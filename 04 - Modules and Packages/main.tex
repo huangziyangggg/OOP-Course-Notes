@@ -1,0 +1,560 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}        % 必须使用 XeLaTeX 编译器
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={04 - Modules and Packages},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码样式配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False, import, as, from, np, pd, def, return, for, in, range}
+}
+
+% --- 自定义教学框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实操案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 04 - Modules and Packages / 模块与包}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 04 - Modules and Packages}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{Modules and Importing / 模块与导入}
+% ======================================================================
+
+\begin{concept}{What is a Module? / 什么是模块？}
+    A module is a file containing Python code that can be re-used in other Python code files. \\
+    模块是一个包含 Python 代码的文件，可以在其他代码中重复使用。
+
+    There are libraries already included with Python and others we have to install before being able to import and use them.
+\end{concept}
+
+\subsection{Four Import Variations / 四种导入方式}
+
+\begin{concept}{Import Syntax / 导入语法}
+    Check the following four variations for importing modules from packages:
+    \begin{enumerate}[itemsep=0.5em]
+        \item \texttt{import [package]} — imports the entire package.
+        \item \texttt{import [package] as [other\_name]} — imports with an alias (shorter name).
+        \item \texttt{from [package] import [module]} — imports only a specific module/function.
+        \item \texttt{from [package] import [module] as [other\_name]} — imports a specific item with alias.
+    \end{enumerate}
+\end{concept}
+
+\begin{examplebox}{Import Examples / 导入示例}
+\begin{lstlisting}
+# 1. Basic import
+import numpy
+arr = numpy.array([1, 2, 3])
+
+# 2. Import with alias (most common for NumPy/Pandas)
+import numpy as np
+arr = np.array([1, 2, 3])
+
+# 3. Import specific function
+from math import sqrt
+print(sqrt(16))             # 4.0
+
+# 4. Import specific function with alias
+from math import sqrt as square_root
+print(square_root(16))      # 4.0
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Standard Library / 标准库核心模块}
+% ======================================================================
+
+\begin{concept}{What is the Standard Library? / 什么是标准库？}
+    The \textbf{Standard Library} doesn't need to be installed separately — it comes with your Python installation. These are often called \textbf{inbuilt packages}. \\
+    标准库随 Python 安装自带，无需额外安装。也叫"内置包"。
+
+    External libraries like NumPy and Pandas must be installed before using them.
+\end{concept}
+
+\subsection{Copy Module / 复制模块}
+
+\begin{concept}{Assignment vs Copy / 赋值与复制的区别}
+    Assignment (\texttt{=}) does not copy objects; it creates a \textbf{binding} (reference) between a name and an object. For mutable collections, a copy is sometimes needed so one can change one copy without changing the other. \\
+    赋值只是创建引用（别名），不是真正的复制。对于可变集合，有时需要真正的副本来独立修改。
+
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{Shallow Copy / 浅拷贝}（\texttt{copy.copy}）：Creates a new container, but elements inside still reference the original objects.
+        \item \textbf{Deep Copy / 深拷贝}（\texttt{copy.deepcopy}）：Recursively copies everything — completely independent from the original.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Shallow Copy Example / 浅拷贝案例}
+\begin{lstlisting}
+import copy
+animals = ["lion", "tiger"]
+
+# Without copy — just a reference
+large_cats = animals
+large_cats.append("Leopard")
+print(animals)      # ['lion', 'tiger', 'Leopard'] — CHANGED!
+
+# With copy.copy — independent copy
+animals = ["lion", "tiger"]
+large_cats = copy.copy(animals)
+large_cats.append("Leopard")
+print(large_cats)   # ['lion', 'tiger', 'Leopard']
+print(animals)      # ['lion', 'tiger'] — unchanged!
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Math Module / 数学模块}
+
+\begin{concept}{What's Inside math? / math 模块的内容}
+    The \texttt{math} package includes mathematical constants and functions:
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{Constants / 常量}：\texttt{math.pi}, \texttt{math.e}.
+        \item \textbf{Functions / 函数}：\texttt{log}, \texttt{cos}, \texttt{sin}, \texttt{ceil} (向上取整), \texttt{floor} (向下取整).
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{math Module Examples / math 模块示例}
+\begin{lstlisting}
+import math
+
+print(math.log(5, 2))       # Logarithm base 2 of 5
+print(math.pi)              # 3.141592653589793
+print(math.floor(2.6))      # 2 (round down)
+print(math.ceil(2.6))       # 3 (round up)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Time Module / 时间模块}
+
+\begin{concept}{What's Inside time? / time 模块的内容}
+    The \texttt{time} package deals with time and timing-related things. \\
+    \texttt{time.time()} returns the seconds that have passed since \textbf{January 1st 1970 00:00:00} (the Unix epoch).
+\end{concept}
+
+\begin{examplebox}{Time Module Examples / time 模块示例}
+\begin{lstlisting}
+import time
+
+# Get current Unix timestamp / 获取当前时间戳
+print(time.time())          # e.g., 1717718400.123456
+
+# Pause execution for 2 seconds / 暂停 2 秒
+print("Wait...")
+time.sleep(2)
+print("Hi")                 # Printed after 2 seconds
+
+# Timing how long a function takes / 测量函数执行时间
+def my_function():
+    for n in range(1000000):
+        n += 2 * n
+
+start_time = time.time()
+my_function()
+elapsed = time.time() - start_time
+print(f"{elapsed:.4f} seconds")
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Time Object with localtime() / 本地时间对象}
+\begin{lstlisting}
+now = time.localtime()
+print(now)                          # time.struct_time object
+print(now.tm_year)                  # Current year, e.g., 2026
+print(now.tm_mon)                   # Current month
+print(now.tm_mday)                  # Current day
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{External Libraries \& Pip / 外部库与包管理}
+% ======================================================================
+
+\begin{concept}{Why Pip? / 为什么需要 Pip？}
+    External packages need to be installed before using them. They are not included with Python by default. \texttt{pip} is the package manager for Python — it automates installing, upgrading, and removing third-party packages. \\
+    \texttt{pip} 是 Python 的包管理器，用于安装、升级和卸载第三方包。
+
+    \texttt{pip} is a command line tool — you must run it from a terminal.
+\end{concept}
+
+\begin{examplebox}{Common pip Commands / 常用 pip 命令}
+\begin{lstlisting}
+# Check pip version / 检查 pip 版本
+pip --version
+
+# Upgrade pip itself / 升级 pip 自身
+pip install --upgrade pip
+
+# List all installed packages / 列出已安装的所有包
+pip list
+
+# Install a package / 安装包
+pip install numpy
+
+# Install a specific version / 安装特定版本
+pip install numpy==1.16.5
+
+# Uninstall a package / 卸载包
+pip uninstall numpy
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Numerical Computing with NumPy / NumPy 数值计算}
+% ======================================================================
+
+\subsection{Why NumPy? / 为什么 NumPy 这么快？}
+
+\begin{concept}{The Type-Checking Bottleneck / 类型检查瓶颈}
+    Python lists can store any object, so the interpreter must check the data type for \textbf{every} operation. NumPy uses \textbf{ndarrays} with a \textbf{fixed data type}, skipping these checks and using \textbf{vectorized operations}. \\
+    Python 列表因为支持异构数据，每次计算都要检查类型。NumPy 通过固定数据类型（\texttt{dtype}）并使用向量化计算，速度快几十倍。
+\end{concept}
+
+\begin{examplebox}{Speed Comparison / 速度对比}
+\begin{lstlisting}
+import random
+import numpy as np
+
+# Create 1,000,000 random integers with Python list
+measurements = [random.randint(150, 200) for _ in range(1_000_000)]
+
+# NumPy version
+measurements_array = np.array(measurements)
+
+# NumPy's vectorized mean is MUCH faster
+np.mean(measurements_array)     # ~50x faster than sum/len on list
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Creating NumPy Arrays / 创建 NumPy 数组}
+
+\begin{concept}{Multiple Ways to Create Arrays / 多种创建方式}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{From list}：\texttt{np.array([10, 2, 35])}
+        \item \textbf{arange}：Like \texttt{range()} but returns ndarray. \texttt{np.arange(start=2, stop=14, step=2)}
+        \item \textbf{linspace}：Creates array with N evenly spaced values. \texttt{np.linspace(start=-5, stop=5, num=9)}
+        \item \textbf{zeros / ones}：Arrays filled with 0 or 1. \texttt{np.zeros(3)}, \texttt{np.ones((2, 3))}
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Creating Arrays / 创建数组案例}
+\begin{lstlisting}
+import numpy as np
+
+# From list
+print(np.array([10, 2, 35]))            # [10  2 35]
+
+# arange: like range but NumPy
+print(list(range(5)))                   # [0, 1, 2, 3, 4]
+print(np.arange(start=2, stop=14, step=2))  # [ 2  4  6  8 10 12]
+
+# linspace: N evenly spaced values
+print(np.linspace(start=-5, stop=5, num=9))
+# [-5.  -3.75 -2.5 -1.25  0.   1.25  2.5  3.75  5. ]
+
+# zeros and ones
+print(np.zeros(3))                      # [0. 0. 0.]
+print(np.ones(3))                       # [1. 1. 1.]
+
+# Multidimensional with shape argument
+print(np.zeros((2, 2)))                 # 2x2 matrix of zeros
+# [[0. 0.]
+#  [0. 0.]]
+print(np.ones((2, 3)))                  # 2x3 matrix of ones
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Anatomy of Arrays / 数组解剖}
+
+\begin{concept}{dtype, shape, ndim / 三大核心属性}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{\texttt{.dtype}}：Data type of the array elements. Can be \texttt{int}, \texttt{float}, \texttt{bool}, etc.
+        \item \textbf{\texttt{.shape}}：A tuple with the number of elements in each dimension. E.g., \texttt{(3, 4)} for a 3×4 array.
+        \item \textbf{\texttt{.ndim}}：The total number of dimensions.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Array Anatomy / 数组属性详解}
+\begin{lstlisting}
+import numpy as np
+
+# dtype — data type
+values = [0, 1, 2, 3, 4]
+int_arr = np.array(values, dtype='int')
+print(int_arr, int_arr.dtype)           # [0 1 2 3 4] int64
+
+# NumPy casts values to match dtype
+bool_arr = np.array(values, dtype='bool')
+print(bool_arr, bool_arr.dtype)
+# [False  True  True  True  True] bool
+
+# Without explicit dtype: "smallest common denominator"
+values = [0, 1, 2.5, 3, 4]
+float_arr = np.array(values)
+print(float_arr, float_arr.dtype)       # all become float64
+
+# 1D Array
+one_dim_arr = np.array([1, 2, 3, 4])
+print(one_dim_arr.shape)                # (4,)
+print(one_dim_arr.ndim)                 # 1
+
+# 2D Array
+values = [[1, 2, 3, 4, 5],
+          [1, 2, 3, 4, 1],
+          [1, 2, 3, 4, 2]]
+two_dim_arr = np.array(values)
+print(two_dim_arr.shape)                # (3, 5)
+print(two_dim_arr.ndim)                 # 2
+
+# Access 2D elements: [row, column]
+print(two_dim_arr[1, 3])                # 4
+two_dim_arr[1, 3] = 10                 # Lists are mutable!
+print(two_dim_arr)
+
+# 3D Array
+values = [[[1, 2, 3, 4]] * 3] * 6
+three_dim_arr = np.array(values)
+print(three_dim_arr.shape)              # (6, 3, 4)
+print(three_dim_arr.ndim)               # 3
+print(three_dim_arr[1, 1, 1])           # Access 3D element
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Reshape / 重塑数组形状}
+
+\begin{examplebox}{Using reshape() / reshape() 用法}
+\begin{lstlisting}
+a = np.arange(start=2, stop=14)         # [2, 3, ..., 13] — 12 elements
+print(a.shape)                          # (12,)
+
+# Reshape to 3x4
+print(a.reshape(3, 4))
+# [[ 2  3  4  5]
+#  [ 6  7  8  9]
+#  [10 11 12 13]]
+
+# -1 auto-detects the size of that dimension
+print(a.reshape(2, -1))                 # 2x6
+print(a.reshape(2, -1).shape)           # (2, 6)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Comparing Arrays / 数组比较}
+
+\begin{examplebox}{Equality and np.isclose() / 相等比较与 np.isclose()}
+\begin{lstlisting}
+a = np.zeros((3, 3))
+b = np.zeros((3, 3))
+print(a == b)                   # All True (element-wise comparison)
+
+# Floating point precision issue!
+a[0, 0] += 0.000000000000001
+print(a == b)                   # One element is now False!
+
+# Use np.isclose() for floating point comparison
+print(np.isclose(a, b))         # All True (tolerates tiny differences)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Mathematical Operations / 数学运算（向量化）}
+
+\begin{concept}{Vectorization / 向量化}
+    Numpy's mathematical functions operate on arrays in a \textbf{vectorized} manner — applied to each element without explicit for-loops. Vectorized functions are called \textbf{ufuncs} (universal functions) in NumPy. \\
+    向量化操作直接作用于整个数组的每个元素，不需要写 \texttt{for} 循环。
+\end{concept}
+
+\begin{examplebox}{Vectorized Operations / 向量化运算}
+\begin{lstlisting}
+arr = np.arange(1, 10)          # [1 2 3 4 5 6 7 8 9]
+
+# Element-wise operations / 逐元素运算
+print(arr * 3)                  # [ 3  6  9 12 15 18 21 24 27]
+print(arr * arr)                # [ 1  4  9 16 25 36 49 64 81]
+print(arr + (arr * 2))          # [ 3  6  9 12 15 18 21 24 27]
+print(arr - arr)                # [0 0 0 0 0 0 0 0 0]
+print(arr / arr)                # [1. 1. 1. ...]
+print(arr ** 2)                 # [ 1  4  9 16 25 36 49 64 81]
+
+# Matrix multiplication (inner product for 1D)
+print(arr @ arr)                # 285 (= 1*1 + 2*2 + ... + 9*9)
+# Same as: np.sum(arr * arr)
+
+# Universal functions / 通用数学函数
+print(np.log(arr))
+print(np.log2(arr))
+print(np.exp(arr))
+print(np.sin(arr))
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{* vs @ / 逐元素乘法 vs 矩阵乘法}
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{arr * arr}：Element-wise multiplication / 逐元素乘法.
+        \item \texttt{arr @ arr}：Matrix product (inner product for 1D vectors) / 矩阵相乘（一维时为内积）.
+    \end{itemize}
+    混淆这两个操作会导致完全不同的结果！
+\end{warning}
+
+\subsection{Aggregation Functions / 聚合函数与轴}
+
+\begin{concept}{Reducing Dimensionality / 降维操作}
+    Aggregation functions (min, max, sum, average) reduce dimensionality. They provide an \textbf{axis} argument to specify which dimension to reduce. \\
+    聚合函数降低数组维度。\texttt{axis} 参数指定沿着哪个轴聚合。
+\end{concept}
+
+\begin{examplebox}{Aggregation with axis / 聚合与轴参数}
+\begin{lstlisting}
+two_dim_arr = np.random.randint(0, high=20, size=(3, 4))
+print(two_dim_arr)              # 3x4 random array
+
+# Aggregation over whole array / 对整个数组聚合
+print(np.min(two_dim_arr))      # Minimum of ALL elements
+print(np.max(two_dim_arr))      # Maximum of ALL elements
+print(np.sum(two_dim_arr))      # Sum of ALL elements
+
+# axis=0: Operation applied across rows (column-wise)
+# 纵向聚合：按列计算，结果 shape 为 (4,)
+print(np.min(two_dim_arr, axis=0))  # Min of each column
+
+# axis=1: Operation applied across columns (row-wise)
+# 横向聚合：按行计算，结果 shape 为 (3,)
+print(np.average(two_dim_arr, axis=1))  # Avg of each row
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{axis Meaning / axis 参数含义}
+    \begin{itemize}
+        \item \textbf{\texttt{axis=0}}：Operation across rows — reduces to one value per \textbf{column}. / 纵向（按列计算）.
+        \item \textbf{\texttt{axis=1}}：Operation across columns — reduces to one value per \textbf{row}. / 横向（按行计算）.
+    \end{itemize}
+    Think of it as: the axis you specify is the one that \textbf{disappears}!
+\end{warning}
+
+\subsection{Combining Arrays / 数组合并}
+
+\begin{examplebox}{concatenate, append, stack / 数组合并三剑客}
+\begin{lstlisting}
+a = np.arange(10)                   # [0 1 2 3 4 5 6 7 8 9]
+b = np.arange(10)[::-1]             # [9 8 7 6 5 4 3 2 1 0]
+
+# concatenate: joins a sequence of arrays
+print(np.concatenate((a, b)))
+# [0 1 2 3 4 5 6 7 8 9 9 8 7 6 5 4 3 2 1 0]
+
+# append: uses concatenate internally
+print(np.append(a, b))
+
+# stack: stacks along a NEW axis (creates new dimension)
+print(np.stack((np.arange(10), np.arange(10))))
+# [[0 1 2 3 4 5 6 7 8 9]
+#  [0 1 2 3 4 5 6 7 8 9]]
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{Concatenation Creates Copies / 合并操作会创建副本}
+    Operations like \texttt{np.append}, \texttt{np.concatenate}, and \texttt{np.stack} always require the whole array to be copied. It often makes more sense to allocate an array of the size you need \textbf{upfront} and then fill it.
+\end{warning}
+
+\subsection{Masking / 掩码过滤}
+
+\begin{concept}{Boolean Indexing / 布尔索引}
+    Logical arrays (arrays containing boolean values) can be used to index other arrays. These logical arrays are called \textbf{masks}. This is especially useful to filter data based on conditions. \\
+    布尔数组可以用作索引来过滤数据，称为"掩码"。
+\end{concept}
+
+\begin{examplebox}{Masking Examples / 掩码过滤示例}
+\begin{lstlisting}
+arr = np.arange(1, 6)               # [1 2 3 4 5]
+
+# Create a boolean mask
+mask = np.array([True, False, True, False, True])
+print(arr[mask])                    # [1 3 5] (only where mask is True)
+
+# Generate mask from condition
+print(arr < 5)                      # [ True  True  True  True False]
+print(arr[arr < 3])                 # [1 2] (filtered by condition)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Advanced Indexing / 高级索引}
+
+\begin{examplebox}{2D Array Indexing / 二维数组索引}
+    The syntax works as \texttt{[row, column]}, or more precisely \texttt{[row\_start:row\_end, col\_start:col\_end]}.
+\begin{lstlisting}
+large_two_dim_arr = np.arange(81).reshape((9, 9))
+
+# Select entire column / 选择整列
+print(large_two_dim_arr[:, 2])      # All rows, column 2
+
+# Select specific row and column range
+print(large_two_dim_arr[1, 2:7])    # Row 1, columns 2 through 6
+
+# Standard slicing with step / 带步长的切片
+print(large_two_dim_arr[:, 2:7:2])  # All rows, columns 2, 4, 6
+\end{lstlisting}
+\end{examplebox}
+
+\end{document}

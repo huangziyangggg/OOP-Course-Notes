@@ -1,0 +1,762 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={01 - Variables & Data Types},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码样式配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False}
+}
+
+% --- 自定义教学框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实操案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 01 - Variables \& Data Types / 变量与数据类型}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 01 - Variables \& Data Types}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{Variables / 变量基础}
+% ======================================================================
+
+\begin{concept}{What is a Variable? / 什么是变量？}
+    In Python, variables are names that can be assigned a value and then used to refer to that value throughout your code. \\
+    在 Python 中，变量是可以被赋值并在代码中反复引用的名称。
+
+    Variables are fundamental to programming for two reasons:
+    \begin{enumerate}[itemsep=0.3em]
+        \item \textbf{Keep values accessible / 保持值可访问}：You can assign the result of a time-consuming operation to a variable so your program doesn't have to perform the operation each time you need the result.
+        \item \textbf{Give values context / 赋予值上下文}：The number 28 could mean lots of different things. Giving it a name like \texttt{num\_students} makes the meaning clear.
+    \end{enumerate}
+\end{concept}
+
+\subsection{The Assignment Operator / 赋值运算符}
+\begin{concept}{How it works / 赋值逻辑}
+    The \texttt{=} symbol is called the \textbf{assignment operator}. It takes the value on the \textbf{right} and assigns it to the name on the \textbf{left}. \\
+    Python 使用 \texttt{=} 符号进行赋值。它将等号右侧的值"绑定"到左侧的名字上。
+\end{concept}
+
+\begin{examplebox}{Basic Assignment / 基础赋值}
+\begin{lstlisting}
+age = 25
+print(age)      # Output: 25
+\end{lstlisting}
+\end{examplebox}
+
+\begin{concept}{How print() Works / print() 的工作原理}
+    \texttt{print()} is a function that displays output. Python looks for the variable name, finds its assigned value, and \textbf{replaces} the variable name with its value before calling the function. \\
+    \texttt{print()} 是一个函数，用于显示输出。Python 先查找变量名对应的值，\textbf{用值替换}变量名后再调用函数。
+\end{concept}
+
+\subsection{Naming Rules \& Conventions / 命名规则与规范}
+
+\begin{itemize}[itemsep=0.3em]
+    \item \textbf{Valid Characters / 合法字符}：Uppercase and lowercase letters (A–Z, a–z), digits (0–9), and underscores (\_). Variable names can be as long or as short as you like.
+    \item \textbf{Case Sensitivity / 大小写敏感}：\texttt{age} is not the same as \texttt{Age}. Using \texttt{print(Age)} when only \texttt{age} is defined will raise a \texttt{NameError}.
+    \item \textbf{Style / 规范}：Common practice is to write variable names in \texttt{lower\_case\_with\_underscores} (e.g., \texttt{car\_length}).
+\end{itemize}
+
+\begin{warning}{Variable Name Rules / 变量命名禁忌}
+    \begin{itemize}
+        \item \textbf{No Digit Start / 严禁数字开头}：Names cannot begin with a digit. \texttt{3text = 4} is invalid.
+        \item \textbf{Reserved Words / 保留字}：Do NOT name variables \texttt{print}, \texttt{for}, \texttt{in}, \texttt{list}, \texttt{str}, \texttt{int} — these are built-in functions you will override.
+        \item \textbf{Meaningful Names / 命名要有意义}：Always use names that describe the data (e.g., \texttt{car\_length} instead of \texttt{L}).
+        \item \textbf{Don't make names too long / 不要太长}：Find a balance between descriptiveness and length.
+    \end{itemize}
+\end{warning}
+
+\begin{examplebox}{Valid and Invalid Names / 合法与非法命名}
+\begin{lstlisting}
+# Valid names / 合法命名
+test1 = 1
+_alpha = 2
+L = 3
+car_length = 2000
+
+# Invalid names / 非法命名
+# 3text = 4         # Error: cannot start with digit
+# my-var = 5        # Error: hyphen is not allowed
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Comments / 代码注释}
+
+\begin{concept}{What are Comments? / 什么是注释？}
+    Comments are lines of text that don't affect how a program runs. They document what code does or why the programmer made certain decisions. \\
+    注释是不影响程序运行的文本行，用于记录代码用途或编程决策的原因。
+
+    The most common way to write a comment is to begin a new line with the \texttt{\#} character. When Python runs your code, it ignores lines starting with \texttt{\#}.
+\end{concept}
+
+\begin{examplebox}{Comment Examples / 注释示例}
+\begin{lstlisting}
+# This variable stores the car length in cm
+L = 2000
+print(L)
+
+H = 146   # This variable stores the car height in cm
+print(H)
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Data Types / 数据类型百科}
+% ======================================================================
+
+\begin{concept}{What is a Data Type? / 什么是数据类型？}
+    The term \textbf{data type} refers to what kind of data a value represents. Python has several built-in data types. \\
+    \textbf{数据类型}指一个值代表什么类型的数据。Python 有多种内置数据类型。
+\end{concept}
+
+\subsection{Primitive Types / 原始类型}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Type / 类型} & \textbf{Keyword} & \textbf{Description / 描述} & \textbf{Example / 示例} \\ \midrule
+Integer / 整数 & \texttt{int} & Whole numbers / 整数 & \texttt{100} \\
+Float / 浮点数 & \texttt{float} & Decimal numbers / 小数 & \texttt{10.7} \\
+Boolean / 布尔值 & \texttt{bool} & \texttt{True} or \texttt{False} (Capitalized!) & \texttt{True} \\
+String / 字符串 & \texttt{str} & Text data / 引号内的文本 & \texttt{"Hello"} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The type() Function / type() 函数}
+
+\begin{concept}{Determining Data Type / 确定数据类型}
+    The \texttt{type()} function is used to determine the data type of a given value or variable. \\
+    \texttt{type()} 函数用于判断任何值或变量的数据类型。
+\end{concept}
+
+\begin{examplebox}{Using type() / type() 实操}
+\begin{lstlisting}
+num = 100               # An integer variable
+length = 10.7           # A floating point variable
+
+print(type(num))        # <class 'int'>
+print(type(length))     # <class 'float'>
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Boolean Data Type / 布尔类型}
+
+\begin{concept}{True or False / 真与假}
+    The boolean data type (\texttt{bool}) can have only one of two values: \texttt{True} or \texttt{False} (both must be \textbf{capitalized}!). \\
+    布尔型只有两个值：\texttt{True}（真）和 \texttt{False}（假），首字母\textbf{必须大写}！
+
+    Booleans are fundamental for conditional expressions — we will explore them more in later chapters.
+\end{concept}
+
+\begin{examplebox}{Boolean Examples / 布尔值示例}
+\begin{lstlisting}
+is_finished = True
+print(type(is_finished))    # <class 'bool'>
+
+is_finished = False
+print(type(is_finished))    # <class 'bool'>
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Strings: Complete Guide / 字符串完全指南}
+% ======================================================================
+
+\subsection{Properties \& Creation / 属性与创建}
+
+\begin{concept}{Three Key Properties / 三大核心属性}
+    Strings in Python are identified as a contiguous set of characters represented in quotation marks. They have three important properties:
+    \begin{enumerate}[itemsep=0.3em]
+        \item \textbf{Characters / 字符}：Strings contain individual letters or symbols called characters.
+        \item \textbf{Length / 长度}：Strings have a length, defined as the number of characters the string contains. Use \texttt{len()} to get it.
+        \item \textbf{Sequence / 序列}：Characters in a string appear in a sequence — each character has a \textbf{numbered position} (index) in the string.
+    \end{enumerate}
+    字符串是引号内的连续字符集。三个核心属性：(1)由字符组成 (2)有长度 (3)字符按序列排列。
+\end{concept}
+
+\subsection{Quotes and Escape Characters / 引号与转义字符}
+
+\begin{warning}{Quote Conflicts / 引号冲突}
+    If you use double quotes inside a string delimited by double quotes, you'll get an error:
+    \begin{lstlisting}
+# text1 = "She said, "What time is it?""  # ERROR!
+    \end{lstlisting}
+    \textbf{Solutions / 解决方案}：
+    \begin{enumerate}
+        \item Use single quotes outside, double quotes inside:
+        \texttt{text1 = 'She said, "What time is it?"'}
+        \item Use the escape character \texttt{\textbackslash}:
+        \texttt{text1 = "She said, \textbackslash"What time is it?\textbackslash""}
+    \end{enumerate}
+\end{warning}
+
+\begin{examplebox}{Escape Character / 转义字符示例}
+\begin{lstlisting}
+text1 = 'She said, "What time is it?"'
+text2 = "She said, \"What time is it?\""
+print(text1)    # She said, "What time is it?"
+print(text2)    # She said, "What time is it?"
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Determine the Length of a String / 获取字符串长度}
+
+\begin{examplebox}{Using len() / len() 函数}
+    \texttt{len()} is a Python built-in function that returns the number of characters in a string (including spaces).
+\begin{lstlisting}
+text2 = "This is a test string"
+print(len(text2))   # Output: 22
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Multiline Strings / 多行字符串}
+
+\begin{concept}{Two Ways to Create Multiline Strings / 两种多行字符串方式}
+    To deal with long strings, you can break them up across multiple lines:
+    \begin{enumerate}[itemsep=0.3em]
+        \item \textbf{Backslash method / 反斜杠法}：Put a backslash (\texttt{\textbackslash}) at the end of each line except the last.
+        \item \textbf{Triple quotes method / 三引号法}：Use triple quotes (\texttt{"""} or \texttt{'''}) as delimiters.
+    \end{enumerate}
+\end{concept}
+
+\begin{examplebox}{Multiline String Examples / 多行字符串示例}
+\begin{lstlisting}
+# Method 1: Backslash / 反斜杠法
+long_text = "This planet has--or rather had--a problem, which was \
+this: most of the people living on it were unhappy for pretty much of the time."
+print(long_text)
+
+# Method 2: Triple quotes / 三引号法
+long_text = """This planet has--or rather had--a problem, which was
+this: most of the people living on it were unhappy for pretty much of the time."""
+print(long_text)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Concatenation, Indexing, and Slicing / 拼接、索引与切片}
+
+\subsubsection{Concatenation / 字符串拼接}
+\begin{concept}{Joining Strings with + / 用 + 拼接字符串}
+    You can combine, or concatenate, two strings using the \texttt{+} operator.
+\end{concept}
+
+\begin{examplebox}{Concatenation Example / 拼接示例}
+\begin{lstlisting}
+string1 = "Hello"
+string2 = "World"
+string3 = string1 + string2
+print(string3)      # Output: HelloWorld (no space!)
+\end{lstlisting}
+\end{examplebox}
+
+\subsubsection{Indexing / 索引}
+\begin{concept}{The Rule of 0 / 从 0 开始计数}
+    In Python, counting always starts at \textbf{zero (0)}. Each character in a string has a numbered position called an \textbf{index}. \\
+    Python 计数永远从 0 开始。字符串中的每个字符都有一个称为索引的编号位置。
+\end{concept}
+
+\begin{examplebox}{Positive and Negative Indexing / 正索引与负索引}
+\begin{lstlisting}
+text = "Python BootCamp"
+
+# Positive index / 正索引（从左到右，从 0 开始）
+print(text[0])      # 'P' (第一个字符)
+print(text[7])      # 'B'
+
+# Negative index / 负索引（从右到左，从 -1 开始）
+print(text[-1])     # 'p' (最后一个字符)
+print(text[-5])     # 't'
+\end{lstlisting}
+\end{examplebox}
+
+\subsubsection{Slicing / 切片}
+\begin{concept}{Extracting Substrings / 提取子字符串}
+    You can extract a portion of a string (called a \textbf{substring}) by inserting a colon between two index numbers inside square brackets: \texttt{[start:stop]}. \\
+    \textbf{Critical Rule / 关键规则}：Inclusive on the left, \textbf{EXCLUSIVE} on the right. \\
+    切片格式为 \texttt{[start:stop]}，左闭右开——包含 start，不包含 stop。
+\end{concept}
+
+\begin{examplebox}{Slicing Examples / 切片实战}
+\begin{lstlisting}
+text = "Python BootCamp"
+
+# Basic slicing [start:stop]
+print(text[0:6])    # 'Python' (indices 0,1,2,3,4,5 — NOT 6)
+print(text[7:11])   # 'Boot'
+
+# Omit start: assumes 0
+print(text[:6])     # 'Python' (same as text[0:6])
+
+# Omit stop: goes to the end
+print(text[7:])     # 'BootCamp'
+
+# Both omitted: the whole string
+print(text[:])      # 'Python BootCamp'
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Immutability / 不可变性}
+
+\begin{warning}{Strings Are Immutable / 字符串不可修改}
+    You cannot change characters once a string is created. Strings are \textbf{immutable}. \\
+    字符串一旦创建就不可修改。试图执行 \texttt{text[6] = '\_'} 会抛出 \texttt{TypeError}：\texttt{'str' object does not support item assignment}.
+
+    \textbf{Solution / 解决方法}：Most string methods return a \textbf{modified copy} — you must reassign to keep the result.
+\end{warning}
+
+\begin{examplebox}{Immutability Demonstration / 不可变性演示}
+\begin{lstlisting}
+name = "Emlyon"
+name.upper()            # Returns "EMLYON" but does NOT change 'name'!
+print(name)             # Still "Emlyon"
+
+name = name.upper()     # Correct: reassign the result
+print(name)             # Now "EMLYON"
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{String Methods / 字符串方法大全}
+
+\begin{concept}{What are String Methods? / 什么是字符串方法？}
+    Strings come bundled with special functions called \textbf{string methods} that you can use to manipulate strings. The dot (\texttt{.}) tells Python that what follows is the name of a method. \\
+    字符串附带特殊的函数称为字符串方法，点号 (\texttt{.}) 表示接下来是方法名。
+\end{concept}
+
+\begin{examplebox}{Common String Methods / 常用字符串方法}
+\begin{lstlisting}
+# 1. Case Conversion / 大小写转换
+print("Python BootCamp".lower())        # 'python bootcamp'
+print("Python BootCamp".upper())        # 'PYTHON BOOTCAMP'
+
+# 2. Removing Whitespace / 去除首尾空白
+print(" Python BootCamp".strip())       # 'Python BootCamp'
+
+# 3. Counting Substrings / 统计子串出现次数
+text = "Python BootCamp is the best Python program ever!"
+print(text.count("Python"))             # Output: 2
+
+# 4. Finding Substring Position / 查找子串位置
+print(text.find("Python"))              # Output: 0 (first occurrence)
+print(text.find("python"))              # Output: -1 (not found!)
+
+# 5. Check Start and End / 检查首尾
+print("Python BootCamp".startswith('P'))  # True
+print("Python BootCamp".endswith('p'))    # False
+
+# 6. Replace / 替换
+print("Hello World".replace("World", "Python"))  # 'Hello Python'
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{find() Returns -1 When Not Found / find() 找不到返回 -1}
+    The \texttt{find()} method returns the index of the first occurrence, or \textbf{-1} if the substring is not found. This is different from indexing with \texttt{[]}, which would raise an error. \\
+    \texttt{find()} 找不到时返回 \texttt{-1}（不是报错），与直接用 \texttt{[]} 索引不同。
+\end{warning}
+
+% ======================================================================
+\section{The None Data Type / 特殊类型 None}
+% ======================================================================
+
+\begin{concept}{NoneType / 空值类型}
+    The \texttt{None} keyword is used to define a null value, or no value at all. \\
+    \texttt{None} 用于表示"空值"或"无值"。
+
+    \textbf{Critical Distinctions / 关键区分}：
+    \begin{itemize}
+        \item \texttt{None} is NOT the same as \texttt{0}
+        \item \texttt{None} is NOT the same as \texttt{False}
+        \item \texttt{None} is NOT the same as an empty string \texttt{""}
+        \item \texttt{None} is a data type of its own (\texttt{NoneType})
+        \item Only \texttt{None} can be \texttt{None}
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{None Example / None 示例}
+\begin{lstlisting}
+my_var = None
+print(my_var)       # None
+print(type(my_var)) # <class 'NoneType'>
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Operators / 运算符}
+% ======================================================================
+
+\subsection{Arithmetic Operators / 算术运算符}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Operator} & \textbf{Operation / 操作} & \textbf{Example / 示例} \\ \midrule
+\texttt{+}  & Addition / 加法          & \texttt{2 + 2 = 4} \\
+\texttt{-}  & Subtraction / 减法       & \texttt{5 - 2 = 3} \\
+\texttt{*}  & Multiplication / 乘法    & \texttt{3 * 2 = 6} \\
+\texttt{/}  & Division / 标准除法      & \texttt{5 / 2 = 2.5} \\
+\texttt{//} & Floor Division / 整除    & \texttt{5 // 2 = 2} \\
+\texttt{**} & Exponent / 幂运算        & \texttt{3 ** 2 = 9} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warning}{/ vs // 的区别}
+    In Python 3, \texttt{/} denotes \textbf{standard division} (always returns float), while \texttt{//} denotes \textbf{floor division} (integer division, discards the remainder). \\
+    Python 3 中，\texttt{/} 是标准除法（返回 float），\texttt{//} 是整除（丢弃余数）。
+\end{warning}
+
+\begin{examplebox}{Arithmetic Operators Demo / 算术运算符演示}
+\begin{lstlisting}
+print(2 + 2)        # 4
+print(3 * 2)        # 6
+print(3 ** 2)       # 9
+print(5 / 2)        # 2.5 (standard division)
+print(5 // 2)       # 2 (floor division)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Arithmetic on Strings / 字符串上的算术运算}
+
+\begin{concept}{Operators work differently on strings / 运算符对字符串有特殊行为}
+    Some arithmetic operators also work on \texttt{str} type:
+    \begin{itemize}
+        \item \texttt{+} on strings: concatenation / 拼接
+        \item \texttt{*} between string and int: repetition / 重复
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{String Arithmetic / 字符串运算}
+\begin{lstlisting}
+print('2' + '4')        # '24' (concatenation, not addition!)
+print(2 * 'S')          # 'SS' (repetition)
+# print('2' * '4')      # Error! Cannot multiply string by string
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Comparison Operators / 比较运算符}
+
+\begin{concept}{Comparison Produces Boolean / 比较结果总是布尔值}
+    The result of a comparison is always a boolean value (\texttt{True} or \texttt{False}). \\
+    比较运算的结果永远是布尔值（\texttt{True} 或 \texttt{False}）。
+\end{concept}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Operator} & \textbf{Description / 描述} & \textbf{Example / 示例} \\ \midrule
+\texttt{==} & Equal / 等于               & \texttt{1 == 1} $\rightarrow$ \texttt{True} \\
+\texttt{!=} & Not equal / 不等于          & \texttt{2.3 != 2.313} $\rightarrow$ \texttt{True} \\
+\texttt{<}  & Less than / 小于             & \texttt{2.5 < 9} $\rightarrow$ \texttt{True} \\
+\texttt{>}  & Greater than / 大于          & \texttt{2.4 > 2.399} $\rightarrow$ \texttt{True} \\
+\texttt{<=} & Less than or equal / 小于等于  & \texttt{3 <= 3} $\rightarrow$ \texttt{True} \\
+\texttt{>=} & Greater than or equal / 大于等于 & \texttt{2.4 >= 2.399} $\rightarrow$ \texttt{True} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{examplebox}{Comparison Examples / 比较运算示例}
+\begin{lstlisting}
+print(2.5 < 3)          # True
+print(2 == 2)           # True
+print(2 != 3)           # True
+print(5 >= 5)           # True
+print(10 < 3)           # False
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Logical Operators / 逻辑运算符}
+
+\begin{concept}{Combining Boolean Values / 组合布尔值}
+    Logical operators take boolean values as input and produce either \texttt{True} or \texttt{False} as output. \\
+    逻辑运算符接收布尔值并返回布尔值。
+\end{concept}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Operator} & \textbf{Description / 描述} & \textbf{Rule / 规则} \\ \midrule
+\texttt{x or y}  & If either is True $\rightarrow$ True; otherwise False. / 任一为真则真 & Returns \texttt{True} if at least one is \texttt{True} \\
+\texttt{x and y} & If both are True $\rightarrow$ True; otherwise False. / 两者为真才真 & Returns \texttt{True} only if \textbf{both} are \texttt{True} \\
+\texttt{not x}   & Reverses the boolean value. / 取反 & Returns \texttt{False} if \texttt{x} is \texttt{True}; \texttt{True} if \texttt{x} is \texttt{False} \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{examplebox}{Logical Operators Demo / 逻辑运算符演示}
+\begin{lstlisting}
+# or: True if either is True
+print((2 == 3) or (4 < 5))      # True (4 < 5 is True)
+
+# and: True only if BOTH are True
+print((2 == 3) and (4 < 5))     # False (2 == 3 is False)
+
+# not: Reverses the boolean
+print(not (2 == 3))             # True (reverses False to True)
+print(not True)                 # False
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Type Casting / 类型转换}
+% ======================================================================
+
+\begin{concept}{Converting Between Types / 类型之间的转换}
+    If you want to change one data type to another, use the following functions: \\
+    使用以下函数进行类型转换：\texttt{int()}, \texttt{str()}, \texttt{float()}, \texttt{bool()}.
+
+    These four data types (\texttt{int}, \texttt{float}, \texttt{str}, \texttt{bool}) are called \textbf{Primitive Types}.
+\end{concept}
+
+\begin{examplebox}{Type Casting Examples / 类型转换示例}
+\begin{lstlisting}
+print(int(9.9))         # 9 (truncates, does NOT round!)
+print(str(5))           # '5'
+print(bool(1))          # True
+# print(int("Yes!"))    # ValueError: invalid literal for int()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{String + Int = Error! / 字符串 + 整数 = 报错！}
+    You MUST cast \texttt{str} to \texttt{int} before doing arithmetic operations:
+\begin{lstlisting}
+# Wrong / 错误
+a = 34
+b = "10"
+# print(a + b)        # TypeError! Cannot add int and str
+
+# Correct / 正确
+a = 34
+b = "10"
+print(a + int(b))       # 44
+\end{lstlisting}
+\end{warning}
+
+\begin{concept}{Truthiness / 真值判定规则}
+    Almost any value is evaluated to \texttt{True} if it has some sort of content:
+    \begin{itemize}[itemsep=0.3em]
+        \item Any string is \texttt{True}, \textbf{except} empty strings (\texttt{""}).
+        \item Any number is \texttt{True}, \textbf{except} \texttt{0}.
+        \item \texttt{bool(0)} $\rightarrow$ \texttt{False}; \texttt{bool("")} $\rightarrow$ \texttt{False}
+    \end{itemize}
+    \textbf{Falsy values / 假值}：\texttt{0}, \texttt{0.0}, \texttt{""}, \texttt{None}, \texttt{False}, empty containers.
+\end{concept}
+
+% ======================================================================
+\section{String Formatting / 字符串格式化输出（四种方法）}
+% ======================================================================
+
+\begin{concept}{The Goal / 目标}
+    Suppose you have \texttt{name = "Doctor Strange"}, \texttt{heads = 2}, \texttt{arms = 3}. \\
+    You want to display: \textbf{"Doctor Strange has 2 heads and 3 arms."}
+
+    There are \textbf{four} ways to achieve this in Python.
+\end{concept}
+
+\subsection{Method 1: Commas in print() / 用逗号分隔}
+
+\begin{examplebox}{Comma Method / 逗号法}
+\begin{lstlisting}
+name = "Doctor Strange"
+heads = 2
+arms = 3
+print(name, "has", str(heads), "heads and", str(arms), "arms.")
+# Output: Doctor Strange has 2 heads and 3 arms.
+\end{lstlisting}
+    Note: \texttt{print()} automatically inserts spaces between comma-separated items. You must convert numbers to strings with \texttt{str()}.
+\end{examplebox}
+
+\subsection{Method 2: Concatenation with + / 字符串拼接法}
+
+\begin{examplebox}{Concatenation Method / 拼接法}
+\begin{lstlisting}
+print(name + " has " + str(heads) + " heads and " + str(arms) + " arms.")
+# Output: Doctor Strange has 2 heads and 3 arms.
+\end{lstlisting}
+    Note: Tedious! Must manually add spaces and convert numbers to strings.
+\end{examplebox}
+
+\subsection{Method 3: f-strings (Best Practice, Python 3.6+) / f-字符串（推荐）}
+
+\begin{concept}{f-strings / f-字符串格式化}
+    Two important things to notice:
+    \begin{enumerate}
+        \item The string literal starts with the letter \texttt{f} before the opening quotation mark.
+        \item Variable names surrounded by curly braces \texttt{\{} and \texttt{\}} are replaced with their corresponding values \textbf{without} needing \texttt{str()}.
+    \end{enumerate}
+    f-strings are only available in \textbf{Python version 3.6 and above}.
+\end{concept}
+
+\begin{examplebox}{f-string Example / f-字符串示例}
+\begin{lstlisting}
+print(f"{name} has {heads} heads and {arms} arms.")
+# Output: Doctor Strange has 2 heads and 3 arms.
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Method 4: .format() Method / .format() 方法}
+
+\begin{examplebox}{.format() Method / .format() 方法示例}
+\begin{lstlisting}
+print("{} has {} heads and {} arms.".format(name, heads, arms))
+# Output: Doctor Strange has 2 heads and 3 arms.
+\end{lstlisting}
+    Curly braces \texttt{\{\}} act as placeholders, filled by \texttt{.format()} arguments in order.
+\end{examplebox}
+
+\subsection{Method 5 (Legacy): \% Operator / \% 运算符（旧式）}
+
+\begin{examplebox}{\% Operator / \% 运算符示例}
+\begin{lstlisting}
+print("%s has %s heads and %s arms." % (name, heads, arms))
+# Output: Doctor Strange has 2 heads and 3 arms.
+\end{lstlisting}
+    \texttt{\%s} is a placeholder for string; values are provided in parentheses after \texttt{\%}.
+\end{examplebox}
+
+% ======================================================================
+\section{User Input / 用户输入}
+% ======================================================================
+
+\begin{concept}{The input() Function / input() 函数}
+    The \texttt{input()} function gets input from the user. It:
+    \begin{itemize}[itemsep=0.3em]
+        \item Displays a \textbf{prompt} (a string that tells the user what to enter).
+        \item Waits for the user to type something and press Enter.
+        \item \textbf{Always returns a string} — even if the user types a number!
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{input() Examples / 用户输入示例}
+\begin{lstlisting}
+# Basic usage
+name = input()
+print(name)
+
+# With a prompt / 带提示信息的输入
+age = input("Please enter your age: ")
+print(age)              # age is a STRING, not a number!
+print(type(age))        # <class 'str'>
+
+# Convert to number if needed / 如需数字，必须转换
+age = int(input("Please enter your age: "))
+print(age + 1)          # Now it works as a number
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{input() Always Returns a String / input() 永远返回字符串}
+    Even if the user types \texttt{42}, the result is the string \texttt{"42"}, NOT the integer \texttt{42}. Use \texttt{int()} or \texttt{float()} to convert. \\
+    即使用户输入 42，返回的也是字符串 \texttt{"42"}，需要用 \texttt{int()} 或 \texttt{float()} 转换后才能做数学运算。
+\end{warning}
+
+% ======================================================================
+\section{Quick Reference / 速查表}
+% ======================================================================
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Operation / 操作} & \textbf{Syntax / 语法} \\ \midrule
+赋值 & \texttt{x = 10} \\
+检查类型 & \texttt{type(x)} \\
+获取长度 & \texttt{len(s)} \\
+索引（正） & \texttt{s[0]} \\
+索引（负） & \texttt{s[-1]} \\
+切片 & \texttt{s[start:stop]} \\
+小写 & \texttt{s.lower()} \\
+大写 & \texttt{s.upper()} \\
+去空白 & \texttt{s.strip()} \\
+计数 & \texttt{s.count(sub)} \\
+查找 & \texttt{s.find(sub)} \\
+开头判断 & \texttt{s.startswith(prefix)} \\
+结尾判断 & \texttt{s.endswith(suffix)} \\
+替换 & \texttt{s.replace(old, new)} \\
+转整数 & \texttt{int(x)} \\
+转浮点 & \texttt{float(x)} \\
+转字符串 & \texttt{str(x)} \\
+转布尔 & \texttt{bool(x)} \\
+f-字符串 & \texttt{f"\{var\}"} \\
+用户输入 & \texttt{input(prompt)} \\
+整除 & \texttt{//} \\
+幂运算 & \texttt{**} \\
+逻辑与 & \texttt{and} \\
+逻辑或 & \texttt{or} \\
+逻辑非 & \texttt{not} \\
+等于 & \texttt{==} \\
+不等于 & \texttt{!=} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

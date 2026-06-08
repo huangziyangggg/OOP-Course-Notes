@@ -1,0 +1,435 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={06 - File I/O & Error Handling},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码样式配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False, with, as, try, except, raise, import, def, for, in, if, else}
+}
+
+% --- 自定义教学框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实战案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 06 - File I/O \& Error Handling / 文件IO与异常处理}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 06 - File I/O \& Error Handling}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{File Systems \& Paths / 文件系统与路径}
+% ======================================================================
+
+\begin{concept}{Hierarchy and Paths / 层级与路径}
+    File systems organize files in a hierarchy of \textbf{directories} (folders). At the top is the \textbf{root directory}. \\
+    文件系统将文件组织在目录（文件夹）的层级结构中。最顶层是根目录。
+
+    Each file in a directory has a file name that must be unique from any other file in the same directory. Directories can contain \textbf{subdirectories} (subfolders).
+
+    A \textbf{file path} is a string representing the location of a file, starting from the root directory. \\
+    \textbf{文件路径}是从根目录开始定位文件的字符串。
+\end{concept}
+
+\begin{warning}{OS Differences / 操作系统路径差异}
+    How you write file paths depends on your operating system:
+    \begin{itemize}
+        \item \textbf{Windows}: Uses backslashes (\texttt{\textbackslash}), e.g., \texttt{C:\textbackslash Users\textbackslash David\textbackslash Documents\textbackslash hello.txt}.
+        \item \textbf{macOS}: Uses forward slashes (\texttt{/}), e.g., \texttt{/Users/David/Documents/hello.txt}.
+        \item \textbf{Ubuntu Linux}: Uses forward slashes (\texttt{/}), e.g., \texttt{/home/David/Documents/hello.txt}.
+    \end{itemize}
+\end{warning}
+
+% ======================================================================
+\section{The open() Function / 打开文件}
+% ======================================================================
+
+\subsection{Opening Modes / 打开模式}
+
+\begin{concept}{Creating a File Object / 创建文件对象}
+    Before you can read or write a file, you must open it using Python's built-in \texttt{open()} function. This function creates a \textbf{file object}. \\
+    读写文件之前必须先用 \texttt{open()} 打开，这会创建一个文件对象。
+
+    \texttt{open(file='path/to/file', mode='...')}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{\texttt{'r'} (Read)}：Read only (default if mode is omitted). File must exist. / 只读。
+        \item \textbf{\texttt{'w'} (Write)}：Overwrites existing file or creates a new one. \textbf{WARNING}: erases existing content! / 覆写（会清空原内容）。
+        \item \textbf{\texttt{'a'} (Append)}：Adds content to the end of the file. Creates the file if it doesn't exist. / 追加（在末尾添加内容）。
+    \end{itemize}
+\end{concept}
+
+\subsection{File Attributes / 文件属性}
+
+\begin{examplebox}{Checking File Attributes / 查看文件属性}
+\begin{lstlisting}
+my_file = open(file='sample.txt', mode='w')
+
+print("Name of the file: ", my_file.name)     # sample.txt
+print("Closed or not: ", my_file.closed)       # False
+print("Opening mode: ", my_file.mode)          # w
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Writing to Files / 写入文件}
+
+\begin{examplebox}{write() Method / write() 方法}
+    The \texttt{write()} method writes any string to an open file. \textbf{IMPORTANT}: It does \textbf{NOT} add a newline character (\texttt{\textbackslash n}) automatically — you must add it manually! \\
+    \texttt{write()} 不会自动添加换行符，必须手动加 \texttt{\textbackslash n}！
+\begin{lstlisting}
+my_file = open(file='sample.txt', mode='w')
+my_file.write('Hello file!')
+my_file.write('\n')                 # Manually add newline
+my_file.write('This is me!')
+my_file.close()                     # Always close to flush data!
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{The close() Method / 关闭文件}
+
+\begin{concept}{Why close()? / 为什么必须 close()？}
+    The \texttt{close()} method flushes any unwritten information and closes the file object, after which no more writing can be done. \\
+    \texttt{close()} 刷写缓冲区中的未保存数据并关闭文件。不关闭可能导致数据丢失！
+\end{concept}
+
+% ======================================================================
+\section{Reading Files / 读取文件}
+% ======================================================================
+
+\begin{concept}{Four Ways to Read / 四种读取方式}
+    \begin{itemize}[itemsep=0.8em]
+        \item \textbf{\texttt{.read()}}：Reads the \textbf{entire} file as one single string. / 整个文件读入一个字符串。
+        \item \textbf{\texttt{.readline()}}：Reads just \textbf{one line} (up to and including the newline character). / 仅读取一行。
+        \item \textbf{\texttt{.readlines()}}：Reads the whole file and returns a \textbf{list of strings} — each line is one element. / 返回字符串列表，每个元素是一行。
+        \item \textbf{\texttt{for line in file}}：Iterates line by line — the most \textbf{memory-efficient} way! / 逐行遍历，最省内存。
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Reading Methods Comparison / 四种读取方式对比}
+\begin{lstlisting}
+# Method 1: .read() — entire file as one string
+my_file = open(file='sample.txt', mode='r')
+file_output = my_file.read()
+my_file.close()
+print(file_output)
+
+# Method 2: .readline() — just one line
+my_file = open(file='sample.txt', mode='r')
+file_output = my_file.readline()    # Reads first line
+my_file.close()
+
+# Method 3: .readlines() — list of lines
+my_file = open(file='sample.txt', mode='r')
+file_output = my_file.readlines()
+my_file.close()
+print(file_output)                  # ['Hello file!\n', 'This is me!\n']
+
+# Method 4: for line in file — BEST for large files!
+my_file = open(file='sample.txt', mode='r')
+for line in my_file:                # Most memory-efficient
+    print(line)
+my_file.close()
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Working with CSV Files / CSV 文件处理}
+% ======================================================================
+
+\begin{concept}{What is CSV? / 什么是 CSV？}
+    CSV stands for \textbf{Comma Separated Values}. It is a simple but powerful way to store data in a table format. \\
+    CSV 是一种用逗号分隔值的简单表格数据格式。
+\end{concept}
+
+\subsection{Reading CSV / 读取 CSV}
+
+\begin{examplebox}{Using csv.reader() and DictReader / CSV 读取器}
+\begin{lstlisting}
+import csv
+
+# Method 1: csv.reader — returns lists
+csv_file = open("sample.csv", "r")
+reader = csv.reader(csv_file, skipinitialspace=True)
+for row in reader:
+    print(row)                      # ['1', 'Rose', '30', 'Grenoble']
+csv_file.close()
+
+# Method 2: csv.DictReader — returns dicts (RECOMMENDED!)
+csv_file = open("sample.csv", "r")
+reader = csv.DictReader(csv_file)
+for row in reader:
+    print(row)
+    # {'id': '1', 'name': 'Rose', 'age': '30', 'city': 'Grenoble'}
+csv_file.close()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Writing CSV / 写入 CSV}
+
+\begin{examplebox}{Using csv.writer() / CSV 写入器}
+\begin{lstlisting}
+# Write CSV — use "w" to overwrite, "a" to append
+csv_file = open("sample.csv", "w")
+writer = csv.writer(csv_file)
+writer.writerow(['5', 'Rose', '30', 'Grenoble'])
+writer.writerow(['6', 'Nona', '23', 'Toulouse'])
+csv_file.close()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{'w' vs 'a' for CSV / CSV 写入模式选择}
+    If you do NOT want to overwrite your existing file, use \textbf{\texttt{'a'}} (append) instead of \textbf{\texttt{'w'}} (write). \\
+    用 \texttt{'w'} 会清空原文件内容，用 \texttt{'a'} 会在末尾追加！
+\end{warning}
+
+% ======================================================================
+\section{Error Handling \& Debugging / 异常处理与调试}
+% ======================================================================
+
+\subsection{Error Types / 错误类型}
+
+\begin{concept}{Errors vs Exceptions / 语法错误 vs 运行时异常}
+    \begin{itemize}[itemsep=0.8em]
+        \item \textbf{SyntaxError / 语法错误}：Caught by the IDE \textbf{before} execution. The script cannot run at all. Examples: forgetting a colon \texttt{:}, forgetting to close a bracket, invalid variable names.
+        \item \textbf{Exceptions / 运行时异常}：Occur \textbf{during} execution. Examples: \texttt{IndexError} (list index out of range), \texttt{NameError} (variable not defined), \texttt{TypeError} (wrong type operation).
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Common Error Examples / 常见错误类型}
+\begin{lstlisting}
+# SyntaxError: invalid name (starts with digit)
+# 3_apples = ["apple", "apple", "apple"]
+
+# SyntaxError: forgot to close brackets
+# three_apples = ["apple", "apple", "apple"
+
+# SyntaxError: forgot colon and wrong indentation
+# for i in range(3)
+# print(three_apples[i])
+
+# IndexError: index out of range
+three_apples = ['A', 'B', 'C']
+# print(three_apples[4])         # IndexError!
+
+# TypeError: cannot concatenate str + int
+# print("hello " + 6)            # TypeError!
+
+# ValueError: invalid literal for float()
+converting_data_types = "I am a string"
+# print(float(converting_data_types))  # ValueError!
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{The Try-Except Block / 捕获异常}
+
+\begin{concept}{try-except Logic / try-except 逻辑}
+    \texttt{try-except} acts like \texttt{if-else} but for exceptions. When the code in the \texttt{try} block fails (raises an exception), the \texttt{except} block runs instead. \\
+    类似于 \texttt{if-else}，但专门处理异常。\texttt{try} 块出错时自动执行 \texttt{except} 块。
+\end{concept}
+
+\begin{examplebox}{Handling User Input / 处理用户输入案例}
+\begin{lstlisting}
+user_input = input("Tell me your name please: ")
+
+try:
+    user_input = float(user_input)
+    print("That is a number, not your name!")
+except:
+    print("Thank you,", user_input)
+\end{lstlisting}
+    If the user enters a string that can't be converted to float, the \texttt{except} block runs. If the conversion succeeds, the \texttt{try} block completes.
+\end{examplebox}
+
+\subsection{Debugging Tips / 调试技巧}
+
+\begin{concept}{Using print() for Debugging / 用 print() 调试}
+    Use the \texttt{print()} function to keep track of your variables and outputs. This helps you catch the point where your code misbehaves. \\
+    在关键位置插入 \texttt{print()} 来追踪变量值，定位代码出错的位置。
+\end{concept}
+
+% ======================================================================
+\section{PEP-8 Style Guide / PEP-8 编程规范}
+% ======================================================================
+
+\begin{concept}{Professional Coding / 像专家一样写代码}
+    Writing nice, easy-to-understand code is crucial. For Python, the official style guide is \textbf{PEP-8}. \\
+    写出易读、易懂的代码至关重要。Python 的官方代码风格指南是 PEP-8。
+
+    Conventions are specified in a strict manner, but remember: don't spend more time with the style guide than with your actual code.
+\end{concept}
+
+\subsection{Comments and Docstrings / 注释与文档字符串}
+
+\begin{warning}{DOs and DO NOTs for Comments / 注释的规范}
+    \textbf{DOs / 应该做的}：
+    \begin{itemize}
+        \item Add explanatory comments before lines that are not entirely obvious.
+        \item Use the same indentation as the code they describe.
+        \item Add docstrings as the first line of every function and module.
+    \end{itemize}
+
+    \textbf{DO NOTs / 不应该做的}：
+    \begin{itemize}
+        \item Do NOT add self-explanatory comments: \texttt{x = x + 1  \# increment x} is BAD.
+        \item Do NOT add comments that are wrong — worse than no comment at all!
+    \end{itemize}
+\end{warning}
+
+\subsection{Whitespaces / 空格规范}
+
+\begin{concept}{Where to Put Spaces / 空格的位置}
+    \textbf{DO put spaces / 应该加空格的}：
+    \begin{itemize}
+        \item After commas, colons, and semicolons.
+        \item Around \texttt{=}, \texttt{+=} in assignments.
+        \item Around most binary operators, e.g., \texttt{2 + 2}.
+    \end{itemize}
+
+    \textbf{DO NOT put spaces / 不应该加空格的}：
+    \begin{itemize}
+        \item Between a function name and \texttt{()}: \texttt{func(x)} NOT \texttt{func (x)}.
+        \item Around \texttt{=} in keyword arguments: \texttt{n=42} NOT \texttt{n = 42}.
+        \item After \texttt{(} and before \texttt{)}.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Good vs Bad Formatting / 好代码 vs 坏代码}
+\begin{lstlisting}
+# Bad / 坏代码
+def my_function ( a,b,c ) :
+    some_dict={"a" : "b", 4:5}
+    another_function(a+b+c, n = 42)
+
+# Good / 好代码
+def my_function(a, b, c):
+    some_dict = {"a": "b", 4: 5}
+    another_function(a + b + c, n=42)
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Blank Lines / 空行规范}
+
+\begin{concept}{How to Use Blank Lines / 如何使用空行}
+    \begin{itemize}[itemsep=0.5em]
+        \item Separate function definitions by \textbf{two} blank lines.
+        \item Separate code blocks (loops, if-statements) by a \textbf{one} blank line.
+        \item Separate logical segments in your code by line breaks.
+        \item \textbf{Rule of thumb}：No more than 4 lines without a blank line.
+        \item Break up long lines of code into multiple ones — either logically (intermediate variables) or syntactically (line continuation with \texttt{\textbackslash}).
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Line Continuation / 行续接}
+\begin{lstlisting}
+# Explicit continuation with backslash
+total_income = gross_income \
+               - taxes \
+               - student_loan_interest
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Naming Conventions / 命名约定}
+
+\begin{concept}{Standard Naming Patterns / 标准命名模式}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{Variables and functions}：\texttt{lower\_case\_with\_underscores} (snake\_case) — e.g., \texttt{translation\_dict}, \texttt{word\_counter}.
+        \item \textbf{Constants}：\texttt{UPPER\_CASE\_WITH\_UNDERSCORES} — e.g., \texttt{MAX\_SIZE}.
+        \item \textbf{Classes}：\texttt{UpperCamelCase} — e.g., \texttt{HREmployee}.
+        \item \textbf{Avoid built-in names}：Do NOT use \texttt{list}, \texttt{str}, \texttt{int} as variable names.
+    \end{itemize}
+\end{concept}
+
+% ======================================================================
+\section{Quick Reference / 速查表}
+% ======================================================================
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Operation / 操作} & \textbf{Syntax / 语法} \\ \midrule
+打开文件(读) & \texttt{open('f.txt', 'r')} \\
+打开文件(写) & \texttt{open('f.txt', 'w')} \\
+打开文件(追加) & \texttt{open('f.txt', 'a')} \\
+写入内容 & \texttt{f.write(str)} \\
+读取全部 & \texttt{f.read()} \\
+读取一行 & \texttt{f.readline()} \\
+读取所有行 & \texttt{f.readlines()} \\
+逐行遍历 & \texttt{for line in f:} \\
+关闭文件 & \texttt{f.close()} \\
+CSV 读(Dict) & \texttt{csv.DictReader(f)} \\
+CSV 写 & \texttt{csv.writer(f).writerow(row)} \\
+捕获异常 & \texttt{try: ... except: ...} \\
+命名规范(变量/函数) & \texttt{snake\_case} \\
+命名规范(常量) & \texttt{UPPER\_CASE} \\
+命名规范(类) & \texttt{CamelCase} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

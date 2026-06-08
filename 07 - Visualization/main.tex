@@ -1,0 +1,515 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}        % 必须使用 XeLaTeX 编译器
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={07 - Visualization},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码样式配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False, plt, np, fig, ax, subplots, import, as, for, in, if, def, return, range}
+}
+
+% --- 自定义教学框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实操案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 07 - Visualization / 数据可视化}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 07 - Visualization (Matplotlib)}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{Introduction to Matplotlib / Matplotlib 简介}
+% ======================================================================
+
+\begin{concept}{What is Matplotlib? / 什么是 Matplotlib？}
+    Matplotlib is one of the most popular packages for quickly creating two-dimensional figures. NumPy makes manipulating data simple, but for \textbf{human consumption}, you need to visualize your data. \\
+    Matplotlib 是最流行的二维数据可视化库之一。
+\end{concept}
+
+\begin{examplebox}{The First Plot / 第一个绘图}
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+
+my_list = [10, 20, 25, 35]
+plt.plot(my_list)           # Simple line plot
+# In Jupyter: the plot displays automatically
+# In scripts: add plt.show() to display
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Anatomy of a "Plot" / 绘图结构解剖}
+% ======================================================================
+
+\begin{concept}{The Container Hierarchy / 容器层级结构}
+    Matplotlib organizes elements in a hierarchy of containers:
+    \begin{enumerate}[itemsep=0.5em]
+        \item \textbf{Figure}：The top-level container — the overall window or page. A Figure can contain multiple Axes/Subplots.
+        \item \textbf{Axes / Subplots}：The actual plot area inside the figure where data is drawn. Each Axes has its own coordinate system.
+        \item \textbf{Axis}：Each Axes has an \textbf{XAxis} and a \textbf{YAxis}, which contain ticks, tick labels, and data limits.
+    \end{enumerate}
+    简单类比：\textbf{Figure} 是画板，\textbf{Axes} 是画板上的坐标系（子图），\textbf{Axis} 是坐标轴。
+\end{concept}
+
+% ======================================================================
+\section{Figure \& Subplots Management / 画板与子图管理}
+% ======================================================================
+
+\subsection{Creation / 显式创建}
+
+\begin{examplebox}{Using plt.subplots() / 显式创建 Figure 和 Axes}
+    To manage multiple plots, it makes sense to explicitly create \texttt{figure} and \texttt{axes} objects.
+\begin{lstlisting}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create a single plot — returns (figure, axes)
+fig, ax = plt.subplots(nrows=1, ncols=1)
+
+# Create a grid of subplots — 2 rows, 4 columns
+fig, axes = plt.subplots(nrows=2, ncols=4)
+# axes is now a 2x4 array of Axes objects
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Appearance Optimization / 视觉优化}
+
+\begin{concept}{fig.tight\_layout() and figsize / 紧凑布局与画板尺寸}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{\texttt{fig.tight\_layout()}}：Automatically adjusts margins so labels don't overlap.
+        \item \textbf{\texttt{figsize}}：Sets the figure size in inches, e.g., \texttt{figsize=(10, 4)}.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Improving Appearance / 改善外观}
+\begin{lstlisting}
+# Without tight_layout — labels may overlap!
+fig, axes = plt.subplots(nrows=2, ncols=4)
+fig.tight_layout()                      # Fix overlapping
+
+# With figsize — control the overall size
+fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(10, 4))
+fig.tight_layout()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Setting Up Axes / 配置坐标轴}
+
+\begin{examplebox}{Using Explicit Setters / 显式配置方法}
+    Matplotlib's objects have lots of explicit setters — functions that start with \texttt{set\_<something>}:
+\begin{lstlisting}
+fig, ax = plt.subplots(nrows=1, ncols=1)
+
+ax.set_xlim([0.5, 4.5])             # Set x-axis range
+ax.set_ylim([-2, 8])                # Set y-axis range
+ax.set_title("An Example Axes")     # Set title
+ax.set_ylabel("Y-Axis")             # Set y-axis label
+ax.set_xlabel("X-Axis")             # Set x-axis label
+
+fig                                 # In Jupyter: display the figure
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Core Plotting Functions / 核心绘图函数}
+% ======================================================================
+
+\subsection{Conditional Bar Plots / 条件条形图}
+
+\begin{examplebox}{Dynamically Colored Bars / 动态着色条形图}
+\begin{lstlisting}
+np.random.seed(1)
+x = np.arange(5)
+y = np.random.randn(5)
+
+fig, ax = plt.subplots()
+vert_bars = ax.bar(x, y)
+
+# Color negative bars red / 负值柱体标红
+for bar, height in zip(vert_bars, y):
+    if height < 0:
+        bar.set(color='red')
+
+ax.axhline(y=0, color='black', linewidth=2)  # Add zero line
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Scatter for N-Dimensional Data / 多维散点图}
+
+\begin{concept}{Mapping Multiple Dimensions / 多维度映射}
+    Scatter allows mapping data to \textbf{x-position}, \textbf{y-position}, \textbf{color (c)}, and \textbf{size (s)} — enabling visualization of multiple dimensions simultaneously. \\
+    散点图可以将多个维度分别映射到 x 位置、y 位置、颜色和大小。
+\end{concept}
+
+\begin{examplebox}{Multidimensional Scatter / 多维散点图}
+\begin{lstlisting}
+n = 50
+x1 = np.random.random(n)
+x2 = np.random.random(n) * 50
+x3 = np.random.random(n)
+y = x1 + x2 + x3
+
+fig, ax = plt.subplots()
+sc = ax.scatter(x=x1, y=y, s=x2, c=x3, marker='o')
+fig.colorbar(sc)                # Add color scale bar
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Image Display / 图像显示}
+
+\begin{examplebox}{Using imshow() / imshow() 显示图像}
+\begin{lstlisting}
+fig, ax = plt.subplots()
+img = plt.imread("images/cat.jpg")
+ax.imshow(img)
+ax.axis("off")                  # Hide axis ticks and labels
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{The "Language" of Matplotlib / 绘图视觉语言}
+% ======================================================================
+
+\subsection{Colors / 颜色规范}
+
+\begin{concept}{Five Ways to Specify Colors / 五种颜色指定方式}
+    \begin{enumerate}[itemsep=0.3em]
+        \item \textbf{Single letters}：\texttt{'r'} (red), \texttt{'b'} (blue), \texttt{'g'} (green), \texttt{'c'} (cyan), \texttt{'m'} (magenta), \texttt{'y'} (yellow), \texttt{'k'} (black), \texttt{'w'} (white).
+        \item \textbf{HTML/CSS color names}：e.g., \texttt{'burlywood'}, \texttt{'chartreuse'}, \texttt{'yellowgreen'} (147 available).
+        \item \textbf{Hex values}：e.g., \texttt{\#0000FF} for blue, \texttt{\#00ffff} for cyan.
+        \item \textbf{RGB[A] tuples}：Floats in range [0, 1], e.g., \texttt{(1.0, 0.0, 0.0, 1.0)} for red. The alpha channel controls transparency.
+        \item \textbf{Grayscale strings}：\texttt{'0.0'} (black) to \texttt{'1.0'} (white), e.g., \texttt{'0.75'} for light gray.
+        \item \textbf{Cycle references}：\texttt{'C0'} to \texttt{'C9'} reference the style's default color cycle.
+    \end{enumerate}
+\end{concept}
+
+\begin{examplebox}{Color Specification Examples / 颜色指定示例}
+\begin{lstlisting}
+t = np.arange(0.0, 5.0, 0.2)
+fig, ax = plt.subplots()
+
+# Single letters
+ax.plot(t, t, linewidth=5, color="r")
+
+# Hex values
+ax.plot(t, t**2, linewidth=5, color='#00ffff')
+
+# RGB tuple (with alpha)
+ax.plot(t, t**3, linewidth=5, color=(0, 0, 1, 0.5))
+
+# Grayscale
+ax.plot(t, -t, linewidth=5, color='0.5')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Markers / 标记符号}
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+\textbf{Marker} & \textbf{Description} & \textbf{Marker} & \textbf{Description} & \textbf{Marker} & \textbf{Description} \\ \midrule
+\texttt{'.'} & point / 点 & \texttt{'o'} & circle / 圆 & \texttt{'s'} & square / 方形 \\
+\texttt{'*'} & star / 星 & \texttt{'+'} & plus / 加号 & \texttt{'x'} & cross / 叉 \\
+\texttt{'D'} & diamond / 钻石 & \texttt{'p'} & pentagon / 五边形 & \texttt{'v'} & triangle\_down \\
+\texttt{'<'} & triangle\_left & \texttt{'>'} & triangle\_right & \texttt{'\^'} & triangle\_up \\
+\texttt{'None'} & nothing / 无标记 & \texttt{""} & nothing / 无标记 & & \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Linestyles / 线型}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Linestyle} & \textbf{Description / 描述} \\ \midrule
+\texttt{'-'}  & solid / 实线 \\
+\texttt{'--'} & dashed / 虚线 \\
+\texttt{'-.'} & dash-dot / 点划线 \\
+\texttt{':'}  & dotted / 点线 \\
+\texttt{'None'} / \texttt{''} & draw nothing / 不画线 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warning}{Don't Mix Up ".-" and "-." / 不要混淆 ".-" 和 "-."}
+    \begin{itemize}
+        \item \texttt{'.-'} = line with dot markers / 实线 + 点标记
+        \item \texttt{'-.'} = dash-dot line / 点划线
+    \end{itemize}
+    这两个看起来很相似但含义完全不同！
+\end{warning}
+
+\begin{examplebox}{Marker and Linestyle Examples / 标记与线型示例}
+\begin{lstlisting}
+t = np.arange(0.0, 5.0, 0.2)
+fig, ax = plt.subplots()
+
+# With explicit arguments, you can set marker and linestyle separately
+ax.plot(t, t, linestyle='-', linewidth=5)
+ax.plot(t, t**2, linestyle='--', linewidth=5)
+ax.plot(t, t**3, linestyle='-.', linewidth=5)
+ax.plot(t, -t, linestyle=':', linewidth=5)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Colormaps / 颜色映射}
+
+\begin{concept}{jet vs viridis / 两种经典色图}
+    A \textbf{colormap} relates a scalar value to a color. Historically, \texttt{'jet'} was the default, but it has perceptual issues. \texttt{'viridis'} is the new default since Matplotlib v2.0 — it's perceptually uniform and colorblind-friendly. \\
+    色图将数值映射为颜色。\texttt{'viridis'} 是现代推荐默认值，对色盲友好。
+\end{concept}
+
+\begin{examplebox}{Colormap Comparison / 色图对比}
+\begin{lstlisting}
+example_x = np.random.normal(size=500)
+example_y = np.random.normal(size=500)
+example_z = example_x + example_y
+
+plt.scatter(example_x, example_y, c=example_z, cmap="jet")
+plt.show()
+
+plt.scatter(example_x, example_y, c=example_z, cmap="viridis")
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Advanced Decoration / 进阶装饰与细节}
+% ======================================================================
+
+\subsection{Mathtext (LaTeX in Plots) / 数学公式}
+
+\begin{concept}{LaTeX-Style Math in Plots / 图中的 LaTeX 数学公式}
+    Any text surrounded by dollar signs (\texttt{\$}) will be treated as \textbf{mathtext}. Use \texttt{r} prefix for "raw" strings to avoid backslash escape issues. \\
+    用 \texttt{\$} 包裹的文本会被渲染为数学公式。建议用 \texttt{r} 原始字符串前缀避免转义问题。
+\end{concept}
+
+\begin{examplebox}{Mathtext Example / 数学公式示例}
+\begin{lstlisting}
+fig, ax = plt.subplots()
+ax.scatter([1, 2, 3, 4], [4, 3, 2, 1])
+ax.spines['top'].set(visible=False)         # Remove top border
+ax.spines['right'].set(visible=False)       # Remove right border
+ax.set_title(r'$\sigma_i=\frac{3}{5}$', fontsize=25)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Legends / 图例}
+
+\begin{concept}{Adding Legends / 添加图例}
+    Provide a \texttt{label} to your plot, then call \texttt{ax.legend()} to automatically build a legend. \\
+    给绘图添加 \texttt{label}，然后调用 \texttt{ax.legend()} 自动生成图例。
+\end{concept}
+
+\begin{examplebox}{Legend Example / 图例示例}
+\begin{lstlisting}
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3, 4], [10, 20, 25, 30], label='Paris')
+ax.plot([1, 2, 3, 4], [30, 23, 13, 4], label='Lyon')
+ax.set(ylabel='Temperature (deg C)', xlabel='Time', title='A tale of two cities')
+ax.legend()                         # Automatically builds legend from labels
+# ax.legend(loc='center')           # Use loc to position the legend
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{concept}{Legend Location Codes / 图例位置代码}
+    The \texttt{loc} keyword argument positions the legend. \texttt{'best'} (default) automatically chooses the location that overlaps plot elements the least.
+
+    \medskip
+    \centering
+    \small
+    \begin{tabularx}{\linewidth}{@{}lX@{}}
+    \toprule
+    \textbf{Location String} & \textbf{Description / 位置} \\ \midrule
+    \texttt{'best'} & Auto-select / 自动选择 \\
+    \texttt{'upper right'} / \texttt{'upper left'} & Top corners / 上角 \\
+    \texttt{'lower right'} / \texttt{'lower left'} & Bottom corners / 下角 \\
+    \texttt{'center'} & Center / 居中 \\
+    \texttt{'right'} / \texttt{'center left'} / \texttt{'center right'} & Side positions / 侧边 \\
+    \texttt{'upper center'} / \texttt{'lower center'} & Center top/bottom / 上/下中 \\ \bottomrule
+    \end{tabularx}
+\end{concept}
+
+\subsection{Ticks and Tick Labels / 刻度与刻度标签}
+
+\begin{concept}{Terminology / 术语辨析（重要）}
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{Tick}：The \textbf{location} of a tick label on the axis. / 刻度线位置。
+        \item \textbf{Tick Line}：The line that denotes the location of the tick. / 刻度线本身。
+        \item \textbf{Tick Label}：The \textbf{text} displayed at that tick. / 刻度标签文字。
+        \item \textbf{Ticker}：Automatically determines ticks for an Axis and formats tick labels. / 自动确定刻度位置和格式的组件。
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Manual Tick Configuration / 手动配置刻度}
+\begin{lstlisting}
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3, 4], [10, 20, 25, 35])
+
+# Manually set ticks and tick labels on the x-axis
+ax.xaxis.set(ticks=range(1, 5), ticklabels=[3, 100, -12, "foo"])
+
+# Customize tick appearance
+ax.tick_params(axis='y', direction='in', length=10)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Tick Labels from Data / 从数据生成刻度标签}
+\begin{lstlisting}
+data = [('apples', 2), ('oranges', 3), ('peaches', 1)]
+fruit, value = zip(*data)               # Unzip into two tuples
+
+fig, ax = plt.subplots()
+x = np.arange(len(fruit))
+ax.bar(x, value, align='center', color='gray')
+ax.set(xticks=x, xticklabels=fruit)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Spines / 边框控制}
+
+\begin{examplebox}{Removing Spines / 移除边框}
+\begin{lstlisting}
+ax.spines['top'].set(visible=False)     # Remove top border
+ax.spines['right'].set(visible=False)   # Remove right border
+# Also available: 'bottom', 'left'
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Subplot Spacing / 子图间距}
+
+\begin{concept}{fig.subplots\_adjust() / 调整子图间距}
+    Spacing between subplots can be adjusted. A common gotcha: labels are NOT automatically adjusted to avoid overlapping those of another subplot. \\
+    子图标签不会自动避免重叠——需要使用 \texttt{tight\_layout()} 或手动调整。
+\end{concept}
+
+\begin{examplebox}{Subplot Spacing / 子图间距调整}
+\begin{lstlisting}
+fig, axes = plt.subplots(2, 2, figsize=(9, 9))
+fig.subplots_adjust(wspace=0.3, hspace=-0.7,
+                    left=0.125, right=0.8,
+                    top=0.7, bottom=0.2)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Tight Layout for Multiple Subplots / 多子图的紧凑布局}
+\begin{lstlisting}
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2)
+
+# Without tight_layout — labels overlap
+example_plot(ax1); example_plot(ax2)
+example_plot(ax3); example_plot(ax4)
+plt.show()
+
+# With tight_layout — everything fits!
+fig.tight_layout()
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Quick Reference / 速查表}
+% ======================================================================
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Operation / 操作} & \textbf{Syntax / 语法} \\ \midrule
+导入 & \texttt{import matplotlib.pyplot as plt} \\
+创建单图 & \texttt{fig, ax = plt.subplots()} \\
+创建多子图 & \texttt{fig, axes = plt.subplots(2, 4)} \\
+折线图 & \texttt{ax.plot(x, y)} \\
+条形图 & \texttt{ax.bar(x, y)} \\
+散点图 & \texttt{ax.scatter(x, y, s=size, c=color)} \\
+显示图像 & \texttt{ax.imshow(img)} \\
+紧凑布局 & \texttt{fig.tight\_layout()} \\
+设置标题 & \texttt{ax.set\_title(str)} \\
+设置轴标签 & \texttt{ax.set\_xlabel(str)} / \texttt{ax.set\_ylabel(str)} \\
+添加图例 & \texttt{ax.legend()} \\
+颜色条 & \texttt{fig.colorbar(sc)} \\
+隐藏轴 & \texttt{ax.axis("off")} \\
+隐藏边框 & \texttt{ax.spines['top'].set(visible=False)} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

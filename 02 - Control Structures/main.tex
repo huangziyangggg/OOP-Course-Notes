@@ -1,0 +1,478 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}        % 必须使用 XeLaTeX 编译器以支持中文
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}     % 用于代码块显示
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}    % 教学框样式
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={02 - Control Structures},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码高亮深度配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False, def, return, if, elif, else, for, in, while, break, continue, pass, range, and, or, not}
+}
+
+% --- 自定义教学方框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实战案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 02 - Control Structures / 控制结构}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 02 - Control Structures}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{Boolean Recap / 布尔值回顾}
+% ======================================================================
+
+\begin{concept}{Review from Lecture 01}
+    Booleans are one of the data types. They can only be one of two values: \texttt{True} or \texttt{False}. \\
+    布尔型只有两个值：\texttt{True}（真）和 \texttt{False}（假）。
+
+    Booleans can result from:
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{Comparison operators}: \texttt{==, !=, <, >, <=, >=} (e.g., \texttt{41 > 42} $\rightarrow$ \texttt{False}).
+        \item \textbf{Logical operators}: \texttt{and}, \texttt{or}, \texttt{not} — these act on Booleans and produce Booleans.
+    \end{itemize}
+    布尔值可以通过比较运算符和逻辑运算符产生。这是条件判断的基础。
+\end{concept}
+
+% ======================================================================
+\section{Conditionals: If-Statements / 条件判断}
+% ======================================================================
+
+\subsection{Basic Logic / 基础逻辑}
+
+\begin{concept}{What is an If-Statement? / 什么是 If 语句？}
+    If-statements allow you to execute parts of your code based on whether a condition is met. \\
+    If 语句允许程序根据条件是否满足来决定执行哪段代码。
+
+    \textbf{The Rule / 核心规则}：As long as the statement after the \texttt{if} keyword evaluates to \texttt{True}, the \textbf{indented} code block will run. If the statement is \texttt{False}, all the indented parts will be skipped. \\
+    只要 \texttt{if} 后面的条件为 \texttt{True}，缩进的代码块就会运行。如果为 \texttt{False}，缩进部分会被完全跳过。
+\end{concept}
+
+\subsection{The Full Structure: if / elif / else}
+
+\begin{concept}{Three Keywords / 三个关键字}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{\texttt{if}}：The first condition to check. / 第一个必检条件。
+        \item \textbf{\texttt{elif}} (else if)：Checks additional conditions \textbf{only if} the previous \texttt{if} (or \texttt{elif}) was \texttt{False}. / 仅在前面的条件为 \texttt{False} 时才检查额外条件。
+        \item \textbf{\texttt{else}}：Runs if \textbf{none} of the above conditions were \texttt{True}. It is the fallback. / 以上所有条件都不满足时的兜底执行。
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Price Classification / 价格分级案例}
+    课件中通过以下案例展示了完整的 \texttt{if-elif-else} 结构：
+\begin{lstlisting}
+price = 42
+if price > 100:
+    print("expensive")          # Runs if price > 100
+elif price > 50:                # Checked ONLY if price <= 100
+    print("moderate")           # Runs if 50 < price <= 100
+else:                           # Runs if all above are False
+    print("cheap")              # Runs if price <= 50
+# Output: cheap
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{Execution Order / 执行顺序（重要）}
+    In an \texttt{if-elif-else} chain:
+    \begin{enumerate}[itemsep=0.3em]
+        \item Python checks each condition \textbf{from top to bottom}.
+        \item The \textbf{first} condition that is \texttt{True} gets executed.
+        \item All subsequent conditions are \textbf{skipped} — even if they would also be \texttt{True}!
+    \end{enumerate}
+    从上到下检查，第一个为真的条件被执行，其余全部跳过！
+\end{warning}
+
+\subsection{Inline Conditionals / 行内条件判断}
+
+\begin{examplebox}{Simple If-Statement / 简单 If 判断}
+    课件展示了只需判断单个条件的场景：
+\begin{lstlisting}
+name = "John"
+if len(name) < 3:
+    print("your name is short!")    # Won't run because len("John") = 4
+\end{lstlisting}
+    如果条件为 \texttt{False}，缩进代码块什么都不执行。
+\end{examplebox}
+
+\begin{concept}{Ternary Operator (One-line if/else) / 三元运算符}
+    Python also supports a one-line conditional expression for simple true/false assignments:
+\begin{lstlisting}
+# Syntax: value_if_true if condition else value_if_false
+result = "short" if len(name) < 3 else "not short"
+\end{lstlisting}
+    三元运算符适合简单的二选一赋值，不适合复杂逻辑。
+\end{concept}
+
+% ======================================================================
+\section{Functions / 函数基础}
+% ======================================================================
+
+\subsection{Why Functions? / 为什么需要函数？}
+
+\begin{concept}{Building Blocks of Python / Python 的积木块}
+    Functions are the building blocks of almost every Python program. They're where the real action takes place. \\
+    函数是几乎所有 Python 程序的基本构建块。
+
+    Functions break code into smaller chunks, and are great for:
+    \begin{itemize}[itemsep=0.3em]
+        \item Tasks that a program uses \textbf{repeatedly} — instead of writing the same code each time, just call the function.
+        \item Breaking complex problems into manageable pieces.
+        \item Making code more readable and maintainable.
+    \end{itemize}
+\end{concept}
+
+\begin{concept}{Built-in vs. User-Defined / 内置函数 vs 自定义函数}
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{Built-in functions}：Come built into Python itself (e.g., \texttt{print()}, \texttt{len()}, \texttt{type()}).
+        \item \textbf{User-defined functions}：Functions you create yourself to perform specific tasks.
+    \end{itemize}
+    你已经用过 \texttt{print()} 和 \texttt{len()} 等内置函数，现在你将学会定义自己的函数。
+\end{concept}
+
+\subsection{How Function Calls Work / 函数调用的三步流程}
+
+\begin{concept}{The Three Steps of a Function Call / 函数调用的三个步骤}
+    \begin{enumerate}[itemsep=0.5em]
+        \item \textbf{Call / 调用}：The function is called, and any arguments are passed to the function as input.
+        \item \textbf{Execute / 执行}：The function executes, and some action is performed with the arguments.
+        \item \textbf{Return / 返回}：The function returns, and the original function call is \textbf{replaced with the return value}.
+    \end{enumerate}
+\end{concept}
+
+\begin{examplebox}{Understanding len() / 理解 len() 的执行过程}
+\begin{lstlisting}
+num_letters = len("emlyon")
+print(num_letters)          # Output: 6
+\end{lstlisting}
+    What happens behind the scenes:
+    \begin{enumerate}
+        \item \texttt{len()} is called with the argument \texttt{"emlyon"}.
+        \item The length of the string is calculated — the number 6.
+        \item \texttt{len()} returns 6 and replaces the function call with the value.
+        \item Python then assigns \texttt{6} to \texttt{num\_letters}. Equivalent to: \texttt{num\_letters = 6}
+    \end{enumerate}
+\end{examplebox}
+
+\begin{warning}{Calling Errors / 调用错误}
+    Functions like \texttt{len()} require exactly one argument. Calling \texttt{len()} without input will raise a \texttt{TypeError}:\\
+    \texttt{TypeError: len() takes exactly one argument (0 given)}
+
+    \begin{itemize}[itemsep=0.3em]
+        \item Some functions can be called with \textbf{no} arguments.
+        \item Some functions can take \textbf{as many arguments as you like}.
+        \item \texttt{len()} requires \textbf{exactly one} argument.
+    \end{itemize}
+\end{warning}
+
+\subsection{Writing Your Own Functions / 定义自己的函数}
+
+\begin{concept}{Two Parts of a Function / 函数的两大部分}
+    Every function has two parts:
+    \begin{enumerate}
+        \item \textbf{Function Signature / 函数签名}：Defines the name of the function and any inputs (parameters) it expects. Starts with the \texttt{def} keyword.
+        \item \textbf{Function Body / 函数体}：Contains the code that runs every time the function is used. Must be \textbf{indented}!
+    \end{enumerate}
+\end{concept}
+
+\begin{examplebox}{Creating Your First Function / 创建你的第一个函数}
+\begin{lstlisting}
+def multiply(x, y):         # Function signature: name + parameters
+    product = x * y         # Function body (indented!)
+    return product          # Return statement: sends result back
+
+# Calling the function
+result = multiply(2, 4)     # result = 8
+print(result)               # 8
+\end{lstlisting}
+\end{examplebox}
+
+\begin{concept}{Key Points About User-Defined Functions / 自定义函数要点}
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{def} keyword creates a new function. The function is assigned to a variable with the same name as the function name.
+        \item Function names become variables, so they must follow the \textbf{same naming rules} as variables.
+        \item You call a user-defined function just like any other function: \texttt{function\_name(arguments)}.
+        \item \texttt{return} sends a value back. If there is no \texttt{return} statement, the function returns \texttt{None}.
+    \end{itemize}
+\end{concept}
+
+\subsection{Arguments and Return Values / 参数与返回值}
+
+\begin{concept}{Key Terminology / 关键术语}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{Parameter / 形参}：A variable in the function signature that defines what input the function expects (e.g., \texttt{x} and \texttt{y} in \texttt{def multiply(x, y)}).
+        \item \textbf{Argument / 实参}：The actual value passed to the function when calling it (e.g., \texttt{2} and \texttt{4} in \texttt{multiply(2, 4)}).
+        \item \textbf{Return Value / 返回值}：When a function is done executing, it returns a value as output. The function call is replaced by this value.
+    \end{itemize}
+\end{concept}
+
+% ======================================================================
+\section{Scope / 作用域的秘密}
+% ======================================================================
+
+\begin{concept}{Local vs. Global / 局部与全局}
+    Names (variable names) are unique. Each function has its own \textbf{local scope} with its own set of names. Code outside functions is in the \textbf{global scope}. \\
+    变量名是唯一的。函数内部拥有独立的"局部作用域"，函数外部的代码属于"全局作用域"。
+\end{concept}
+
+\begin{examplebox}{Scope Demonstration / 作用域演示}
+\begin{lstlisting}
+x = 2                       # Global x / 全局变量
+
+def func():
+    x = 3                   # NEW local x — does NOT change global x!
+    print("Inside:", x)     # Prints 3 (local x)
+
+func()                      # Output: Inside: 3
+print("Outside:", x)        # Output: 2 (global x unchanged!)
+\end{lstlisting}
+    \textbf{关键理解}：函数内部的 \texttt{x = 3} 创建了一个\textbf{全新的局部变量}，不会影响全局的 \texttt{x}。
+\end{examplebox}
+
+\begin{concept}{Scope Hierarchy / 作用域层级}
+    Scopes have a hierarchy. When Python encounters a variable name:
+    \begin{enumerate}[itemsep=0.3em]
+        \item First, it looks in the \textbf{local scope} (inside the current function).
+        \item If not found, it moves up to the \textbf{global scope} (outside all functions).
+        \item If still not found, it raises a \texttt{NameError}.
+    \end{enumerate}
+    Python 查找变量时先从局部找，找不到才去全局找。
+\end{concept}
+
+\begin{examplebox}{Scope Lookup Example / 作用域查找示例}
+\begin{lstlisting}
+x = 5                       # Global
+
+def func():
+    y = x + 5               # x not found locally → uses global x (5)
+    print("Inside, y =", y) # Output: Inside, y = 10
+
+func()
+print("Outside, x =", x)    # Output: Outside, x = 5
+# print(y)                  # NameError! y only exists in func()'s local scope
+\end{lstlisting}
+    \textbf{注意}：函数内部可以\textbf{读取}全局变量，但不能直接修改它（除非用 \texttt{global} 关键字）。
+\end{examplebox}
+
+% ======================================================================
+\section{Loops / 循环：程序如何做重复工作}
+% ======================================================================
+
+\begin{concept}{Why Loops? / 为什么需要循环？}
+    Programmers don't want to work hard — they want to work \textbf{smart}. Loops are the tool for that. \\
+    程序员不想做重复劳动——循环就是用来解决这个问题的。
+
+    Imagine your boss wants you to print numbers from 1 to 10. Without loops, you'd write \texttt{print()} ten times. With loops, it's just a few lines. \\
+    想象老板让你打印 1 到 10。没有循环你得写 10 次 \texttt{print()}，有了循环只需要几行代码。
+
+    Loops help with tasks that are similar and repetitive, from simple (printing numbers) to complex (nested loops with conditionals).
+\end{concept}
+
+\subsection{For Loops / For 循环}
+
+\begin{concept}{For Loop Structure / For 循环结构}
+    \begin{lstlisting}
+for [every_element] in [my_sequence]:
+    do something
+    \end{lstlisting}
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{every\_element}：A variable created by the loop that takes on each value in the sequence, one at a time.
+        \item \texttt{my\_sequence}：The sequence to iterate over (list, tuple, string, range, etc.).
+        \item The loop runs once for each item in the sequence.
+    \end{itemize}
+\end{concept}
+
+\subsubsection{The range() Function / range() 函数}
+
+\begin{concept}{range(start, stop) / range() 详解}
+    \texttt{range(1, 11)} produces numbers from \texttt{1} up to (but \textbf{NOT} including) \texttt{11} — i.e., 1, 2, 3, …, 10. \\
+    \texttt{range(1, 11)} 产生 1 到 10 的序列，\textbf{不包含}终点 11。
+
+    \textbf{Syntax / 语法}：
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{range(stop)} — starts at 0, goes up to (but not including) stop.
+        \item \texttt{range(start, stop)} — starts at start, goes up to (but not including) stop.
+        \item \texttt{range(start, stop, step)} — starts at start, increments by step each time.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Printing Numbers with for / 用 for 循环打印数字}
+\begin{lstlisting}
+for i in range(1, 11):
+    print(i)                # Prints 1, 2, 3, ..., 10 (each on new line)
+\end{lstlisting}
+    其中 \texttt{i} 是迭代变量，依次取值为 1, 2, 3, …, 10。
+\end{examplebox}
+
+\subsection{While Loops / While 循环}
+
+\begin{concept}{When to Use While? / 什么时候用 While？}
+    Used when we only know \textbf{when to stop}, but not \textbf{how many times} to run. \\
+    用于只知道"什么时候停"，但不知道要运行几次的情况。
+
+    \textbf{Structure / 结构}：
+    \begin{lstlisting}
+while [condition]:
+    do whatever
+    \end{lstlisting}
+    Before starting each iteration, the condition is checked. If \texttt{True}, the loop runs. If \texttt{False}, the loop exits.
+\end{concept}
+
+\begin{examplebox}{While Loop vs For Loop / While 循环与 For 循环对比}
+\begin{lstlisting}
+# For loop version — finite, known iterations
+for i in range(1, 11):
+    print(i)
+
+# While loop version — same result, different approach
+counter = 1
+while counter < 11:
+    print(counter)
+    counter = counter + 1       # MUST update counter!
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{Infinite Loops / 无限循环风险}
+    A \texttt{while} loop could run \textbf{forever} if the condition never becomes \texttt{False}! \\
+    如果条件永远不为假，\texttt{while} 循环会无休止运行！
+
+    \textbf{Key Differences / For 与 While 的主要区别}：
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{For loop}：Creates a variable to iterate over a given sequence. It is \textbf{finite} — you know exactly how many times it will run.
+        \item \textbf{While loop}：Does NOT create an iteration variable for you. You must create and update your own counter. It \textbf{could run forever} if you're not careful.
+    \end{itemize}
+\end{warning}
+
+\subsection{Control Keywords / 循环控制关键字}
+
+\begin{concept}{break, continue, pass / 三大控制关键字}
+    这三个关键字可以改变循环的正常执行流程。
+\end{concept}
+
+\begin{examplebox}{Control Keywords Demo / 控制关键字对比}
+\begin{lstlisting}
+# Example: break — 立即终止整个循环
+for i in range(1, 11):
+    if i == 5:
+        break           # Exit loop completely when i = 5
+    print(i)            # Prints: 1, 2, 3, 4 (stops at 5)
+\end{lstlisting}
+
+\begin{lstlisting}
+# Example: continue — 跳过本次循环剩余部分
+for i in range(1, 11):
+    if i == 5:
+        continue        # Skip the rest of THIS iteration
+    print(i)            # Prints: 1, 2, 3, 4, 6, 7, 8, 9, 10 (no 5!)
+\end{lstlisting}
+
+\begin{lstlisting}
+# Example: pass — 占位符，什么都不做
+for i in range(1, 11):
+    if i == 5:
+        pass            # Do nothing — just a placeholder
+    print(i)            # Prints: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+\end{lstlisting}
+\end{examplebox}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Keyword} & \textbf{Effect / 作用} & \textbf{Use Case / 使用场景} \\ \midrule
+\texttt{break}    & Aborts the loop entirely / 直接终止整个循环 & 搜索到目标后退出 \\
+\texttt{continue} & Skips the rest of the current iteration / 跳过本次循环剩余部分 & 跳过不需要处理的特殊情况 \\
+\texttt{pass}     & A placeholder that does nothing / 占位符 & 预留代码位置，防止空代码块报错 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+% ======================================================================
+\section{Summary / 速查表}
+% ======================================================================
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Structure / 结构} & \textbf{Syntax / 语法} \\ \midrule
+If 判断 & \texttt{if condition:} \\
+Elif 判断 & \texttt{elif condition:} \\
+Else 兜底 & \texttt{else:} \\
+定义函数 & \texttt{def name(params):} \\
+返回结果 & \texttt{return value} \\
+For 循环 & \texttt{for var in sequence:} \\
+While 循环 & \texttt{while condition:} \\
+终止循环 & \texttt{break} \\
+跳过本次 & \texttt{continue} \\
+占位符 & \texttt{pass} \\
+Range 序列 & \texttt{range(start, stop, step)} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

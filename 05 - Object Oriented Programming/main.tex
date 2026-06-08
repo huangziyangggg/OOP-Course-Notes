@@ -1,0 +1,418 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- 核心宏包与中文支持 ---
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+% --- PDF 书签与元数据 ---
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    bookmarks=true,
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX},
+    pdftitle={05 - Object Oriented Programming},
+    pdfauthor={黄子扬},
+}
+
+% --- 页面美化设置 ---
+\geometry{top=0.7in,bottom=0.8in,left=0.6in,right=0.6in}
+\onehalfspacing
+\tcbuselibrary{skins,breakable}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% --- 代码样式配置 ---
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{commentgreen},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    frame=leftline,
+    xleftmargin=2em,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None, True, False, class, def, self, super, pass, property, return, if, for, in, del}
+}
+
+% --- 自定义教学框 ---
+\newtcolorbox{concept}[1]{colback=blue!5, colframe=mainblue, fonttitle=\bfseries, title={{【Concept / 核心概念】#1}}, arc=3pt, breakable}
+\newtcolorbox{warning}[1]{colback=red!5, colframe=examred, fonttitle=\bfseries, title={{【Warning / 避坑指南】#1}}, arc=3pt, breakable}
+\newtcolorbox{examplebox}[1]{colback=green!2, colframe=green!40!black, fonttitle=\bfseries, title={{【Example / 实操案例】#1}}, arc=2pt, breakable}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries 05 - Object Oriented Programming / 面向对象编程}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- 文档信息 ---
+\title{\Huge \bfseries 05 - Object Oriented Programming}
+\author{\Large \textbf{哈尔滨工业大学 \quad 黄子扬}}
+\date{2026年6月8日}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ======================================================================
+\section{Why OOP? / 为什么需要面向对象？}
+% ======================================================================
+
+\begin{concept}{From Lists to Classes / 从列表到类}
+    OOP (Object-Oriented Programming) is a method of structuring a program by bundling related properties and behaviors into individual \textbf{objects}. \\
+    面向对象编程是一种将相关属性和行为打包成"对象"的程序设计方法。
+
+    \textbf{The Problem with Lists / 用列表存储数据的困境}：
+
+    Imagine tracking employees in an organization. You could represent each employee as a list:
+\begin{lstlisting}
+Eric = ["Eric", 34, "CEO", 2016]
+Alice = ["Alice", "Science Officer", 2017]
+\end{lstlisting}
+    There are issues with this approach:
+    \begin{enumerate}[itemsep=0.3em]
+        \item You need to \textbf{remember} which index means what (e.g., index 0 = name, index 1 = age).
+        \item What if not every employee has the same number of elements? (Age is missing for Alice!)
+        \item What if you want to define \textbf{behaviors} (methods) for your employees?
+    \end{enumerate}
+
+    \textbf{Classes} allow you to create \textbf{User-defined Data Structures} that group data (attributes) and behaviors (methods) together. Classes define a type.
+\end{concept}
+
+% ======================================================================
+\section{Creating Classes / 创建类}
+% ======================================================================
+
+\subsection{The Blueprint / 蓝图定义}
+
+\begin{concept}{The class Keyword / class 关键字}
+    All class definitions start with the \texttt{class} keyword, followed by the name of the class and a colon (\texttt{:}).
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{Naming / 命名}：Use \textbf{CamelCase} (e.g., \texttt{Employee}), starting with a capital letter. This is different from functions/variables which use \texttt{snake\_case}.
+        \item \textbf{\texttt{pass}}：A placeholder used as a body where code will eventually go. Allows you to run the class without throwing an error.
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Minimal Class / 最简类定义}
+\begin{lstlisting}
+class Employee:
+    pass                # Placeholder — does nothing, but avoids SyntaxError
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{The \texttt{\_\_init\_\_()} Method / 初始化方法}
+
+\begin{concept}{The Initializer / 初始化器}
+    The \texttt{\_\_init\_\_()} method is a special method that runs \textbf{every time} a new object is created. It tells Python what the \textbf{initial state} (initial values of the object's properties) should be. \\
+    \texttt{\_\_init\_\_()} 在每次创建新对象时自动运行，设置对象的初始值。
+\end{concept}
+
+\begin{warning}{What is self? / self 到底是什么？}
+    The first argument of \texttt{\_\_init\_\_()} is \textbf{always} \texttt{self}. It is a reference to the \textbf{specific instance} being created. Think of it as a \textbf{placeholder} while building the blueprint — it refers to the instance that will be created later. \\
+    \texttt{self} 指代"当前的这个实例"。它是构建蓝图时的占位符——虽然实例还没创建，但 \texttt{self} 代表了将来会被创建的实例对象。
+\end{warning}
+
+% ======================================================================
+\section{Attributes / 属性}
+% ======================================================================
+
+\begin{concept}{Instance vs Class Attributes / 实例属性 vs 类属性}
+    \begin{itemize}[itemsep=0.8em]
+        \item \textbf{Instance Attributes / 实例属性}：Belong to a \textbf{specific} object. Defined inside \texttt{\_\_init\_\_()} with \texttt{self.xxx}. Each instance has its own copy. \\
+        例：\texttt{self.name} — 每个员工有不同的名字。
+        \item \textbf{Class Attributes / 类属性}：Same for \textbf{ALL} instances of a class. Defined directly inside the class body (outside \texttt{\_\_init\_\_()}). All instances share the same value. \\
+        例：\texttt{company\_name = "Emlyon"} — 所有员工属于同一公司。
+    \end{itemize}
+\end{concept}
+
+\begin{examplebox}{Class Definition with Attributes / 完整类定义}
+\begin{lstlisting}
+class Employee:
+    # Class Attribute / 类属性 — shared by all instances
+    company_name = "Emlyon"
+
+    def __init__(self, name, age):
+        # Instance Attributes / 实例属性 — unique to each instance
+        self.name = name
+        self.age = age
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Instantiating \& Methods / 实例化与方法}
+% ======================================================================
+
+\subsection{Instantiating Objects / 实例化对象}
+
+\begin{concept}{Blueprint → Object / 蓝图 → 对象}
+    While the \textbf{class} is the blueprint, an \textbf{instance} is an object built from a class that contains real data. \\
+    类是蓝图，实例是从类构建出来的包含真实数据的对象。
+
+    To instantiate an object, type the name of the class (CamelCase) followed by parentheses containing any values that must be passed to \texttt{\_\_init\_\_()}.
+\end{concept}
+
+\begin{examplebox}{Creating Objects / 创建对象}
+\begin{lstlisting}
+emp1 = Employee("David", 23)
+emp2 = Employee("Alice", 35)
+
+print(emp1)                     # <__main__.Employee object at 0x00aeff70>
+# The hex number is the memory address — different on each computer!
+
+print(emp1 == emp2)             # False (different objects in memory)
+print(type(emp1))               # <class '__main__.Employee'>
+
+# Access attributes with dot notation / 用点号访问属性
+print(emp1.name)                # 'David'
+print(emp2.age)                 # 35
+
+# Class attributes are accessed the same way
+print(emp1.company_name)        # 'Emlyon'
+print(emp2.company_name)        # 'Emlyon' (same for all)
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{Objects Are Mutable by Default / 对象默认是可变的}
+    \begin{lstlisting}
+emp1.age = 36                   # Dynamically modify instance attribute
+print(emp1.age)                 # 36 — changed!
+    \end{lstlisting}
+    Custom objects are \textbf{mutable} by default — their attributes can be altered dynamically. This is an important takeaway.
+\end{warning}
+
+\subsection{Instance Methods / 实例方法}
+
+\begin{concept}{Behaviors / 行为}
+    Classes also have special functions, called \textbf{methods}, that define behaviors and actions that an object can perform with its data. \\
+    类内部的函数定义了对象能做的动作。实例方法的第一个参数永远是 \texttt{self}。
+\end{concept}
+
+\begin{examplebox}{Instance Methods Example / 实例方法案例}
+\begin{lstlisting}
+class Employee:
+    company_name = "Emlyon"
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    # Instance method / 实例方法
+    def description(self):
+        return f"{self.name} is {self.age} years old"
+
+    # Another instance method / 另一个实例方法
+    def update_age(self, new_age):
+        self.age = new_age
+
+# Usage
+emp1 = Employee("David", 23)
+print(emp1.description())       # 'David is 23 years old'
+emp1.update_age(24)
+print(emp1.description())       # 'David is 24 years old'
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Dunder Methods / 魔术方法}
+
+\begin{concept}{The \_\_str\_\_() Method / \_\_str\_\_() 方法}
+    By default, \texttt{print(emp1)} outputs something ugly like \texttt{<\_\_main\_\_.Employee object at 0x00aeff70>}. You can change what gets printed by defining a special instance method called \texttt{\_\_str\_\_()}. \\
+    定义 \texttt{\_\_str\_\_()} 方法可以改变打印对象时的显示内容。
+\end{concept}
+
+\begin{examplebox}{Customizing print() Output / 自定义 print() 输出}
+\begin{lstlisting}
+class Employee:
+    company_name = "Emlyon"
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def __str__(self):
+        return f"{self.name} is {self.age} years old"
+
+emp1 = Employee("David", 23)
+print(emp1)                     # 'David is 23 years old' — nice!
+\end{lstlisting}
+\end{examplebox}
+
+\begin{concept}{What Are Dunder Methods? / 什么是魔术方法？}
+    Methods like \texttt{\_\_str\_\_()} are called \textbf{dunder methods} because they begin and end with \textbf{d}ouble \textbf{under}scores. There are many dunder methods available that allow your classes to work well with other Python language features (e.g., \texttt{\_\_init\_\_}, \texttt{\_\_str\_\_}, \texttt{\_\_repr\_\_}, \texttt{\_\_eq\_\_}, \texttt{\_\_len\_\_}).
+\end{concept}
+
+% ======================================================================
+\section{Inheritance / 继承}
+% ======================================================================
+
+\begin{concept}{Parent vs Child / 父类与子类}
+    \textbf{Inheritance} is the process by which one class takes on the attributes and methods of another. \\
+    继承允许一个类获取另一个类的所有属性和方法。
+
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{Parent Class / 父类}：The class being inherited from.
+        \item \textbf{Child Class / 子类}：The class that inherits. Child classes can \textbf{override} (redefine) and \textbf{extend} (add to) the parent's attributes and methods.
+        \item To create a child class, put the parent class name in parentheses after the child class name.
+    \end{itemize}
+\end{concept}
+
+\begin{concept}{The \texttt{super()} Function / super() 函数}
+    \texttt{super()} calls the \textbf{parent} class's methods, especially useful for calling \texttt{\_\_init\_\_()} in the child class to initialize inherited attributes. \\
+    \texttt{super()} 用于调用父类的方法，最常见的用法是在子类的 \texttt{\_\_init\_\_()} 中调用父类的 \texttt{\_\_init\_\_()}。
+\end{concept}
+
+\begin{examplebox}{Full Inheritance Example / 继承完整案例}
+\begin{lstlisting}
+# Parent class / 父类
+class Employee:
+    company_name = "Emlyon"
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def __str__(self):
+        return f"{self.name} is {self.age} years old"
+
+# Child class 1: HR Employee / 子类 1
+class HREmployee(Employee):
+    def __init__(self, name, age, wh):
+        super().__init__(name, age)     # Call parent's __init__
+        self.working_hours = wh         # New attribute / 新属性
+
+    def update_working_hours(self, new_hour):   # New method / 新方法
+        self.working_hours = new_hour
+
+    def __str__(self):                          # Override __str__ / 重写
+        return f"{self.name} is {self.age} years old and works in HR and has {self.working_hours} working hours!"
+
+# Child class 2: Management Employee / 子类 2
+class ManagementEmployee(Employee):
+    def __init__(self, name, age):
+        super().__init__(name, age)
+        self.emp_list = []              # New attribute / 新属性
+
+    def add_employee(self, emp_name):   # New method / 新方法
+        self.emp_list.append(emp_name)
+
+    def give_emp_list(self):            # New method / 新方法
+        for i in range(len(self.emp_list)):
+            print(f"{i} : {self.emp_list[i]}")
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Using the Child Classes / 使用子类}
+\begin{lstlisting}
+# HR Employee / HR 员工
+hr_emp_1 = HREmployee("David", 23, 8)
+print(hr_emp_1)                     # Uses overridden __str__
+hr_emp_1.update_working_hours(10)   # Child's own method
+print(hr_emp_1.working_hours)       # 10
+
+# Management Employee / 管理员工
+management_emp_1 = ManagementEmployee("Alice", 35)
+print(management_emp_1)             # Uses parent's __str__
+management_emp_1.add_employee("John")
+management_emp_1.add_employee("Maria")
+management_emp_1.give_emp_list()
+# Output:
+# 0 : John
+# 1 : Maria
+\end{lstlisting}
+\end{examplebox}
+
+% ======================================================================
+\section{Encapsulation \& Properties / 封装与属性装饰器}
+% ======================================================================
+
+\begin{concept}{Read-Only Attributes / 只读属性}
+    Sometimes it's a bad idea if someone can change an attribute from outside the class, but you still want to \textbf{see} the value. This is done using a \textbf{getter-function} with the \textbf{\texttt{@property}} decorator. \\
+    使用 \texttt{@property} 装饰器可以将方法伪装成属性，实现只读访问，防止外部非法篡改。
+\end{concept}
+
+\begin{examplebox}{@property Example / @property 案例}
+\begin{lstlisting}
+class MyClass:
+    def __init__(self):
+        self._hidden = 42           # Prefix '_' suggests internal use
+
+    @property
+    def hidden(self):               # Getter — can access like an attribute
+        return self._hidden
+
+    def get_hidden(self):           # Ordinary getter — requires parentheses
+        return self._hidden
+
+my_object = MyClass()
+
+# @property: access like an attribute (no parentheses!)
+print(my_object.hidden)             # 42
+
+# Direct assignment to @property is BLOCKED
+# my_object.hidden = 0              # AttributeError! Read-only!
+
+# BUT: _hidden can still be accessed directly if you really want
+my_object._hidden = 0               # Works, but you shouldn't do it
+print(my_object._hidden)            # 0
+
+# Ordinary getter requires parentheses
+print(my_object.get_hidden())       # 0
+\end{lstlisting}
+\end{examplebox}
+
+\begin{warning}{The \_ Prefix Convention / \_ 前缀约定}
+    The underscore prefix (\texttt{\_hidden}) is a \textbf{convention} that tells other programmers "this attribute is internal — don't access it directly." However, it does \textbf{NOT} actually prevent access. Python trusts you to follow the convention.
+\end{warning}
+
+% ======================================================================
+\section{Quick Reference / 速查表}
+% ======================================================================
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Concept / 概念} & \textbf{Syntax / 语法} \\ \midrule
+定义类 & \texttt{class MyClass:} \\
+初始化方法 & \texttt{def \_\_init\_\_(self, param):} \\
+实例属性 & \texttt{self.attr = value} \\
+类属性 & \texttt{class\_attr = value}（在 \texttt{\_\_init\_\_} 外） \\
+实例化 & \texttt{obj = MyClass(arg)} \\
+字符串表示 & \texttt{def \_\_str\_\_(self): return "..."} \\
+继承 & \texttt{class Child(Parent):} \\
+调用父类 & \texttt{super().method()} \\
+只读属性 & \texttt{@property} 装饰 getter 方法 \\
+内部属性约定 & \texttt{self.\_internal} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

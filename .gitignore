@@ -1,0 +1,39 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.toc
+*.out
+*.xdv
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Temp files
+*_tmp*
+OO.pdf
+OO_d.pdf
+test_*.pdf
+test_*.tex
+test_*.log
+test_*.aux
+test_*.toc
+check.*
+
+# Old versions
+OOP_Complete_Notes*.pdf
+OOP_Final.pdf
+OOP_Notes.pdf
+OOP_logos.pdf
+OOP_with_logos.pdf
+OOP_v2.pdf
+appendix_content.tex
+
+# Source images (keep PNGs but not SVGs)
+*.svg
+
+# Empty files
+emlyon_logo_real.png
+
+# System
+.DS_Store
+Thumbs.db

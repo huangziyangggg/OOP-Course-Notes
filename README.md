@@ -41,7 +41,6 @@
 | 文件 | 说明 |
 |------|------|
 | `OOP.pdf` | 完整合并版（含封面、前言、目录、9章正文、附录） |
-| `OOP_demo.pdf` | 水印演示版（每页带有"黄子扬"水印） |
 | `OOP.tex` | 合并版 LaTeX 源文件 |
 | `01 - Variables/` ~ `09 - Pandas Library II/` | 各章节独立笔记（tex + PDF） |
 | `OOP.doc` | 课程大纲 |

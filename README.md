@@ -15,7 +15,7 @@
 |------|------|
 | 课程名称 | Object Oriented Programming |
 | 课程代码 | 22EM31202C |
-| 授课教师 | Imène BRIGUI 等 |
+| 授课教师 | Imène BRIGUI / Saeed VARASTEN YAZDI |
 | 学院 | 经济与管理学院 |
 | 专业 | 大数据管理与应用（中外合作办学） |
 | 合作院校 | 哈尔滨工业大学 × emlyon business school |

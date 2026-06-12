@@ -963,13 +963,16 @@ result = "short" if len(name) < 3 else "not short"
 
 \begin{concept}{Building Blocks of Python / Python 的积木块}
     Functions are the building blocks of almost every Python program. They're where the real action takes place. \\
-    函数是几乎所有 Python 程序的基本构建块。
+    函数是几乎所有 Python 程序的基本构建块，真正的逻辑都在函数里。
 
     Functions break code into smaller chunks, and are great for:
     \begin{itemize}[itemsep=0.3em]
-        \item Tasks that a program uses \textbf{repeatedly} — instead of writing the same code each time, just call the function.
-        \item Breaking complex problems into manageable pieces.
-        \item Making code more readable and maintainable.
+        \item Tasks that a program uses \textbf{repeatedly} — instead of writing the same code each time, just call the function. \\
+        重复使用的任务——不必每次重写相同代码，直接调用函数即可。
+        \item Breaking complex problems into manageable pieces. \\
+        把复杂问题拆解为可管理的小块。
+        \item Making code more readable and maintainable. \\
+        让代码更易读、更易维护。
     \end{itemize}
 \end{concept}
 
@@ -2063,9 +2066,10 @@ print(now.tm_mday)                  # Current day
 
 \begin{concept}{Why Pip? / 为什么需要 Pip？}
     External packages need to be installed before using them. They are not included with Python by default. \texttt{pip} is the package manager for Python — it automates installing, upgrading, and removing third-party packages. \\
-    \texttt{pip} 是 Python 的包管理器，用于安装、升级和卸载第三方包。
+    Python 默认不自带第三方库（如 NumPy、Pandas），必须先安装才能用。\texttt{pip} 是 Python 的官方包管理器，自动完成第三方包的安装、升级和卸载。
 
-    \texttt{pip} is a command line tool — you must run it from a terminal.
+    \texttt{pip} is a command line tool — you must run it from a terminal. \\
+    \texttt{pip} 是命令行工具，必须在终端中运行（不是在 Python 脚本里）。
 \end{concept}
 
 \begin{examplebox}{Common pip Commands / 常用 pip 命令}
@@ -2102,17 +2106,18 @@ pip uninstall numpy
 \end{concept}
 
 \begin{examplebox}{Speed Comparison / 速度对比}
+    NumPy 的向量化运算比纯 Python 列表快几十倍——关键原因是不需要对每个元素逐一进行类型检查。
 \begin{lstlisting}
 import random
 import numpy as np
 
-# Create 1,000,000 random integers with Python list
+# Create 1,000,000 random integers with Python list / 用 Python 列表创建100万随机整数
 measurements = [random.randint(150, 200) for _ in range(1_000_000)]
 
-# NumPy version
+# NumPy version / 转换为 NumPy 数组
 measurements_array = np.array(measurements)
 
-# NumPy's vectorized mean is MUCH faster
+# NumPy's vectorized mean is MUCH faster / 向量化均值快约50倍！
 np.mean(measurements_array)     # ~50x faster than sum/len on list
 \end{lstlisting}
 \end{examplebox}
@@ -2121,10 +2126,10 @@ np.mean(measurements_array)     # ~50x faster than sum/len on list
 
 \begin{concept}{Multiple Ways to Create Arrays / 多种创建方式}
     \begin{itemize}[itemsep=0.5em]
-        \item \textbf{From list}：\texttt{np.array([10, 2, 35])}
-        \item \textbf{arange}：Like \texttt{range()} but returns ndarray. \texttt{np.arange(start=2, stop=14, step=2)}
-        \item \textbf{linspace}：Creates array with N evenly spaced values. \texttt{np.linspace(start=-5, stop=5, num=9)}
-        \item \textbf{zeros / ones}：Arrays filled with 0 or 1. \texttt{np.zeros(3)}, \texttt{np.ones((2, 3))}
+        \item \textbf{From list / 从列表创建}：\texttt{np.array([10, 2, 35])}——最基础的方式，将 Python 列表转为 ndarray。
+        \item \textbf{arange / 等差数组}：Like \texttt{range()} but returns ndarray. \texttt{np.arange(start=2, stop=14, step=2)}——类似 \texttt{range()}，但返回 NumPy 数组。
+        \item \textbf{linspace / 等间距数组}：Creates array with N evenly spaced values. \texttt{np.linspace(start=-5, stop=5, num=9)}——在起点和终点之间等距取 N 个点。
+        \item \textbf{zeros / ones / 全零/全一数组}：Arrays filled with 0 or 1. \texttt{np.zeros(3)}, \texttt{np.ones((2, 3))}——创建全零或全一数组，常用于初始化。
     \end{itemize}
 \end{concept}
 
@@ -2159,9 +2164,12 @@ print(np.ones((2, 3)))                  # 2x3 matrix of ones
 
 \begin{concept}{dtype, shape, ndim / 三大核心属性}
     \begin{itemize}[itemsep=0.5em]
-        \item \textbf{\texttt{.dtype}}：Data type of the array elements. Can be \texttt{int}, \texttt{float}, \texttt{bool}, etc.
-        \item \textbf{\texttt{.shape}}：A tuple with the number of elements in each dimension. E.g., \texttt{(3, 4)} for a 3×4 array.
-        \item \textbf{\texttt{.ndim}}：The total number of dimensions.
+        \item \textbf{\texttt{.dtype}}：Data type of the array elements. Can be \texttt{int}, \texttt{float}, \texttt{bool}, etc. \\
+        数组元素的数据类型（\texttt{int}整数、\texttt{float}浮点数、\texttt{bool}布尔值等）。统一 dtype 是 NumPy 高性能的关键。
+        \item \textbf{\texttt{.shape}}：A tuple with the number of elements in each dimension. E.g., \texttt{(3, 4)} for a 3×4 array. \\
+        形状——一个元组，记录每个维度的元素数量。例如 \texttt{(3, 4)} 表示 3 行 × 4 列。
+        \item \textbf{\texttt{.ndim}}：The total number of dimensions. \\
+        维度总数——1 表示一维数组（向量），2 表示二维数组（矩阵），3 表示三维张量。
     \end{itemize}
 \end{concept}
 
@@ -2410,12 +2418,16 @@ Alice = ["Alice", "Science Officer", 2017]
 \end{lstlisting}
     There are issues with this approach:
     \begin{enumerate}[itemsep=0.3em]
-        \item You need to \textbf{remember} which index means what (e.g., index 0 = name, index 1 = age).
-        \item What if not every employee has the same number of elements? (Age is missing for Alice!)
-        \item What if you want to define \textbf{behaviors} (methods) for your employees?
+        \item You need to \textbf{remember} which index means what (e.g., index 0 = name, index 1 = age). \\
+        你必须\textbf{记住}每个索引代表什么含义（索引0=名字，索引1=年龄？），容易出错。
+        \item What if not every employee has the same number of elements? (Age is missing for Alice!) \\
+        如果每个员工的属性数量不一样怎么办？（Alice 缺少年龄字段！列表就会缺位错位。）
+        \item What if you want to define \textbf{behaviors} (methods) for your employees? \\
+        如果你想为每个员工定义\textbf{行为}（比如涨工资、调部门），列表完全做不到。
     \end{enumerate}
 
-    \textbf{Classes} allow you to create \textbf{User-defined Data Structures} that group data (attributes) and behaviors (methods) together. Classes define a type.
+    \textbf{Classes} allow you to create \textbf{User-defined Data Structures} that group data (attributes) and behaviors (methods) together. Classes define a type. \\
+    \textbf{类} 让你创建自定义的数据结构，把数据（属性）和行为（方法）打包在一起。类本质上定义了一个新类型。
 \end{concept}
 
 % ======================================================================
@@ -2425,10 +2437,13 @@ Alice = ["Alice", "Science Officer", 2017]
 \subsection{The Blueprint / 蓝图定义}
 
 \begin{concept}{The class Keyword / class 关键字}
-    All class definitions start with the \texttt{class} keyword, followed by the name of the class and a colon (\texttt{:}).
+    All class definitions start with the \texttt{class} keyword, followed by the name of the class and a colon (\texttt{:}). \\
+    所有类定义以 \texttt{class} 关键字开头，后跟类名和一个冒号。
     \begin{itemize}[itemsep=0.3em]
-        \item \textbf{Naming / 命名}：Use \textbf{CamelCase} (e.g., \texttt{Employee}), starting with a capital letter. This is different from functions/variables which use \texttt{snake\_case}.
-        \item \textbf{\texttt{pass}}：A placeholder used as a body where code will eventually go. Allows you to run the class without throwing an error.
+        \item \textbf{Naming / 命名}：Use \textbf{CamelCase} (e.g., \texttt{Employee}), starting with a capital letter. \\
+        类名使用\textbf{大驼峰命名法}（CamelCase），首字母大写。这与函数/变量的下划线命名法（\texttt{snake\_case}）不同。
+        \item \textbf{\texttt{pass}}：A placeholder used as a body where code will eventually go. Allows you to run the class without throwing an error. \\
+        \texttt{pass} 是占位符，用于暂时没有代码的类体，避免语法错误。
     \end{itemize}
 \end{concept}
 
@@ -2487,7 +2502,8 @@ class Employee:
     While the \textbf{class} is the blueprint, an \textbf{instance} is an object built from a class that contains real data. \\
     类是蓝图，实例是从类构建出来的包含真实数据的对象。
 
-    To instantiate an object, type the name of the class (CamelCase) followed by parentheses containing any values that must be passed to \texttt{\_\_init\_\_()}.
+    To instantiate an object, type the name of the class (CamelCase) followed by parentheses containing any values that must be passed to \texttt{\_\_init\_\_()}. \\
+    实例化对象时，写上类名（CamelCase），后面跟括号传入 \texttt{\_\_init\_\_()} 所需的参数值。
 \end{concept}
 
 \begin{examplebox}{Creating Objects / 创建对象}
@@ -3123,15 +3139,20 @@ print(calculate_average_v2([1, 2, 3, 4, 5]))  # 3.0 — verified!
 \begin{warning}{DOs and DO NOTs for Comments / 注释的规范}
     \textbf{DOs / 应该做的}：
     \begin{itemize}
-        \item Add explanatory comments before lines that are not entirely obvious.
-        \item Use the same indentation as the code they describe.
-        \item Add docstrings as the first line of every function and module.
+        \item Add explanatory comments before lines that are not entirely obvious. \\
+        在不够明显的代码行之前添加解释性注释。
+        \item Use the same indentation as the code they describe. \\
+        注释的缩进级别与所描述的代码保持一致。
+        \item Add docstrings as the first line of every function and module. \\
+        每个函数和模块的第一行添加文档字符串（docstring）。
     \end{itemize}
 
     \textbf{DO NOTs / 不应该做的}：
     \begin{itemize}
-        \item Do NOT add self-explanatory comments: \texttt{x = x + 1  \# increment x} is BAD.
-        \item Do NOT add comments that are wrong — worse than no comment at all!
+        \item Do NOT add self-explanatory comments: \texttt{x = x + 1  \# increment x} is BAD. \\
+        不要写给谁都看得懂的注释——\texttt{x = x + 1  \# 自增 x} 纯属画蛇添足。
+        \item Do NOT add comments that are wrong — worse than no comment at all! \\
+        不要写错误的注释——错误的注释比没有注释还糟糕！
     \end{itemize}
 \end{warning}
 
@@ -3140,16 +3161,22 @@ print(calculate_average_v2([1, 2, 3, 4, 5]))  # 3.0 — verified!
 \begin{concept}{Where to Put Spaces / 空格的位置}
     \textbf{DO put spaces / 应该加空格的}：
     \begin{itemize}
-        \item After commas, colons, and semicolons.
-        \item Around \texttt{=}, \texttt{+=} in assignments.
-        \item Around most binary operators, e.g., \texttt{2 + 2}.
+        \item After commas, colons, and semicolons. \\
+        逗号、冒号、分号后面加空格。
+        \item Around \texttt{=}, \texttt{+=} in assignments. \\
+        赋值运算符（\texttt{=}、\texttt{+=} 等）两边加空格。
+        \item Around most binary operators, e.g., \texttt{2 + 2}. \\
+        二元运算符（如 \texttt{+}、\texttt{-}、\texttt{*}）两边加空格。
     \end{itemize}
 
     \textbf{DO NOT put spaces / 不应该加空格的}：
     \begin{itemize}
-        \item Between a function name and \texttt{()}: \texttt{func(x)} NOT \texttt{func (x)}.
-        \item Around \texttt{=} in keyword arguments: \texttt{n=42} NOT \texttt{n = 42}.
-        \item After \texttt{(} and before \texttt{)}.
+        \item Between a function name and \texttt{()}: \texttt{func(x)} NOT \texttt{func (x)}. \\
+        函数名和括号之间不要加空格。
+        \item Around \texttt{=} in keyword arguments: \texttt{n=42} NOT \texttt{n = 42}. \\
+        关键字参数中的 \texttt{=} 两边不要加空格。
+        \item After \texttt{(} and before \texttt{)}. \\
+        左括号之后、右括号之前不要加空格。
     \end{itemize}
 \end{concept}
 
@@ -3171,11 +3198,16 @@ def my_function(a, b, c):
 
 \begin{concept}{How to Use Blank Lines / 如何使用空行}
     \begin{itemize}[itemsep=0.5em]
-        \item Separate function definitions by \textbf{two} blank lines.
-        \item Separate code blocks (loops, if-statements) by a \textbf{one} blank line.
-        \item Separate logical segments in your code by line breaks.
-        \item \textbf{Rule of thumb}：No more than 4 lines without a blank line.
-        \item Break up long lines of code into multiple ones — either logically (intermediate variables) or syntactically (line continuation with \texttt{\textbackslash}).
+        \item Separate function definitions by \textbf{two} blank lines. \\
+        函数与函数之间用\textbf{两行}空行分隔。
+        \item Separate code blocks (loops, if-statements) by a \textbf{one} blank line. \\
+        代码块之间（循环、if语句）用\textbf{一}行空行分隔。
+        \item Separate logical segments in your code by line breaks. \\
+        逻辑上独立的片段用空行分隔。
+        \item \textbf{Rule of thumb}：No more than 4 lines without a blank line. \\
+        \textbf{经验法则}：连续代码不超过 4 行就要加空行。
+        \item Break up long lines of code into multiple ones — either logically (intermediate variables) or syntactically (line continuation with \texttt{\textbackslash}). \\
+        长行代码拆分为多行——逻辑拆分（用中间变量）或语法拆分（用反斜杠 \texttt{\textbackslash} 续接）。
     \end{itemize}
 \end{concept}
 
@@ -3192,10 +3224,14 @@ total_income = gross_income \
 
 \begin{concept}{Standard Naming Patterns / 标准命名模式}
     \begin{itemize}[itemsep=0.5em]
-        \item \textbf{Variables and functions}：\texttt{lower\_case\_with\_underscores} (snake\_case) — e.g., \texttt{translation\_dict}, \texttt{word\_counter}.
-        \item \textbf{Constants}：\texttt{UPPER\_CASE\_WITH\_UNDERSCORES} — e.g., \texttt{MAX\_SIZE}.
-        \item \textbf{Classes}：\texttt{UpperCamelCase} — e.g., \texttt{HREmployee}.
-        \item \textbf{Avoid built-in names}：Do NOT use \texttt{list}, \texttt{str}, \texttt{int} as variable names.
+        \item \textbf{Variables and functions}：\texttt{lower\_case\_with\_underscores} (snake\_case) — e.g., \texttt{translation\_dict}, \texttt{word\_counter}. \\
+        \textbf{变量和函数}：全小写 + 下划线分隔（蛇形命名 snake\_case）。
+        \item \textbf{Constants}：\texttt{UPPER\_CASE\_WITH\_UNDERSCORES} — e.g., \texttt{MAX\_SIZE}. \\
+        \textbf{常量}：全大写 + 下划线分隔。
+        \item \textbf{Classes}：\texttt{UpperCamelCase} — e.g., \texttt{HREmployee}. \\
+        \textbf{类名}：大驼峰命名法（CamelCase），每个单词首字母大写。
+        \item \textbf{Avoid built-in names}：Do NOT use \texttt{list}, \texttt{str}, \texttt{int} as variable names. \\
+        \textbf{避开内置名}：不要用 \texttt{list}、\texttt{str}、\texttt{int} 等 Python 关键字作为变量名。
     \end{itemize}
 \end{concept}
 
@@ -3264,9 +3300,12 @@ plt.plot(my_list)           # Simple line plot
 \begin{concept}{The Container Hierarchy / 容器层级结构}
     Matplotlib organizes elements in a hierarchy of containers:
     \begin{enumerate}[itemsep=0.5em]
-        \item \textbf{Figure}：The top-level container — the overall window or page. A Figure can contain multiple Axes/Subplots.
-        \item \textbf{Axes / Subplots}：The actual plot area inside the figure where data is drawn. Each Axes has its own coordinate system.
-        \item \textbf{Axis}：Each Axes has an \textbf{XAxis} and a \textbf{YAxis}, which contain ticks, tick labels, and data limits.
+        \item \textbf{Figure / 画板}：The top-level container — the overall window or page. A Figure can contain multiple Axes/Subplots. \\
+        最顶层的容器——整个绘图窗口或页面。一个 Figure 可以包含多个 Axes（子图）。
+        \item \textbf{Axes / Subplots / 坐标系（子图）}：The actual plot area inside the figure where data is drawn. Each Axes has its own coordinate system. \\
+        真正绘制数据的区域，每个 Axes 拥有独立的坐标系。
+        \item \textbf{Axis / 坐标轴}：Each Axes has an \textbf{XAxis} and a \textbf{YAxis}, which contain ticks, tick labels, and data limits. \\
+        每个 Axes 包含一条 X 轴和一条 Y 轴，轴上有刻度（ticks）、刻度标签（tick labels）和数据范围。
     \end{enumerate}
     简单类比：\textbf{Figure} 是画板，\textbf{Axes} 是画板上的坐标系（子图），\textbf{Axis} 是坐标轴。
 \end{concept}
@@ -3394,12 +3433,12 @@ ax.axis("off")                  # Hide axis ticks and labels
 
 \begin{concept}{Five Ways to Specify Colors / 五种颜色指定方式}
     \begin{enumerate}[itemsep=0.3em]
-        \item \textbf{Single letters}：\texttt{'r'} (red), \texttt{'b'} (blue), \texttt{'g'} (green), \texttt{'c'} (cyan), \texttt{'m'} (magenta), \texttt{'y'} (yellow), \texttt{'k'} (black), \texttt{'w'} (white).
-        \item \textbf{HTML/CSS color names}：e.g., \texttt{'burlywood'}, \texttt{'chartreuse'}, \texttt{'yellowgreen'} (147 available).
-        \item \textbf{Hex values}：e.g., \texttt{\#0000FF} for blue, \texttt{\#00ffff} for cyan.
-        \item \textbf{RGB[A] tuples}：Floats in range [0, 1], e.g., \texttt{(1.0, 0.0, 0.0, 1.0)} for red. The alpha channel controls transparency.
-        \item \textbf{Grayscale strings}：\texttt{'0.0'} (black) to \texttt{'1.0'} (white), e.g., \texttt{'0.75'} for light gray.
-        \item \textbf{Cycle references}：\texttt{'C0'} to \texttt{'C9'} reference the style's default color cycle.
+        \item \textbf{Single letters / 单字母简写}：\texttt{'r'} (red/红), \texttt{'b'} (blue/蓝), \texttt{'g'} (green/绿), \texttt{'c'} (cyan/青), \texttt{'m'} (magenta/品红), \texttt{'y'} (yellow/黄), \texttt{'k'} (black/黑), \texttt{'w'} (white/白).
+        \item \textbf{HTML/CSS color names / HTML颜色名}：e.g., \texttt{'burlywood'}, \texttt{'chartreuse'}, \texttt{'yellowgreen'} (147 available / 共147种可用).
+        \item \textbf{Hex values / 十六进制值}：e.g., \texttt{\#0000FF} for blue / 蓝色, \texttt{\#00ffff} for cyan / 青色.
+        \item \textbf{RGB[A] tuples / RGB[A] 元组}：Floats in range [0, 1], e.g., \texttt{(1.0, 0.0, 0.0, 1.0)} for red. The alpha channel controls transparency / Alpha 通道控制透明度.
+        \item \textbf{Grayscale strings / 灰度字符串}：\texttt{'0.0'} (black/黑) to \texttt{'1.0'} (white/白), e.g., \texttt{'0.75'} for light gray / 浅灰.
+        \item \textbf{Cycle references / 循环色引用}：\texttt{'C0'} to \texttt{'C9'} reference the style's default color cycle / 引用样式默认颜色循环中的第0~9种颜色.
     \end{enumerate}
 \end{concept}
 
@@ -3434,8 +3473,8 @@ plt.show()
 \textbf{Marker} & \textbf{Description} & \textbf{Marker} & \textbf{Description} & \textbf{Marker} & \textbf{Description} \\ \midrule
 \texttt{'.'} & point / 点 & \texttt{'o'} & circle / 圆 & \texttt{'s'} & square / 方形 \\
 \texttt{'*'} & star / 星 & \texttt{'+'} & plus / 加号 & \texttt{'x'} & cross / 叉 \\
-\texttt{'D'} & diamond / 钻石 & \texttt{'p'} & pentagon / 五边形 & \texttt{'v'} & triangle\_down \\
-\texttt{'<'} & triangle\_left & \texttt{'>'} & triangle\_right & \texttt{'\^'} & triangle\_up \\
+\texttt{'D'} & diamond / 钻石 & \texttt{'p'} & pentagon / 五边形 & \texttt{'v'} & triangle\_down / 下三角 \\
+\texttt{'<'} & triangle\_left / 左三角 & \texttt{'>'} & triangle\_right / 右三角 & \texttt{'\^'} & triangle\_up / 上三角 \\
 \texttt{'None'} & nothing / 无标记 & \texttt{""} & nothing / 无标记 & & \\ \bottomrule
 \end{tabular}
 \medskip
@@ -3705,10 +3744,10 @@ plt.show()
 \begin{concept}{The Peculiarity of Index / 索引的特殊性}
     In Pandas, \textbf{Index} are about \textbf{labels}, not just performance (like in SQL). They help with:
     \begin{enumerate}[itemsep=0.3em]
-        \item \textbf{Selection}：Label-based data access.
-        \item \textbf{Automatic alignment}：When performing operations between two DataFrames or Series, Pandas automatically aligns data by index labels.
+        \item \textbf{Selection / 选择}：Label-based data access. / 通过标签访问数据。
+        \item \textbf{Automatic alignment / 自动对齐}：When performing operations between two DataFrames or Series, Pandas automatically aligns data by index labels. / 两个 DataFrame/Series 运算时，Pandas 会按索引标签自动对齐数据——这是 Pandas 最强大的特性之一。
     \end{enumerate}
-    在 Pandas 中，索引是关于"标签"的。它帮助在两个表格运算时自动对齐数据。
+    在 Pandas 中，索引的核心是"标签"而非"加速查找"（不同于 SQL）。它使得两个表格运算时能自动按标签对齐，避免手动匹配。
 
     Special Index types: \texttt{MultiIndex} (hierarchical), \texttt{DatetimeIndex} (datetimes), \texttt{Float64Index} (floats), \texttt{CategoricalIndex} (categories).
 \end{concept}
@@ -3834,9 +3873,9 @@ print(df.iat[0, 0])                 # Fast position-based single value
 
 \begin{concept}{Column Selection Shortcuts / 列选择快捷方式}
     \begin{itemize}[itemsep=0.3em]
-        \item \texttt{df['A']} — Single column, returns \textbf{Series}.
-        \item \texttt{df[['A', 'C']]} — Multiple columns, returns \textbf{DataFrame}.
-        \item \texttt{df.A} — Attribute lookup (works only if column name has no spaces and doesn't conflict with DataFrame methods).
+        \item \texttt{df['A']} — Single column, returns \textbf{Series}. / 单列 → 返回 Series。
+        \item \texttt{df[['A', 'C']]} — Multiple columns, returns \textbf{DataFrame}. / 多列 → 返回 DataFrame（注意双层方括号！）。
+        \item \texttt{df.A} — Attribute lookup / 属性访问（works only if column name has no spaces and doesn't conflict with DataFrame methods / 仅当列名无空格且不与已有方法冲突时可用）。
     \end{itemize}
 \end{concept}
 

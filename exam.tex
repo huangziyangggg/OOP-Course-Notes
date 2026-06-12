@@ -155,7 +155,6 @@
 \tableofcontents
 \newpage
 
-% --- 正文：所有实战案例 ---
 \begin{examplebox}{Basic Assignment / 基础赋值}
 \begin{lstlisting}
 age = 25
@@ -828,6 +827,41 @@ print(myset)                    # {'apple', 'banana', 'cherry'} (no duplicate)
 \end{lstlisting}
 \end{examplebox}
 
+\begin{examplebox}{Set Operations / 集合运算}
+    集合最大的优势在于数学集合运算——去重、交集、并集、差集等操作一行搞定：
+\begin{lstlisting}
+A = {1, 2, 3, 4}
+B = {3, 4, 5, 6}
+
+# Add/Remove elements / 添加与删除
+A.add(10)                           # {1, 2, 3, 4, 10}
+A.remove(10)                        # {1, 2, 3, 4} — KeyError if not found
+A.discard(99)                       # Safe remove — no error if missing
+
+# Union / 并集：A 或 B 中的所有元素
+print(A | B)                        # {1, 2, 3, 4, 5, 6}
+print(A.union(B))                   # Equivalent
+
+# Intersection / 交集：同时在 A 和 B 中的元素
+print(A & B)                        # {3, 4}
+print(A.intersection(B))            # Equivalent
+
+# Difference / 差集：在 A 中但不在 B 中的元素
+print(A - B)                        # {1, 2}
+
+# Symmetric Difference / 对称差：仅在 A 或仅在 B（不同时存在）
+print(A ^ B)                        # {1, 2, 5, 6}
+
+# Subset & Superset / 子集与超集
+print({1, 2} <= A)                  # True — {1, 2} is subset of A
+print(A >= {1, 2})                  # True — A is superset of {1, 2}
+
+# Practical use: deduplicate a list / 实战：列表去重
+duplicates = [1, 2, 2, 3, 3, 3, 4]
+unique = list(set(duplicates))      # [1, 2, 3, 4] — 一行去重！
+\end{lstlisting}
+\end{examplebox}
+
 \begin{examplebox}{Comprehension vs Traditional Loop / 推导式 vs 传统循环}
 \begin{lstlisting}
 numbers = (1, 2, 3, 4, 5)
@@ -851,6 +885,37 @@ print(squares)                  # [1, 4, 9, 16, 25]
 str_numbers = ["1.5", "2.3", "5.25"]
 float_numbers = [float(value) for value in str_numbers]
 print(float_numbers)            # [1.5, 2.3, 5.25]
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Filtered \& Dict/Set Comprehension / 条件过滤 + 字典/集合推导式}
+\begin{lstlisting}
+numbers = [1, 2, 3, 4, 5, 6]
+
+# List comprehension with condition / 带过滤的列表推导式
+even_squares = [num**2 for num in numbers if num % 2 == 0]
+print(even_squares)                     # [4, 16, 36]
+
+# if-else inside comprehension (ternary) / 条件表达式在左侧
+labels = ["even" if n % 2 == 0 else "odd" for n in numbers]
+print(labels)                           # ['odd', 'even', 'odd', 'even', ...]
+
+# Dictionary comprehension / 字典推导式
+squares_dict = {num: num**2 for num in numbers}
+print(squares_dict)                     # {1: 1, 2: 4, 3: 9, 4: 16, ...}
+
+# Dict comprehension with filter / 带过滤的字典推导式
+even_squares_dict = {n: n**2 for n in numbers if n % 2 == 0}
+print(even_squares_dict)                # {2: 4, 4: 16, 6: 36}
+
+# Set comprehension / 集合推导式
+unique_lengths = {len(str(n)) for n in numbers}
+print(unique_lengths)                   # {1} — all single-digit lengths are 1
+
+# Nested comprehension / 嵌套推导式（展开二维列表）
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+flattened = [x for row in matrix for x in row]
+print(flattened)                        # [1, 2, 3, 4, 5, 6, 7, 8, 9]
 \end{lstlisting}
 \end{examplebox}
 
@@ -890,6 +955,31 @@ large_cats = copy.copy(animals)
 large_cats.append("Leopard")
 print(large_cats)   # ['lion', 'tiger', 'Leopard']
 print(animals)      # ['lion', 'tiger'] — unchanged!
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Deep Copy Example / 深拷贝案例}
+\begin{lstlisting}
+import copy
+
+# Nested list — shallow copy still shares inner objects
+original = [[1, 2, 3], [4, 5, 6]]
+shallow = copy.copy(original)
+deep = copy.deepcopy(original)
+
+# Modify inner element of shallow copy
+shallow[0][0] = 999
+print(original)          # [[999, 2, 3], [4, 5, 6]] — CHANGED!
+print(shallow)           # [[999, 2, 3], [4, 5, 6]]
+print(deep)              # [[1, 2, 3], [4, 5, 6]] — unchanged!
+
+# Modify inner element of deep copy
+deep[1][0] = 777
+print(original)          # [[999, 2, 3], [4, 5, 6]] — unchanged!
+print(deep)              # [[1, 2, 3], [777, 5, 6]] — independent!
+
+# Key insight: shallow copy copies the container only;
+# deep copy recursively copies everything inside.
 \end{lstlisting}
 \end{examplebox}
 
@@ -1347,6 +1437,38 @@ print(my_object.get_hidden())       # 0
 \end{lstlisting}
 \end{examplebox}
 
+\begin{examplebox}{@property.setter Example / @property.setter 案例（带验证的写入）}
+    通过 \texttt{@xxx.setter} 可以在赋值时自动执行验证逻辑——阻止非法值写入：
+\begin{lstlisting}
+class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self._score = score             # Internal storage
+
+    @property
+    def score(self):                    # Getter — read like attribute
+        return self._score
+
+    @score.setter
+    def score(self, value):             # Setter — validate before writing
+        if value < 0 or value > 100:
+            raise ValueError("Score must be between 0 and 100!")
+        self._score = value
+
+s = Student("Alice", 85)
+print(s.score)          # 85 — reads like attribute (no parentheses)
+
+s.score = 92            # Valid — setter silently accepts
+print(s.score)          # 92
+
+# s.score = 150         # ValueError: Score must be between 0 and 100!
+# s.score = -10         # ValueError — blocked by setter validation!
+
+# Key advantage: the validation is REUSABLE — every assignment
+# to .score automatically goes through the setter's check.
+\end{lstlisting}
+\end{examplebox}
+
 \begin{examplebox}{Checking File Attributes / 查看文件属性}
 \begin{lstlisting}
 my_file = open(file='sample.txt', mode='w')
@@ -1366,6 +1488,31 @@ my_file.write('Hello file!')
 my_file.write('\n')                 # Manually add newline
 my_file.write('This is me!')
 my_file.close()                     # Always close to flush data!
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{The with Statement (Best Practice) / with 语句（最佳实践）}
+    \textbf{Recommended}: Use \texttt{with open(...) as f:} — it automatically closes the file, even if an exception occurs. This avoids the common mistake of forgetting \texttt{close()}. \\
+    \textbf{推荐}：使用 \texttt{with} 语句自动关闭文件，即使发生异常也不会泄漏资源。
+\begin{lstlisting}
+# OLD WAY — must remember to close (easy to forget!)
+my_file = open('sample.txt', 'w')
+my_file.write('Hello!\n')
+my_file.close()                         # Don't forget this!
+
+# BETTER WAY — with statement auto-closes!
+with open('sample.txt', 'w') as f:
+    f.write('Hello!\n')                 # No need to call close()
+    f.write('World!\n')
+# File is automatically closed here — even if an error occurred!
+
+# Reading with `with` + iterating
+with open('sample.txt', 'r') as f:
+    for line in f:                      # Memory-efficient iteration
+        print(line.strip())             # Strip removes trailing \n
+
+# `with` is the Pythonic way — it works with ALL file modes
+# and guarantees cleanup. Use it in every exam answer!
 \end{lstlisting}
 \end{examplebox}
 
@@ -1453,17 +1600,88 @@ converting_data_types = "I am a string"
 \end{lstlisting}
 \end{examplebox}
 
-\begin{examplebox}{Handling User Input / 处理用户输入案例}
+\begin{examplebox}{Specific Exception Handling / 精确捕获异常类型}
+    \textbf{永远避免裸} \texttt{except:}！始终指定具体的异常类型：
 \begin{lstlisting}
-user_input = input("Tell me your name please: ")
-
+# BAD — bare except catches EVERYTHING (even Ctrl+C!)
 try:
-    user_input = float(user_input)
-    print("That is a number, not your name!")
-except:
-    print("Thank you,", user_input)
+    result = 10 / 0
+except:                                 # Don't do this!
+    print("Something went wrong")
+
+# GOOD — catch specific exceptions
+try:
+    user_input = input("Enter a number: ")
+    result = 10 / float(user_input)
+except ValueError:                      # Catches bad float conversion
+    print("That's not a valid number!")
+except ZeroDivisionError:               # Catches division by zero
+    print("Cannot divide by zero!")
 \end{lstlisting}
-    If the user enters a string that can't be converted to float, the \texttt{except} block runs. If the conversion succeeds, the \texttt{try} block completes.
+\end{examplebox}
+
+\begin{examplebox}{else, finally, and raise / else·finally·raise 完整结构}
+\begin{lstlisting}
+def safe_divide(a, b):
+    try:
+        result = a / b
+    except ZeroDivisionError:
+        print("Error: Division by zero!")
+        raise                           # Re-raise — let caller handle it
+    except TypeError as e:              # Capture the exception object
+        print(f"Type error: {e}")
+        raise ValueError("Both arguments must be numbers") from e
+    else:
+        print(f"Success! Result = {result}")  # Only runs if no exception
+        return result
+    finally:
+        print("Cleanup: this ALWAYS runs.")   # Runs no matter what!
+
+# Test cases / 测试
+safe_divide(10, 2)      # Success → result=5.0, cleanup runs
+# safe_divide(10, 0)    # ZeroDivisionError → cleanup STILL runs!
+# safe_divide(10, "x")  # TypeError → chained to ValueError
+
+# Key points:
+# - else: runs ONLY on success (avoids catching its own exceptions)
+# - finally: ALWAYS runs — even after return/raise/exception
+# - raise: re-throws the same exception to the caller
+# - raise X from Y: chains exceptions for better debugging
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Debugging Workflow Demo / 调试流程演示}
+\begin{lstlisting}
+# Problem: function returns unexpected result
+def calculate_average(grades):
+    total = 0
+    for g in grades:
+        total += g
+    return total / len(grades)
+
+grades = [85, 92, 78]
+result = calculate_average(grades)
+print(f"Result: {result}")          # 85.0 — correct!
+
+# But what if we have an empty list?
+# calculate_average([])             # ZeroDivisionError — crash!
+
+# Debugging approach:
+# 1. Add print to check input
+def calculate_average_v2(grades):
+    print(f"DEBUG: grades = {grades}, type = {type(grades)}")  # Check input
+    if len(grades) == 0:
+        return 0                    # Guard clause / 防御性检查
+    total = 0
+    for g in grades:
+        total += g
+    result = total / len(grades)
+    print(f"DEBUG: total={total}, count={len(grades)}, avg={result}")
+    return result
+
+print(calculate_average_v2([]))     # 0 — safe!
+print(calculate_average_v2([1, 2, 3, 4, 5]))  # 3.0 — verified!
+\end{lstlisting}
 \end{examplebox}
 
 \begin{examplebox}{Good vs Bad Formatting / 好代码 vs 坏代码}
@@ -2197,6 +2415,5 @@ ax.legend(title='', loc='center', bbox_to_anchor=(0.5, -0.3),
 plt.show()
 \end{lstlisting}
 \end{examplebox}
-
 
 \end{document}

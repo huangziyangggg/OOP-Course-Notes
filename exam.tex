@@ -384,7 +384,8 @@ arms = 3
 print(name, "has", str(heads), "heads and", str(arms), "arms.")
 # Output: Doctor Strange has 2 heads and 3 arms.
 \end{lstlisting}
-    Note: \texttt{print()} automatically inserts spaces between comma-separated items. You must convert numbers to strings with \texttt{str()}.
+    Note: \texttt{print()} automatically inserts spaces between comma-separated items. You must convert numbers to strings with \texttt{str()}. \\
+    注意：\texttt{print()} 会自动在逗号分隔的项之间插入空格。数字必须用 \texttt{str()} 转为字符串。
 \end{examplebox}
 
 \begin{examplebox}{Concatenation Method / 拼接法}
@@ -392,7 +393,8 @@ print(name, "has", str(heads), "heads and", str(arms), "arms.")
 print(name + " has " + str(heads) + " heads and " + str(arms) + " arms.")
 # Output: Doctor Strange has 2 heads and 3 arms.
 \end{lstlisting}
-    Note: Tedious! Must manually add spaces and convert numbers to strings.
+    Note: Tedious! Must manually add spaces and convert numbers to strings. \\
+    注意：这种方法写起来很繁琐！必须手动添加空格、用 \texttt{str()} 转换数字。
 \end{examplebox}
 
 \begin{examplebox}{f-string Example / f-字符串示例}
@@ -1051,17 +1053,18 @@ pip uninstall numpy
 \end{examplebox}
 
 \begin{examplebox}{Speed Comparison / 速度对比}
+    NumPy 的向量化运算比纯 Python 列表快几十倍——关键原因是不需要对每个元素逐一进行类型检查。
 \begin{lstlisting}
 import random
 import numpy as np
 
-# Create 1,000,000 random integers with Python list
+# Create 1,000,000 random integers with Python list / 用 Python 列表创建100万随机整数
 measurements = [random.randint(150, 200) for _ in range(1_000_000)]
 
-# NumPy version
+# NumPy version / 转换为 NumPy 数组
 measurements_array = np.array(measurements)
 
-# NumPy's vectorized mean is MUCH faster
+# NumPy's vectorized mean is MUCH faster / 向量化均值快约50倍！
 np.mean(measurements_array)     # ~50x faster than sum/len on list
 \end{lstlisting}
 \end{examplebox}

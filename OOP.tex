@@ -591,9 +591,10 @@ print(5 // 2)       # 2 (floor division)
 \begin{concept}{Operators work differently on strings / 运算符对字符串有特殊行为}
     Some arithmetic operators also work on \texttt{str} type:
     \begin{itemize}
-        \item \texttt{+} on strings: concatenation / 拼接
-        \item \texttt{*} between string and int: repetition / 重复
+        \item \texttt{+} on strings: concatenation / 拼接——将两个字符串首尾相接
+        \item \texttt{*} between string and int: repetition / 重复——将字符串重复指定次数
     \end{itemize}
+    注意：\texttt{+} 两边是字符串时是拼接（不是算术加法）；\texttt{*} 左边是字符串、右边是整数时是重复。
 \end{concept}
 
 \begin{examplebox}{String Arithmetic / 字符串运算}
@@ -707,11 +708,11 @@ print(a + int(b))       # 44
 \begin{concept}{Truthiness / 真值判定规则}
     Almost any value is evaluated to \texttt{True} if it has some sort of content:
     \begin{itemize}[itemsep=0.3em]
-        \item Any string is \texttt{True}, \textbf{except} empty strings (\texttt{""}).
-        \item Any number is \texttt{True}, \textbf{except} \texttt{0}.
+        \item Any string is \texttt{True}, \textbf{except} empty strings (\texttt{""}). / 任何非空字符串为 \texttt{True}。
+        \item Any number is \texttt{True}, \textbf{except} \texttt{0}. / 任何非零数字为 \texttt{True}。
         \item \texttt{bool(0)} $\rightarrow$ \texttt{False}; \texttt{bool("")} $\rightarrow$ \texttt{False}
     \end{itemize}
-    \textbf{Falsy values / 假值}：\texttt{0}, \texttt{0.0}, \texttt{""}, \texttt{None}, \texttt{False}, empty containers.
+    \textbf{Falsy values / 假值（以下值会被判为 False）}：\texttt{0}, \texttt{0.0}, \texttt{""}, \texttt{None}, \texttt{False}, empty containers / 空容器.
 \end{concept}
 
 % ======================================================================
@@ -735,7 +736,8 @@ arms = 3
 print(name, "has", str(heads), "heads and", str(arms), "arms.")
 # Output: Doctor Strange has 2 heads and 3 arms.
 \end{lstlisting}
-    Note: \texttt{print()} automatically inserts spaces between comma-separated items. You must convert numbers to strings with \texttt{str()}.
+    Note: \texttt{print()} automatically inserts spaces between comma-separated items. You must convert numbers to strings with \texttt{str()}. \\
+    注意：\texttt{print()} 会自动在逗号分隔的项之间插入空格。数字必须用 \texttt{str()} 转为字符串。
 \end{examplebox}
 
 \subsection{Method 2: Concatenation with + / 字符串拼接法}
@@ -745,7 +747,8 @@ print(name, "has", str(heads), "heads and", str(arms), "arms.")
 print(name + " has " + str(heads) + " heads and " + str(arms) + " arms.")
 # Output: Doctor Strange has 2 heads and 3 arms.
 \end{lstlisting}
-    Note: Tedious! Must manually add spaces and convert numbers to strings.
+    Note: Tedious! Must manually add spaces and convert numbers to strings. \\
+    注意：这种方法写起来很繁琐！必须手动添加空格、用 \texttt{str()} 转换数字。
 \end{examplebox}
 
 \subsection{Method 3: f-strings (Best Practice, Python 3.6+) / f-字符串（推荐）}
@@ -1130,9 +1133,9 @@ for [every_element] in [my_sequence]:
     do something
     \end{lstlisting}
     \begin{itemize}[itemsep=0.3em]
-        \item \texttt{every\_element}：A variable created by the loop that takes on each value in the sequence, one at a time.
-        \item \texttt{my\_sequence}：The sequence to iterate over (list, tuple, string, range, etc.).
-        \item The loop runs once for each item in the sequence.
+        \item \texttt{every\_element / 迭代变量}：A variable created by the loop that takes on each value in the sequence, one at a time. / 循环每次迭代时被赋值为序列中的下一个元素。
+        \item \texttt{my\_sequence / 被遍历序列}：The sequence to iterate over (list, tuple, string, range, etc.). / 被遍历的序列（列表、元组、字符串、range 等）。
+        \item The loop runs once for each item in the sequence. / 循环对序列中的每个元素执行一次。
     \end{itemize}
 \end{concept}
 
@@ -1140,13 +1143,13 @@ for [every_element] in [my_sequence]:
 
 \begin{concept}{range(start, stop) / range() 详解}
     \texttt{range(1, 11)} produces numbers from \texttt{1} up to (but \textbf{NOT} including) \texttt{11} — i.e., 1, 2, 3, …, 10. \\
-    \texttt{range(1, 11)} 产生 1 到 10 的序列，\textbf{不包含}终点 11。
+    \texttt{range(1, 11)} 产生 1 到 10 的序列，\textbf{不包含}终点 11——和切片一样遵循"左闭右开"规则。
 
-    \textbf{Syntax / 语法}：
+    \textbf{Syntax / 三种语法}：
     \begin{itemize}[itemsep=0.3em]
-        \item \texttt{range(stop)} — starts at 0, goes up to (but not including) stop.
-        \item \texttt{range(start, stop)} — starts at start, goes up to (but not including) stop.
-        \item \texttt{range(start, stop, step)} — starts at start, increments by step each time.
+        \item \texttt{range(stop)} — starts at 0, goes up to (but not including) stop. / 从 0 开始，到 stop-1 结束。
+        \item \texttt{range(start, stop)} — starts at start, goes up to (but not including) stop. / 从 start 开始，到 stop-1 结束。
+        \item \texttt{range(start, stop, step)} — starts at start, increments by step each time. / 从 start 开始，每次增加 step（步长）。
     \end{itemize}
 \end{concept}
 
@@ -1192,8 +1195,8 @@ while counter < 11:
 
     \textbf{Key Differences / For 与 While 的主要区别}：
     \begin{itemize}[itemsep=0.3em]
-        \item \textbf{For loop}：Creates a variable to iterate over a given sequence. It is \textbf{finite} — you know exactly how many times it will run.
-        \item \textbf{While loop}：Does NOT create an iteration variable for you. You must create and update your own counter. It \textbf{could run forever} if you're not careful.
+        \item \textbf{For loop / For 循环}：Creates a variable to iterate over a given sequence. It is \textbf{finite} — you know exactly how many times it will run. / 自动创建迭代变量，遍历已知序列——你确切知道循环会执行多少次。
+        \item \textbf{While loop / While 循环}：Does NOT create an iteration variable for you. You must create and update your own counter. It \textbf{could run forever} if you're not careful. / 不会自动创建迭代变量，你必须手动初始化并更新计数器——稍有不慎就会无限循环。
     \end{itemize}
 \end{warning}
 
@@ -1550,8 +1553,10 @@ print(my_nested_list[1][0])     # 3 (first element of second sublist)
 
 \begin{concept}{.sort() vs sorted() / 原地排序 vs 返回新序列}
     \begin{itemize}[itemsep=0.5em]
-        \item \textbf{\texttt{list.sort()}}：Sorts the list \textbf{in-place} (modifies the original list). Returns \texttt{None}. Available for \textbf{lists only}.
-        \item \textbf{\texttt{sorted(iterable)}}：Returns a \textbf{new sorted list} from any iterable. The original is unchanged. Works on \textbf{any iterable} (lists, tuples, strings, etc.).
+        \item \textbf{\texttt{list.sort()}}：Sorts the list \textbf{in-place} (modifies the original list). Returns \texttt{None}. Available for \textbf{lists only}. \\
+        \textbf{原地排序}——直接修改原列表，返回 \texttt{None}。\textbf{仅列表可用}。
+        \item \textbf{\texttt{sorted(iterable)}}：Returns a \textbf{new sorted list} from any iterable. The original is unchanged. Works on \textbf{any iterable} (lists, tuples, strings, etc.). \\
+        \textbf{返回新序列}——从任意可迭代对象生成新的排序列表，原数据不变。\textbf{适用于所有可迭代对象}。
     \end{itemize}
 \end{concept}
 
@@ -1939,7 +1944,8 @@ print(square_root(16))      # 4.0
     The \textbf{Standard Library} doesn't need to be installed separately — it comes with your Python installation. These are often called \textbf{inbuilt packages}. \\
     标准库随 Python 安装自带，无需额外安装。也叫"内置包"。
 
-    External libraries like NumPy and Pandas must be installed before using them.
+    External libraries like NumPy and Pandas must be installed before using them. \\
+    NumPy、Pandas 等外部库则需要先用 pip 安装才能使用。标准库和外部库的区分是考试常见考点。
 \end{concept}
 
 \subsection{Copy Module / 复制模块}

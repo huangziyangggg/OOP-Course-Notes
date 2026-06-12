@@ -1472,6 +1472,93 @@ print(s.score)          # 92
 \end{lstlisting}
 \end{examplebox}
 
+\begin{examplebox}{Polymorphism via Inheritance / 通过继承实现多态}
+    子类重写（override）父类方法，同一个方法名在不同子类中表现不同：
+\begin{lstlisting}
+# Parent class / 父类
+class Animal:
+    def speak(self):
+        return "Some sound"
+
+# Child classes override speak() / 子类各自重写 speak()
+class Dog(Animal):
+    def speak(self):
+        return "Woof! 汪汪！"
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow! 喵喵！"
+
+class Duck(Animal):
+    def speak(self):
+        return "Quack! 嘎嘎！"
+
+# Polymorphism in action: same method, different behavior!
+animals = [Dog(), Cat(), Duck(), Dog()]
+for a in animals:
+    print(a.speak())
+# Output:
+# Woof! 汪汪！
+# Meow! 喵喵！
+# Quack! 嘎嘎！
+# Woof! 汪汪！
+\end{lstlisting}
+    关键：调用 \texttt{a.speak()} 时，Python 自动根据对象的\textbf{实际类型}选择正确的 \texttt{speak()} 实现——这就是多态的核心。
+\end{examplebox}
+
+\begin{examplebox}{Duck Typing Polymorphism / 鸭子类型的多态（Python 特色）}
+    Python 不需要继承自同一个父类，只要对象有同名方法就能互换：
+\begin{lstlisting}
+# These classes don't inherit from Animal at all!
+class Car:
+    def start(self):
+        return "Engine roaring! Vroom vroom!"
+
+class Computer:
+    def start(self):
+        return "Booting up... Beep!"
+
+class Morning:
+    def start(self):
+        return "Time to wake up! 起床啦！"
+
+# All can be used interchangeably — duck typing!
+things = [Car(), Computer(), Morning()]
+for t in things:
+    print(t.start())
+# Output:
+# Engine roaring! Vroom vroom!
+# Booting up... Beep!
+# Time to wake up! 起床啦！
+\end{lstlisting}
+    这就是 Python 的"鸭子类型"哲学：不关心你是什么类型，只关心你有没有我需要的方法。
+\end{examplebox}
+
+\begin{examplebox}{Destructor Example / 析构函数示例}
+\begin{lstlisting}
+class FileHandler:
+    def __init__(self, filename):
+        self.filename = filename
+        self.file = open(filename, 'w')
+        print(f"File '{filename}' opened.")
+
+    def write_data(self, data):
+        self.file.write(data)
+
+    def __del__(self):
+        self.file.close()
+        print(f"File '{self.filename}' closed (cleanup done).")
+
+# Usage / 使用
+handler = FileHandler("test.txt")
+handler.write_data("Hello, world!")
+
+# When 'handler' goes out of scope or the program ends,
+# __del__() is called automatically to close the file.
+\end{lstlisting}
+    \textbf{最佳实践}：析构函数适合做"保险措施"——即使你忘了手动清理，对象销毁时也会自动调用 \texttt{\_\_del\_\_()}。但不要完全依赖它，关键资源还是用 \texttt{with} 或显式 \texttt{.close()} 来管理。
+\end{examplebox}
+
 \begin{examplebox}{Checking File Attributes / 查看文件属性}
 \begin{lstlisting}
 my_file = open(file='sample.txt', mode='w')
@@ -2393,29 +2480,189 @@ data.describe()
 \end{examplebox}
 
 \begin{examplebox}{Line Plot with Pandas / Pandas 折线图}
+    \texttt{kind='line'} 是默认类型，适合展示随时间或顺序变化的趋势。DataFrame 的每一列自动变成一条线。
 \begin{lstlisting}
-# Plot salePrice against rentPrice for rows 100-110
+# 单列折线图：salePrice 随 rentPrice 的变化趋势
 data.loc[100:110].plot(x="rentPrice", y="salePrice",
                        title='salePrice vs rentPrice',
                        ylabel='salePrice', alpha=0.8)
 plt.show()
+
+# 多列折线图：每列一条线（自动分色 + 图例）
+data.loc[100:110].plot(y=["salePrice", "rentPrice"],
+                       title='Price Comparison')
+plt.show()
+
+# Series 也可直接 .plot()
+data['salePrice'].plot(title='Sale Price Trend')
+plt.show()
 \end{lstlisting}
 \end{examplebox}
 
-\begin{examplebox}{Customized Bar Plot from Pivot Table / 透视表条形图}
+\begin{examplebox}{Vertical Bar Plot (kind='bar') / 垂直柱状图}
+    柱状图适合比较分类数据的数值大小。
 \begin{lstlisting}
-# Create pivot table for plotting
+# 基本柱状图：按 bathrooms 分组统计 salePrice 均值
+data.groupby('bathrooms')['salePrice'].mean().plot(
+    kind='bar', title='Avg Sale Price by Bathrooms',
+    xlabel='Bathrooms', ylabel='Avg Price', rot=0)
+plt.show()
+
+# 从透视表绘制分组柱状图
 plot_data = data.pivot_table(index='bathrooms', columns='salePriceBins',
                              values='salePrice', aggfunc='mean')
-
-# Plot as bar chart with custom formatting
-ax = plot_data.plot(
-    kind='bar', rot=0, xlabel='', ylabel='Price Mean', fontsize=8,
-    figsize=(12, 1.5), title='Number of bathrooms | Price Bins',
-)
+ax = plot_data.plot(kind='bar', rot=0, xlabel='', ylabel='Price Mean',
+                    fontsize=8, figsize=(12, 1.5),
+                    title='Bathrooms | Price Bins')
 ax.legend(title='', loc='center', bbox_to_anchor=(0.5, -0.3),
           ncol=3, frameon=False)
 plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Horizontal Bar Plot (kind='barh') / 水平柱状图}
+    \texttt{barh} 特别适合类别名称较长的场景，避免标签重叠。
+\begin{lstlisting}
+# 水平柱状图：各类别销售均值
+data.groupby('propertyType')['salePrice'].mean().sort_values().plot(
+    kind='barh', title='Avg Sale Price by Property Type',
+    xlabel='Avg Price', color='steelblue')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Histogram (kind='hist') / 直方图}
+    直方图展示数值数据的\textbf{分布形态}——集中趋势、离散程度、偏态。\texttt{bins} 参数控制柱子数量。
+\begin{lstlisting}
+# 单列直方图：查看 salePrice 分布
+data['salePrice'].plot(kind='hist', bins=30, title='Sale Price Distribution',
+                       edgecolor='black', alpha=0.7)
+plt.show()
+
+# 多列直方图叠加：对比不同列的分布
+data[['salePrice', 'rentPrice']].plot(kind='hist', bins=30, alpha=0.5,
+                                       title='Price Distributions Comparison')
+plt.show()
+
+# 快速方法：df.hist() 为每列生成独立直方图
+data[['salePrice', 'rentPrice', 'bedrooms']].hist(bins=20, figsize=(10, 6))
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Box Plot (kind='box') / 箱线图}
+    箱线图显示数据的\textbf{五数概括}：最小值、Q1（25\%分位）、中位数、Q3（75\%分位）、最大值，以及离群点。是发现异常值的首选工具。
+\begin{lstlisting}
+# 单列箱线图
+data['salePrice'].plot(kind='box', title='Sale Price Box Plot')
+plt.show()
+
+# 按分类分组绘制箱线图：比较不同 propertyType 的价格分布
+data.boxplot(column='salePrice', by='propertyType', rot=45,
+             figsize=(8, 5))
+plt.title('Sale Price by Property Type')
+plt.suptitle('')            # 移除 Pandas 自动添加的 suptitle
+plt.show()
+
+# 多列箱线图
+data[['salePrice', 'rentPrice']].plot(kind='box',
+                                       title='Price Distributions')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Scatter Plot (kind='scatter') / 散点图}
+    散点图展示两个数值变量之间的关系（相关性、聚类、离群点）。
+\begin{lstlisting}
+# 基本散点图：salePrice vs rentPrice
+data.plot(kind='scatter', x='rentPrice', y='salePrice',
+          title='salePrice vs rentPrice', alpha=0.5, s=10)
+plt.show()
+
+# 带颜色映射的散点图：用第三维变量着色
+data.plot(kind='scatter', x='rentPrice', y='salePrice',
+          c='bedrooms', colormap='viridis', alpha=0.6,
+          title='Price Scatter (color = bedrooms)', sharex=False)
+plt.show()
+
+# 矩阵散点图：pd.plotting.scatter_matrix 生成所有数值列的配对散点图
+pd.plotting.scatter_matrix(data[['salePrice', 'rentPrice', 'bedrooms']],
+                           figsize=(10, 10), diagonal='hist', alpha=0.5)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Area Plot (kind='area') / 面积图}
+    面积图是折线图的填充版本，适合展示\textbf{组成部分随时间的变化}。\texttt{stacked=True}（默认）堆叠显示总量构成。
+\begin{lstlisting}
+# 堆叠面积图
+data.groupby('bedrooms')['salePrice'].mean().plot(
+    kind='area', title='Avg Sale Price by Bedrooms (Stacked)',
+    alpha=0.4, figsize=(10, 5))
+plt.show()
+
+# 非堆叠面积图（透明叠加）
+data.groupby('bedrooms')['salePrice'].mean().plot(
+    kind='area', stacked=False, alpha=0.3,
+    title='Avg Sale Price by Bedrooms (Unstacked)')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Pie Chart (kind='pie') / 饼图}
+    饼图展示各部分占整体的比例。适合类别数量较少（≤6）的场景。类别过多时考虑用柱状图替代。
+\begin{lstlisting}
+# 饼图：各 propertyType 占比
+type_counts = data['propertyType'].value_counts()
+type_counts.plot(kind='pie', autopct='%1.1f%%',
+                 title='Property Type Distribution',
+                 ylabel='', legend=False, figsize=(6, 6))
+plt.show()
+
+# 饼图 + 自定义颜色 + 突出显示
+colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
+type_counts.plot(kind='pie', autopct='%1.1f%%', colors=colors,
+                 explode=(0, 0.05, 0, 0),  # 突出第二块
+                 title='Property Types', ylabel='')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{KDE Density Plot (kind='kde' / kind='density') / 核密度估计图}
+    密度图是直方图的平滑版本，更适合展示数据分布的形状（多峰、偏态）。
+\begin{lstlisting}
+# 单列密度图
+data['salePrice'].plot(kind='density', title='Sale Price Density',
+                       linewidth=2)
+plt.show()
+
+# 多列密度图叠加：对比不同列的分布形状
+data[['salePrice', 'rentPrice']].plot(kind='density', linewidth=2,
+                                       title='Price Density Comparison')
+plt.show()
+
+# 直方图 + 密度图叠加（更直观）
+data['salePrice'].plot(kind='hist', bins=30, density=True,
+                        alpha=0.5, edgecolor='black')
+data['salePrice'].plot(kind='density', linewidth=2)
+plt.title('Histogram + Density Overlay')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\begin{examplebox}{Hexbin Plot (kind='hexbin') / 六边形分箱图}
+    当散点图因数据量过大而严重重叠时，hexbin 通过六边形分箱 + 颜色深浅表示每个区域内点的密度，是大数据量二维分布的理想选择。
+\begin{lstlisting}
+# Hexbin：用颜色深浅表示点的密集程度
+data.plot(kind='hexbin', x='rentPrice', y='salePrice',
+          gridsize=30, title='Price Hexbin Density',
+          colormap='YlOrRd', sharex=False, figsize=(8, 6))
+plt.show()
+
+# Hexbin 与散点图对比：数据量大时 hexbin 明显更清晰
+# data.plot(kind='scatter', x='rentPrice', y='salePrice', alpha=0.1)
+# data.plot(kind='hexbin', x='rentPrice', y='salePrice', gridsize=20)
 \end{lstlisting}
 \end{examplebox}
 

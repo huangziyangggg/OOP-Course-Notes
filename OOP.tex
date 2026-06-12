@@ -2753,10 +2753,123 @@ print(s.score)          # 92
 \end{examplebox}
 
 \begin{warning}{The \_ Prefix Convention / \_ 前缀约定}
-    The underscore prefix (\texttt{\_hidden}) is a \textbf{convention} that tells other programmers "this attribute is internal — don't access it directly." However, it does \textbf{NOT} actually prevent access. Python trusts you to follow the convention.
+    The underscore prefix (\texttt{\_hidden}) is a \textbf{convention} that tells other programmers "this attribute is internal — don't access it directly." However, it does \textbf{NOT} actually prevent access. Python trusts you to follow the convention. \\
+    下划线前缀 (\texttt{\_hidden}) 是一种约定——告诉其他程序员"这是内部属性，不要直接访问"。但 Python 不会强制阻止，它信任你自觉遵守约定。
 \end{warning}
 
 % ======================================================================
+\section{Polymorphism / 多态}
+% ======================================================================
+
+\begin{concept}{What is Polymorphism? / 什么是多态？}
+    \textbf{Polymorphism}（多态，源自希腊语 "many forms"）means "many forms" — the same method name can behave differently depending on which class's object calls it. It allows us to write code that works with \textbf{any} class as long as it implements the expected method. \\
+    多态是面向对象编程的四大支柱之一（封装、继承、多态、抽象）。同一个方法名，不同的类有不同的实现方式，调用者无需关心对象的具体类型——"只管调用，各显神通"。
+
+    Polymorphism is often combined with inheritance, but Python's \textbf{duck typing} makes polymorphism work even without inheritance — "If it walks like a duck and quacks like a duck, it's a duck!" \\
+    Python 的鸭子类型（duck typing）使得多态甚至不需要继承关系——只要对象有同名方法就能互换使用。
+\end{concept}
+
+\begin{examplebox}{Polymorphism via Inheritance / 通过继承实现多态}
+    子类重写（override）父类方法，同一个方法名在不同子类中表现不同：
+\begin{lstlisting}
+# Parent class / 父类
+class Animal:
+    def speak(self):
+        return "Some sound"
+
+# Child classes override speak() / 子类各自重写 speak()
+class Dog(Animal):
+    def speak(self):
+        return "Woof! 汪汪！"
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow! 喵喵！"
+
+class Duck(Animal):
+    def speak(self):
+        return "Quack! 嘎嘎！"
+
+# Polymorphism in action: same method, different behavior!
+animals = [Dog(), Cat(), Duck(), Dog()]
+for a in animals:
+    print(a.speak())
+# Output:
+# Woof! 汪汪！
+# Meow! 喵喵！
+# Quack! 嘎嘎！
+# Woof! 汪汪！
+\end{lstlisting}
+    关键：调用 \texttt{a.speak()} 时，Python 自动根据对象的\textbf{实际类型}选择正确的 \texttt{speak()} 实现——这就是多态的核心。
+\end{examplebox}
+
+\begin{examplebox}{Duck Typing Polymorphism / 鸭子类型的多态（Python 特色）}
+    Python 不需要继承自同一个父类，只要对象有同名方法就能互换：
+\begin{lstlisting}
+# These classes don't inherit from Animal at all!
+class Car:
+    def start(self):
+        return "Engine roaring! Vroom vroom!"
+
+class Computer:
+    def start(self):
+        return "Booting up... Beep!"
+
+class Morning:
+    def start(self):
+        return "Time to wake up! 起床啦！"
+
+# All can be used interchangeably — duck typing!
+things = [Car(), Computer(), Morning()]
+for t in things:
+    print(t.start())
+# Output:
+# Engine roaring! Vroom vroom!
+# Booting up... Beep!
+# Time to wake up! 起床啦！
+\end{lstlisting}
+    这就是 Python 的"鸭子类型"哲学：不关心你是什么类型，只关心你有没有我需要的方法。
+\end{examplebox}
+
+% ======================================================================
+\section{Destructor / 析构函数（对象销毁）}
+% ======================================================================
+
+\begin{concept}{The \_\_del\_\_() Method / \_\_del\_\_() 析构方法}
+    Just as \texttt{\_\_init\_\_()} runs when an object is \textbf{created}, \texttt{\_\_del\_\_()} runs when an object is about to be \textbf{destroyed} (garbage collected). It's useful for cleanup — closing files, releasing network connections, etc. \\
+    如果说 \texttt{\_\_init\_\_()} 是对象的"出生仪式"，\texttt{\_\_del\_\_()} 就是对象的"告别仪式"——在对象被垃圾回收前自动调用，常用于释放资源（关闭文件、断开连接等）。
+
+    \textbf{Caution / 注意事项}：Python uses automatic garbage collection, so you can't predict exactly \textbf{when} \texttt{\_\_del\_\_()} will be called. Use \texttt{with} statements (context managers) for deterministic cleanup when possible. \\
+    Python 使用自动垃圾回收，无法精确预测 \texttt{\_\_del\_\_()} 何时被调用。推荐优先使用 \texttt{with} 语句进行确定性资源清理。
+\end{concept}
+
+\begin{examplebox}{Destructor Example / 析构函数示例}
+\begin{lstlisting}
+class FileHandler:
+    def __init__(self, filename):
+        self.filename = filename
+        self.file = open(filename, 'w')
+        print(f"File '{filename}' opened.")
+
+    def write_data(self, data):
+        self.file.write(data)
+
+    def __del__(self):
+        self.file.close()
+        print(f"File '{self.filename}' closed (cleanup done).")
+
+# Usage / 使用
+handler = FileHandler("test.txt")
+handler.write_data("Hello, world!")
+
+# When 'handler' goes out of scope or the program ends,
+# __del__() is called automatically to close the file.
+\end{lstlisting}
+    \textbf{最佳实践}：析构函数适合做"保险措施"——即使你忘了手动清理，对象销毁时也会自动调用 \texttt{\_\_del\_\_()}。但不要完全依赖它，关键资源还是用 \texttt{with} 或显式 \texttt{.close()} 来管理。
+\end{examplebox}
+
+% ======================================================================
+\section{Quick Reference / 速查表}
 \section{Quick Reference / 速查表}
 % ======================================================================
 
@@ -2768,14 +2881,17 @@ print(s.score)          # 92
 \toprule
 \textbf{Concept / 概念} & \textbf{Syntax / 语法} \\ \midrule
 定义类 & \texttt{class MyClass:} \\
-初始化方法 & \texttt{def \_\_init\_\_(self, param):} \\
+构造函数 & \texttt{def \_\_init\_\_(self, param):} \\
+析构函数 & \texttt{def \_\_del\_\_(self):} \\
 实例属性 & \texttt{self.attr = value} \\
 类属性 & \texttt{class\_attr = value}（在 \texttt{\_\_init\_\_} 外） \\
 实例化 & \texttt{obj = MyClass(arg)} \\
 字符串表示 & \texttt{def \_\_str\_\_(self): return "..."} \\
 继承 & \texttt{class Child(Parent):} \\
+多态 & 子类重写父类方法，同名不同行为 \\
 调用父类 & \texttt{super().method()} \\
 只读属性 & \texttt{@property} 装饰 getter 方法 \\
+可写属性(带验证) & \texttt{@xxx.setter} 装饰 setter 方法 \\
 内部属性约定 & \texttt{self.\_internal} \\ \bottomrule
 \end{tabular}
 \medskip
@@ -4524,44 +4640,233 @@ data.describe()
 \section{Visualization with Pandas / 数据可视化}
 % ======================================================================
 
-\begin{concept}{Integrated Plotting / 集成绘图}
-    Pandas provides a \texttt{.plot()} method that directly uses Matplotlib. For SVG-format plots (high resolution), use:
+\begin{concept}{Integrated Plotting with .plot() / Pandas 集成绘图}
+    Pandas 的 \texttt{.plot()} 方法直接基于 Matplotlib，通过 \texttt{kind} 参数切换图表类型，无需手动创建 Figure 和 Axes。DataFrame 和 Series 都支持。
+
+    对于高分辨率 SVG 格式输出（Jupyter Notebook 中推荐）：
 \begin{lstlisting}
 %config InlineBackend.figure_formats = ['svg']
 %matplotlib inline
 \end{lstlisting}
 \end{concept}
 
-\subsection{Line Plot / 折线图}
+\subsection{Line Plot / 折线图（默认）}
 
 \begin{examplebox}{Line Plot with Pandas / Pandas 折线图}
+    \texttt{kind='line'} 是默认类型，适合展示随时间或顺序变化的趋势。DataFrame 的每一列自动变成一条线。
 \begin{lstlisting}
-# Plot salePrice against rentPrice for rows 100-110
+# 单列折线图：salePrice 随 rentPrice 的变化趋势
 data.loc[100:110].plot(x="rentPrice", y="salePrice",
                        title='salePrice vs rentPrice',
                        ylabel='salePrice', alpha=0.8)
 plt.show()
+
+# 多列折线图：每列一条线（自动分色 + 图例）
+data.loc[100:110].plot(y=["salePrice", "rentPrice"],
+                       title='Price Comparison')
+plt.show()
+
+# Series 也可直接 .plot()
+data['salePrice'].plot(title='Sale Price Trend')
+plt.show()
 \end{lstlisting}
 \end{examplebox}
 
-\subsection{Bar Plot / 条形图}
+\subsection{Bar Plot / 柱状图与水平柱状图}
 
-\begin{examplebox}{Customized Bar Plot from Pivot Table / 透视表条形图}
+\begin{examplebox}{Vertical Bar Plot (kind='bar') / 垂直柱状图}
+    柱状图适合比较分类数据的数值大小。
 \begin{lstlisting}
-# Create pivot table for plotting
+# 基本柱状图：按 bathrooms 分组统计 salePrice 均值
+data.groupby('bathrooms')['salePrice'].mean().plot(
+    kind='bar', title='Avg Sale Price by Bathrooms',
+    xlabel='Bathrooms', ylabel='Avg Price', rot=0)
+plt.show()
+
+# 从透视表绘制分组柱状图
 plot_data = data.pivot_table(index='bathrooms', columns='salePriceBins',
                              values='salePrice', aggfunc='mean')
-
-# Plot as bar chart with custom formatting
-ax = plot_data.plot(
-    kind='bar', rot=0, xlabel='', ylabel='Price Mean', fontsize=8,
-    figsize=(12, 1.5), title='Number of bathrooms | Price Bins',
-)
+ax = plot_data.plot(kind='bar', rot=0, xlabel='', ylabel='Price Mean',
+                    fontsize=8, figsize=(12, 1.5),
+                    title='Bathrooms | Price Bins')
 ax.legend(title='', loc='center', bbox_to_anchor=(0.5, -0.3),
           ncol=3, frameon=False)
 plt.show()
 \end{lstlisting}
 \end{examplebox}
+
+\begin{examplebox}{Horizontal Bar Plot (kind='barh') / 水平柱状图}
+    \texttt{barh} 特别适合类别名称较长的场景，避免标签重叠。
+\begin{lstlisting}
+# 水平柱状图：各类别销售均值
+data.groupby('propertyType')['salePrice'].mean().sort_values().plot(
+    kind='barh', title='Avg Sale Price by Property Type',
+    xlabel='Avg Price', color='steelblue')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Histogram / 直方图}
+
+\begin{examplebox}{Histogram (kind='hist') / 直方图}
+    直方图展示数值数据的\textbf{分布形态}——集中趋势、离散程度、偏态。\texttt{bins} 参数控制柱子数量。
+\begin{lstlisting}
+# 单列直方图：查看 salePrice 分布
+data['salePrice'].plot(kind='hist', bins=30, title='Sale Price Distribution',
+                       edgecolor='black', alpha=0.7)
+plt.show()
+
+# 多列直方图叠加：对比不同列的分布
+data[['salePrice', 'rentPrice']].plot(kind='hist', bins=30, alpha=0.5,
+                                       title='Price Distributions Comparison')
+plt.show()
+
+# 快速方法：df.hist() 为每列生成独立直方图
+data[['salePrice', 'rentPrice', 'bedrooms']].hist(bins=20, figsize=(10, 6))
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Box Plot / 箱线图}
+
+\begin{examplebox}{Box Plot (kind='box') / 箱线图}
+    箱线图显示数据的\textbf{五数概括}：最小值、Q1（25\%分位）、中位数、Q3（75\%分位）、最大值，以及离群点。是发现异常值的首选工具。
+\begin{lstlisting}
+# 单列箱线图
+data['salePrice'].plot(kind='box', title='Sale Price Box Plot')
+plt.show()
+
+# 按分类分组绘制箱线图：比较不同 propertyType 的价格分布
+data.boxplot(column='salePrice', by='propertyType', rot=45,
+             figsize=(8, 5))
+plt.title('Sale Price by Property Type')
+plt.suptitle('')            # 移除 Pandas 自动添加的 suptitle
+plt.show()
+
+# 多列箱线图
+data[['salePrice', 'rentPrice']].plot(kind='box',
+                                       title='Price Distributions')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Scatter Plot / 散点图}
+
+\begin{examplebox}{Scatter Plot (kind='scatter') / 散点图}
+    散点图展示两个数值变量之间的关系（相关性、聚类、离群点）。
+\begin{lstlisting}
+# 基本散点图：salePrice vs rentPrice
+data.plot(kind='scatter', x='rentPrice', y='salePrice',
+          title='salePrice vs rentPrice', alpha=0.5, s=10)
+plt.show()
+
+# 带颜色映射的散点图：用第三维变量着色
+data.plot(kind='scatter', x='rentPrice', y='salePrice',
+          c='bedrooms', colormap='viridis', alpha=0.6,
+          title='Price Scatter (color = bedrooms)', sharex=False)
+plt.show()
+
+# 矩阵散点图：pd.plotting.scatter_matrix 生成所有数值列的配对散点图
+pd.plotting.scatter_matrix(data[['salePrice', 'rentPrice', 'bedrooms']],
+                           figsize=(10, 10), diagonal='hist', alpha=0.5)
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Area Plot / 面积图}
+
+\begin{examplebox}{Area Plot (kind='area') / 面积图}
+    面积图是折线图的填充版本，适合展示\textbf{组成部分随时间的变化}。\texttt{stacked=True}（默认）堆叠显示总量构成。
+\begin{lstlisting}
+# 堆叠面积图
+data.groupby('bedrooms')['salePrice'].mean().plot(
+    kind='area', title='Avg Sale Price by Bedrooms (Stacked)',
+    alpha=0.4, figsize=(10, 5))
+plt.show()
+
+# 非堆叠面积图（透明叠加）
+data.groupby('bedrooms')['salePrice'].mean().plot(
+    kind='area', stacked=False, alpha=0.3,
+    title='Avg Sale Price by Bedrooms (Unstacked)')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Pie Chart / 饼图}
+
+\begin{examplebox}{Pie Chart (kind='pie') / 饼图}
+    饼图展示各部分占整体的比例。适合类别数量较少（≤6）的场景。类别过多时考虑用柱状图替代。
+\begin{lstlisting}
+# 饼图：各 propertyType 占比
+type_counts = data['propertyType'].value_counts()
+type_counts.plot(kind='pie', autopct='%1.1f%%',
+                 title='Property Type Distribution',
+                 ylabel='', legend=False, figsize=(6, 6))
+plt.show()
+
+# 饼图 + 自定义颜色 + 突出显示
+colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
+type_counts.plot(kind='pie', autopct='%1.1f%%', colors=colors,
+                 explode=(0, 0.05, 0, 0),  # 突出第二块
+                 title='Property Types', ylabel='')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Density Plot / 密度图}
+
+\begin{examplebox}{KDE Density Plot (kind='kde' / kind='density') / 核密度估计图}
+    密度图是直方图的平滑版本，更适合展示数据分布的形状（多峰、偏态）。
+\begin{lstlisting}
+# 单列密度图
+data['salePrice'].plot(kind='density', title='Sale Price Density',
+                       linewidth=2)
+plt.show()
+
+# 多列密度图叠加：对比不同列的分布形状
+data[['salePrice', 'rentPrice']].plot(kind='density', linewidth=2,
+                                       title='Price Density Comparison')
+plt.show()
+
+# 直方图 + 密度图叠加（更直观）
+data['salePrice'].plot(kind='hist', bins=30, density=True,
+                        alpha=0.5, edgecolor='black')
+data['salePrice'].plot(kind='density', linewidth=2)
+plt.title('Histogram + Density Overlay')
+plt.show()
+\end{lstlisting}
+\end{examplebox}
+
+\subsection{Hexbin Plot / 六边形分箱图}
+
+\begin{examplebox}{Hexbin Plot (kind='hexbin') / 六边形分箱图}
+    当散点图因数据量过大而严重重叠时，hexbin 通过六边形分箱 + 颜色深浅表示每个区域内点的密度，是大数据量二维分布的理想选择。
+\begin{lstlisting}
+# Hexbin：用颜色深浅表示点的密集程度
+data.plot(kind='hexbin', x='rentPrice', y='salePrice',
+          gridsize=30, title='Price Hexbin Density',
+          colormap='YlOrRd', sharex=False, figsize=(8, 6))
+plt.show()
+
+# Hexbin 与散点图对比：数据量大时 hexbin 明显更清晰
+# data.plot(kind='scatter', x='rentPrice', y='salePrice', alpha=0.1)
+# data.plot(kind='hexbin', x='rentPrice', y='salePrice', gridsize=20)
+\end{lstlisting}
+\end{examplebox}
+
+\begin{concept}{Plot Type Selection Guide / 图表类型选择指南}
+    \begin{itemize}[itemsep=0.5em]
+        \item \textbf{趋势 / 时间序列} $\rightarrow$ \texttt{line}（折线图）
+        \item \textbf{分类对比} $\rightarrow$ \texttt{bar} / \texttt{barh}（柱状图）
+        \item \textbf{分布形态} $\rightarrow$ \texttt{hist}（直方图）/ \texttt{density}（密度图）
+        \item \textbf{五数概括 + 异常值} $\rightarrow$ \texttt{box}（箱线图）
+        \item \textbf{两变量关系} $\rightarrow$ \texttt{scatter}（散点图）/ \texttt{hexbin}（大数据量）
+        \item \textbf{组成部分占比} $\rightarrow$ \texttt{pie}（饼图）
+        \item \textbf{构成随时间变化} $\rightarrow$ \texttt{area}（面积图）
+    \end{itemize}
+    口诀：一手 \texttt{.plot(kind='xxx')} 走天下，Matplotlib 的精细控制全兼容！
+\end{concept}
 
 % ======================================================================
 \newpage

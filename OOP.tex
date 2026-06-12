@@ -1701,11 +1701,12 @@ for country, capital in capitals.items():
     A set is a collection which is:
     \begin{itemize}[itemsep=0.3em]
         \item \textbf{Unordered / 无序}：Elements have no fixed position.
-        \item \textbf{Unchangeable / 不可变内容}：You cannot change items, but you can add or remove items.
+        \item \textbf{Mutable container / 容器可变}：You can add or remove elements after creation.
+        \item \textbf{Hashable elements / 元素需可哈希}：Elements usually must be immutable values such as numbers, strings, or tuples.
         \item \textbf{Unindexed / 无索引}：You cannot access items by index (no \texttt{set[0]}).
         \item \textbf{No Duplicates / 不重复}：Sets cannot have two items with the same value. Duplicates are automatically removed!
     \end{itemize}
-    集合是无序、无索引、不可重复的数据结构。写入相同值会被自动去重。
+    集合是无序、无索引、不可重复的数据结构。集合本身可以增删元素，但元素需要是可哈希对象；写入相同值会被自动去重。
 \end{concept}
 
 \begin{examplebox}{Set Creation / 创建集合}
@@ -2870,7 +2871,6 @@ handler.write_data("Hello, world!")
 
 % ======================================================================
 \section{Quick Reference / 速查表}
-\section{Quick Reference / 速查表}
 % ======================================================================
 
 \medskip
@@ -3988,7 +3988,7 @@ print(df.loc['ii', 'C'])            # Scalar value at row 'ii', column 'C'
 print(df.loc['i':'ii', ['A', 'C']]) # Rows 'i' to 'ii', columns A and C
 
 # Scalar access / 单值快速访问
-print(df.at[0, 'Name'])             # Fast label-based single value
+print(df.at['i', 'A'])              # Fast label-based single value
 print(df.iat[0, 0])                 # Fast position-based single value
 \end{lstlisting}
 \end{examplebox}
@@ -4642,6 +4642,8 @@ data.describe()
 
 \begin{concept}{Integrated Plotting with .plot() / Pandas 集成绘图}
     Pandas 的 \texttt{.plot()} 方法直接基于 Matplotlib，通过 \texttt{kind} 参数切换图表类型，无需手动创建 Figure 和 Axes。DataFrame 和 Series 都支持。
+
+    本节前半部分对应 Lecture 09 中的 Pandas plotting 内容；后续的箱线图、散点图、面积图、饼图、密度图和 hexbin 属于常用补充，帮助你把同一个 \texttt{.plot()} 接口迁移到更多数据探索场景。
 
     对于高分辨率 SVG 格式输出（Jupyter Notebook 中推荐）：
 \begin{lstlisting}

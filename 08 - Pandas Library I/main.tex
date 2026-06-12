@@ -235,7 +235,7 @@ print(df.loc['ii', 'C'])            # Scalar value at row 'ii', column 'C'
 print(df.loc['i':'ii', ['A', 'C']]) # Rows 'i' to 'ii', columns A and C
 
 # Scalar access / 单值快速访问
-print(df.at[0, 'Name'])             # Fast label-based single value
+print(df.at['i', 'A'])              # Fast label-based single value
 print(df.iat[0, 0])                 # Fast position-based single value
 \end{lstlisting}
 \end{examplebox}

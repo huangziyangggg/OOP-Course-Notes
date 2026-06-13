@@ -1,0 +1,1181 @@
+\documentclass[11pt,a4paper]{report}
+
+% ===== Core packages =====
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Title formatting
+\titleformat{\chapter}[block]{\normalfont\Huge\bfseries\raggedright}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{16pt}
+
+% PDF metadata
+\hypersetup{
+    colorlinks=false, pdfborder={0 0 0},
+    bookmarks=true, bookmarksnumbered=true, bookmarksopen=true, bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX}, pdftitle={Python BootCamp - Complete Command Reference},
+    pdfauthor={黄子扬},
+}
+
+% Page setup
+\geometry{top=0.6in,bottom=0.7in,left=0.5in,right=0.5in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+% Colors
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{examred}{RGB}{180,0,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+% Code style
+\lstset{
+    backgroundcolor=\color{codebg}, basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries, commentstyle=\color{commentgreen},
+    stringstyle=\color{orange}, breaklines=true, showstringspaces=false,
+    frame=single, frameround=tttt, framesep=6pt, rulecolor=\color{gray!40},
+    xleftmargin=0em, numbers=left, numbersep=5pt, numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None,True,False,plt,np,pd,fig,ax,subplots,DataFrame,Series,loc,iloc,at,iat,merge,join,groupby,def,return,if,elif,else,for,in,while,break,continue,pass,class,self,super,property,lambda,inplace,astype,cut,assign,import,as,from,with,try,except,raise,and,or,not,del,range,len,type,sum,min,max,sorted},
+}
+
+% tcolorbox
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{cmdsection}[1]{colback=blue!3,colframe=mainblue,fonttitle=\bfseries,title={#1},arc=2pt,breakable,before skip=12pt,after skip=8pt}
+
+% Page header/footer
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\bfseries Python BootCamp — Command Reference}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% Inline code color
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{\textcolor{mainblue}{\oldtexttt{#1}}}
+
+\begin{document}
+
+% === Cover ===
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{2cm}
+
+{\large 哈尔滨工业大学 \quad 法国里昂商学院 \\ Harbin Institute of Technology \quad emlyon business school \par}
+
+\vspace{1.5cm}
+\rule{\linewidth}{0.5pt}
+\vspace{1cm}
+
+{\Huge\bfseries Python BootCamp \\[0.3em] Complete Command Reference \par}
+
+\vspace{0.5cm}
+{\LARGE 全课程命令速查表 \par}
+
+\vspace{1cm}
+\rule{\linewidth}{0.5pt}
+\vspace{1.5cm}
+
+{\Large\textbf{黄子扬} \quad Ziyang Huang \par}
+\vspace{0.3em}
+{\normalsize 二叉苹果树 \par}
+
+\vfill
+
+{\large Course Code: 22EM31202C \quad • \quad Object Oriented Programming \par}
+\vspace{0.3em}
+{\large \today \par}
+
+\end{center}
+\end{titlepage}
+
+% === TOC ===
+\tableofcontents
+\newpage
+
+% ============================================================
+\chapter{Basic Syntax \& Operators / 基础语法与运算符}
+% ============================================================
+
+\begin{cmdsection}{1.1  Variables \& Assignment / 变量与赋值}
+\small\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+x = 10                  & Assignment / 赋值：右侧值绑定到左侧变量名 \\
+x, y = 1, 2             & Multiple assignment / 多重赋值（同时绑定多个变量） \\
+a = b = 0               & Chain assignment / 链式赋值（a 和 b 都指向 0） \\
+del x                   & Delete variable / 删除变量，释放引用 \\
+None                    & Null value (NoneType) / 空值——不等于 0、False 或 \texttt{""} \\
+type(x)                 & Return data type / 返回变量的数据类型 \\
+isinstance(x, int)      & Check if x is of given type / 类型检查（推荐，支持继承判断） \\
+id(x)                   & Memory address / 返回对象的内存地址（整数） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{1.2  Data Types / 数据类型}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+int(x)                  & Convert to integer / 转整数；\texttt{int(9.9)} → 9（截断，非四舍五入） \\
+float(x)                & Convert to float / 转浮点数 \\
+str(x)                  & Convert to string / 转字符串 \\
+bool(x)                 & Convert to boolean / 转布尔值 \\
+bool(0) → False         & Falsy values / 假值：\texttt{0, 0.0, "", None, [], \{\}, False} \\
+int("101", 2) → 5       & Convert from base / 从指定进制转换（2=二进制，16=十六进制） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{1.3  Arithmetic \& Comparison Operators / 算术与比较运算符}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Operator}} & \textbf{Description / 说明} \\ \midrule
++  -  *                 & Addition / Subtraction / Multiplication（加/减/乘） \\
+/                       & Standard division → float / 标准除法（总是返回 float） \\
+//                      & Floor division / 整除（向下取整，丢弃余数） \\
+**                      & Exponentiation / 幂运算：\texttt{3**2 → 9} \\
+\%                      & Modulo (remainder) / 取模（余数）：\texttt{7\%3 → 1} \\
+==  !=                  & Equal / Not equal（等于/不等于） \\
+<  >  <=  >=            & Comparison operators / 比较运算符（返回 bool） \\
+and  or  not            & Logical operators / 逻辑运算符 \\
+\&  |  \textasciitilde  & Bitwise AND/OR/NOT / 位运算——Pandas 中 \texttt{\&} / \texttt{|} 用于逐元素逻辑 \\
+is  is not              & Identity comparison / 身份比较（比较内存地址，非值） \\
+in  not in              & Membership test / 成员检查 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{1.4  print() \& input() / 输入与输出}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+print(x)                & Print x to console / 打印到控制台 \\
+print(x, y, sep=',')    & Custom separator / 自定义分隔符（默认空格） \\
+print(x, end='!')       & Custom end char / 自定义结尾符（默认 \texttt{\textbackslash n} 换行） \\
+input("Prompt: ")       & Read user input / 读取用户输入——\textbf{总是返回 str} \\
+\# comment              & Single-line comment / 单行注释 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Strings / 字符串}
+% ============================================================
+
+\begin{cmdsection}{2.1  String Basics / 字符串基础}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+"hello" / 'hello'       & Single/double quotes / 单引号或双引号包裹 \\
+len(s)                  & String length (includes spaces) / 字符串长度（含空格） \\
+s[i]                    & Positive index / 正索引（从 0 开始） \\
+s[-i]                   & Negative index / 负索引（-1 = 最后一个字符） \\
+s[start:stop]           & Slice / 切片——\textbf{左闭右开}（含 start，不含 stop） \\
+s[start:stop:step]      & Slice with step / 带步长的切片 \\
+s[::-1]                 & Reverse string / 反转字符串 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{2.2  String Methods / 字符串方法}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Method}} & \textbf{Description / 说明} \\ \midrule
+s.lower() / s.upper()   & Convert case / 转小写/大写 \\
+s.title() / s.capitalize() & Title case / Capitalize first letter / 首字母大写 \\
+s.strip()               & Remove leading+trailing whitespace / 去除首尾空白 \\
+s.lstrip() / s.rstrip() & Remove left/right whitespace only \\
+s.replace(old, new)     & Replace all occurrences / 替换所有匹配——返回新字符串 \\
+s.split(delim)          & Split by delimiter → list / 按分隔符拆分为列表 \\
+delim.join(list)        & Join list elements with delimiter / 用分隔符连接列表 \\
+s.count(sub)            & Count occurrences of sub / 统计子串出现次数 \\
+s.find(sub)             & Find first index of sub / 查找子串——找不到返回 \textbf{-1}（不报错） \\
+s.index(sub)            & Find first index—raises ValueError if not found / 找不到则报错 \\
+s.startswith(p)         & Check prefix / 检查是否以 p 开头 → bool \\
+s.endswith(p)           & Check suffix / 检查是否以 p 结尾 → bool \\
+s.isdigit() / s.isalpha() & Check all digits / all letters / 全数字/全字母检查 \\
+s.isnumeric() / s.isalnum() & Check numeric / alphanumeric / 数值/字母数字检查 \\
+s.zfill(width)          & Pad with leading zeros / 左侧补零至指定宽度 \\
+\bottomrule
+\end{tabularx}
+\medskip
+\textbf{Immutability / 不可变性}：Strings are immutable — all methods return \textbf{new} strings.\\
+字符串不可变——所有方法返回新字符串，必须重新赋值才能保留结果。
+\end{cmdsection}
+
+\begin{cmdsection}{2.3  String Formatting / 字符串格式化}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+f"\{var\}"              & \textbf{f-string (Best Practice / 推荐)}——Python 3.6+，自动转换类型 \\
+f"\{var:.2f\}"           & Format float to 2 decimal places / 保留两位小数 \\
+f"\{var:>10\}"           & Right-align in 10-char width / 右对齐，宽度10 \\
+"\{\} \{\}".format(a, b)  & \texttt{.format()} method / 经典格式化方法 \\
+"\%s \%d \%f" \% (s, d, f) & Old-style \texttt{\%} formatting / 旧式格式化（不推荐） \\
+r"raw\textbackslash string"      & Raw string / 原始字符串——反斜杠不转义 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Control Structures / 控制结构}
+% ============================================================
+
+\begin{cmdsection}{3.1  Conditionals / 条件判断}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+if cond: ...             & Basic if / 基本条件——条件为 True 时执行缩进块 \\
+if cond: ... else: ...   & If-else / 二选一分支 \\
+if c1: ... elif c2: ... else: ... & Full chain / 完整链——从上到下检查，\textbf{首个为真即执行} \\
+x if cond else y         & Ternary operator / 三元表达式——简单二选一赋值 \\
+pass                     & Placeholder / 占位符——什么都不做，避免语法错误 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{3.2  Loops / 循环}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+for item in iterable: ... & Iterate over iterable / 遍历可迭代对象中的每个元素 \\
+for i in range(n): ...    & Loop n times (0 to n-1) / 循环 n 次 \\
+range(start, stop, step)  & Integer sequence / 整数序列——\textbf{左闭右开} \\
+for i, v in enumerate(lst): & Loop with index + value / 同时获取索引和值 \\
+for a, b in zip(l1, l2):   & Parallel iteration / 并行遍历多个序列 \\
+while cond: ...            & Repeat while cond is True / 条件循环——\textbf{小心无限循环} \\
+break                      & Exit loop immediately / 立即退出整个循环 \\
+continue                   & Skip to next iteration / 跳过本次迭代剩余部分 \\
+else (with for/while)      & Runs if loop completes without break / 循环正常完成时执行 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{3.3  Functions / 函数}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+def f(a, b): return x       & Function definition / 函数定义 \\
+def f(a, b=default): ...    & Default argument / 带默认值的参数 \\
+def f(*args, **kwargs): ... & Variable arguments / 可变参数——\texttt{*args} 打包为元组，\texttt{**kwargs} 打包为字典 \\
+return x                    & Return value / 返回值——无 return 则返回 \texttt{None} \\
+lambda x, y: x + y          & Anonymous function / 匿名函数——仅限单表达式 \\
+global x                    & Declare x as global / 声明全局变量（在函数内修改全局变量） \\
+nonlocal x                  & Declare x from enclosing scope / 声明外层（非全局）变量 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Data Structures / 数据结构}
+% ============================================================
+
+\begin{cmdsection}{4.1  List / 列表 — Mutable, Ordered}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+lst = [1, 2, 3]             & Create list / 创建列表 \\
+lst[i] / lst[-1]            & Index / 索引（从 0 开始；-1 最后一个） \\
+lst[i:j]                    & Slice / 切片——\textbf{左闭右开} \\
+lst.append(x)               & Add x to end / 末尾追加 \\
+lst.extend(iter)            & Add all from iterable / 批量追加 \\
+lst.insert(i, x)            & Insert x at index i / 在位置 i 插入 \\
+lst.remove(x)               & Remove first match / 删除首次出现的 x——找不到报错 \\
+lst.pop(i)                  & Remove \& return element at i / 弹出位置 i 的元素（默认最后） \\
+lst.clear()                 & Remove all elements / 清空列表 \\
+lst.index(x)                & Find index of first match / 查找首次出现的位置 \\
+lst.count(x)                & Count occurrences / 统计出现次数 \\
+lst.sort()                  & Sort in-place / 原地排序——返回 \texttt{None} \\
+lst.sort(reverse=True)      & Sort descending / 降序排序 \\
+lst.sort(key=len)           & Sort by custom key / 按自定义规则排序 \\
+sorted(lst)                 & Return new sorted list / 返回新排序列表——\textbf{不改变原列表} \\
+lst.reverse()               & Reverse in-place / 原地反转 \\
+lst.copy()                  & Shallow copy / 浅拷贝（等价于 \texttt{lst[:]}） \\
+del lst[i]                  & Delete by index / 按索引删除 \\
+del lst[i:j]                & Delete slice / 切片删除 \\
+lst[i:j] = [...]            & Slice assignment / 切片替换 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{4.2  Tuple / 元组 — Immutable, Ordered}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+t = (1, 2, 3)               & Create tuple / 创建元组 \\
+t = 1, 2, 3                 & Parentheses optional / 圆括号可省略 \\
+a, b, c = t                 & Unpacking / 元组解包 \\
+a, *rest = t                & Star unpacking / 星号解包——\texttt{rest} 接收剩余元素 \\
+t.count(x) / t.index(x)     & Count / Find index（元组仅有的两个方法） \\
+\bottomrule
+\end{tabularx}
+\medskip
+\textbf{Note}：Tuples are \textbf{immutable} — no append, remove, or item assignment.\\
+元组不可变——没有 append/remove，不能修改元素。但是，如果元组包含可变对象（如列表），该对象的内容可以修改。
+\end{cmdsection}
+
+\begin{cmdsection}{4.3  Dictionary / 字典 — Mutable, Key-Value Pairs}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+d = \{k: v\}                 & Create dictionary / 创建字典 \\
+d = dict(zip(keys, vals))   & Create from two lists / 两列表→字典 \\
+d[key]                      & Access value / 访问值——key 不存在则 KeyError \\
+d.get(key, default)         & Safe access with fallback / 安全访问——不存在返回 default（默认 None） \\
+d[key] = val                & Set/update value / 设置/更新值 \\
+d.keys()                    & View of keys / 键视图（可迭代） \\
+d.values()                  & View of values / 值视图 \\
+d.items()                   & View of (key, value) pairs / 键值对视图 \\
+for k, v in d.items(): ...  & Iterate / 遍历字典的标准写法 \\
+d.update(\{k: v\})           & Merge dict / 合并字典 \\
+d.pop(key)                  & Remove \& return / 弹出键——不存在则 KeyError \\
+d.pop(key, default)         & Safe pop with fallback / 安全弹出 \\
+d.popitem()                 & Remove \& return last pair (LIFO) / 弹出最后一个键值对 \\
+del d[key]                  & Delete key / 删除键 \\
+key in d                    & Check key existence / 检查键是否存在 \\
+d.setdefault(key, default)  & Get or set default / 获取值，不存在则设置默认值 \\
+\{k:v for k,v in d.items() if cond\} & Dict comprehension / 字典推导式 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{4.4  Set / 集合 — Unordered, Unique Elements}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+s = \{1, 2, 3\}              & Create set / 创建集合——\textbf{空集合必须用 \texttt{set()}（\{\} 是空字典）} \\
+s = set(lst)                 & Create from iterable / 从可迭代对象创建——自动去重 \\
+s.add(x)                     & Add element / 添加元素 \\
+s.remove(x)                  & Remove element / 删除——不存在则 KeyError \\
+s.discard(x)                 & Safe remove / 安全删除——不存在也不报错 \\
+s.pop()                      & Remove \& return arbitrary element / 随机弹出一个元素 \\
+s | t                        & Union / 并集——\texttt{s.union(t)} \\
+s \& t                       & Intersection / 交集——\texttt{s.intersection(t)} \\
+s - t                        & Difference / 差集（在 s 不在 t） \\
+s \textasciicircum\ t        & Symmetric difference / 对称差（仅在 s 或仅在 t） \\
+s <= t                       & Subset / 子集——\texttt{s.issubset(t)} \\
+s >= t                       & Superset / 超集——\texttt{s.issuperset(t)} \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{4.5  Comprehensions / 推导式}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+[expr for x in lst]            & List comprehension / 列表推导式 \\
+[expr for x in lst if cond]    & With filter / 带过滤条件 \\
+[expr if cond else alt for x]  & With ternary / 带三元表达式（条件在左侧） \\
+\{k:v for k,v in d.items()\}    & Dict comprehension / 字典推导式 \\
+\{expr for x in lst\}           & Set comprehension / 集合推导式——自动去重 \\
+[expr for x in lst for y in x] & Nested comprehension / 嵌套推导式——展平二维列表 \\
+any(cond) / all(cond)          & Any True / All True / 任一为真/全部为真 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Modules \& Packages / 模块与包}
+% ============================================================
+
+\begin{cmdsection}{5.1  Import Variations / 导入方式}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import numpy                & Import entire module / 导入整个模块 \\
+import numpy as np          & Import with alias / 导入并取别名（最常用） \\
+from math import sqrt, pi   & Import specific names / 导入特定函数/常量 \\
+from math import *          & Import all public names / 导入所有（\textbf{不推荐}——污染命名空间） \\
+from math import sqrt as s  & Import with alias / 导入并重命名 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{5.2  Standard Library Highlights / 标准库核心}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import copy \newline copy.copy(obj)   & Shallow copy / 浅拷贝——仅复制容器，内部元素共享 \\
+import copy \newline copy.deepcopy(obj) & Deep copy / 深拷贝——递归复制所有内容，完全独立 \\
+import math \newline math.pi / math.e & Constants / 常量：圆周率 $\pi$ 和自然常数 $e$ \\
+math.sqrt(x) / math.log(x, base)      & Square root / Logarithm / 平方根 / 对数 \\
+math.ceil(x) / math.floor(x)          & Round up / Round down / 向上取整 / 向下取整 \\
+math.sin(x) / math.cos(x) / math.tan(x) & Trigonometric functions / 三角函数 \\
+import time \newline time.time()      & Unix timestamp / 返回自1970-01-01以来的秒数 \\
+time.sleep(seconds)                    & Pause execution / 暂停执行 \\
+time.localtime()                       & Current time as struct\_time / 本地时间结构体 \\
+import random \newline random.randint(a,b) & Random int between a and b (inclusive) / [a,b] 随机整数 \\
+random.random()                        & Random float in [0, 1) \\
+random.choice(lst)                     & Pick random element / 随机选取一个元素 \\
+random.shuffle(lst)                    & Shuffle in-place / 原地打乱 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{5.3  pip Commands / pip 命令}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Command (Terminal)}} & \textbf{Description / 说明} \\ \midrule
+pip install package         & Install package / 安装包 \\
+pip install package==1.0    & Install specific version / 安装指定版本 \\
+pip install --upgrade pkg   & Upgrade package / 升级包 \\
+pip uninstall package       & Uninstall package / 卸载包 \\
+pip list                    & List all installed packages / 列出已安装的包 \\
+pip show package            & Show package details / 查看包详情 \\
+pip freeze > requirements.txt & Export dependencies / 导出依赖列表 \\
+pip install -r requirements.txt & Install from file / 从文件安装所有依赖 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{NumPy / 数值计算}
+% ============================================================
+
+\begin{cmdsection}{6.1  Creating Arrays / 创建数组}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import numpy as np          & Standard import / 标准导入别名 \\
+np.array([1,2,3])           & From list / 从列表创建 \\
+np.array([[1,2],[3,4]])     & 2D array (matrix) from nested lists / 二维数组 \\
+np.arange(start, stop, step)& Like range, returns ndarray / 等差数组 \\
+np.linspace(s, e, num)      & N evenly spaced values / 等间距取 num 个点 \\
+np.zeros(shape)             & Array of zeros / 全零数组 \\
+np.ones(shape)              & Array of ones / 全一数组 \\
+np.full(shape, value)       & Array filled with value / 全值数组 \\
+np.eye(n)                   & Identity matrix / n×n 单位矩阵 \\
+np.random.rand(d0,d1)       & Uniform random [0,1) / 均匀分布随机数 \\
+np.random.randn(d0,d1)      & Standard normal random / 标准正态分布随机数 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{6.2  Array Attributes \& Operations / 数组属性与操作}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+arr.shape                   & Dimensions / 形状元组，如 (3, 4) \\
+arr.ndim                    & Number of dimensions / 维度数 \\
+arr.dtype                   & Data type / 元素数据类型 \\
+arr.size                    & Total number of elements / 元素总数 \\
+arr.reshape(r, c)           & Reshape / 重塑形状——总数必须匹配，-1 自动计算 \\
+arr.flatten()               & Flatten to 1D / 展平为一维 \\
+arr.T                       & Transpose / 转置 \\
+arr.astype('float')         & Change dtype / 转换数据类型 \\
+np.concatenate([a,b])       & Concatenate along axis 0 / 沿第0轴拼接 \\
+np.stack([a,b])             & Stack along new axis / 沿新轴堆叠 \\
+np.isclose(a, b)            & Element-wise close comparison / 逐元素近似相等（容差默认 1e-8） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{6.3  Vectorized Math \& Aggregation / 向量化数学与聚合}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+arr + 1 / arr * 2           & Broadcasting / 广播——标量自动扩展到数组每个元素 \\
+arr1 + arr2                 & Element-wise operation / 逐元素运算 \\
+np.sqrt(arr) / np.log(arr)  & Universal functions (ufuncs) / 通用函数——逐元素计算 \\
+np.sum(arr) / np.mean(arr)  & Sum / Mean / 总和 / 均值 \\
+np.min(arr) / np.max(arr)   & Min / Max / 最小值 / 最大值 \\
+np.std(arr) / np.var(arr)   & Std deviation / Variance / 标准差 / 方差 \\
+np.median(arr)              & Median / 中位数 \\
+np.sum(arr, axis=0)         & Sum along axis / 沿指定轴求和——0=列方向，1=行方向 \\
+np.percentile(arr, q)       & q-th percentile / 第 q 百分位数 \\
+arr[arr > 5]                & Boolean masking / 布尔掩码过滤 \\
+np.where(cond, a, b)        & Conditional selection / 条件选择——cond 真取 a，假取 b \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Object-Oriented Programming / 面向对象编程}
+% ============================================================
+
+\begin{cmdsection}{7.1  Class Definition / 类定义}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+class Dog:                  & Class definition / 类定义（类名用 CamelCase） \\
+class Puppy(Dog):           & Inheritance / 继承——Puppy 继承 Dog 的所有属性和方法 \\
+class Child(A, B):          & Multiple inheritance / 多重继承（从左到右 MRO 解析） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{7.2  Constructor, Attributes \& Methods / 构造、属性与方法}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+def \_\_init\_\_(self, name): & Constructor / 构造函数——创建对象时自动调用 \\
+self.name = name            & Instance attribute / 实例属性——每个对象独立拥有 \\
+cls\_attr = value (in class) & Class attribute / 类属性——所有实例共享 \\
+def method(self, x): ...    & Instance method / 实例方法——第一个参数必须是 \texttt{self} \\
+obj = Dog("Buddy")          & Instantiation / 实例化——自动调用 \texttt{\_\_init\_\_()} \\
+obj.name                    & Attribute access / 属性访问（点号表示法） \\
+obj.method(x)               & Method call / 方法调用——不需要传 \texttt{self} \\
+super().\_\_init\_\_(...)     & Call parent constructor / 调用父类构造函数 \\
+super().method()            & Call parent method / 调用父类方法 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{7.3  Dunder (Magic) Methods / 魔术方法}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Method}} & \textbf{Description / 说明} \\ \midrule
+\_\_init\_\_(self)           & Constructor / 构造函数——对象创建时调用 \\
+\_\_del\_\_(self)            & Destructor / 析构函数——对象销毁时调用（垃圾回收） \\
+\_\_str\_\_(self)            & String representation / 字符串表示——\texttt{print(obj)} 和 \texttt{str(obj)} 调用 \\
+\_\_repr\_\_(self)           & Developer representation / 开发者表示——\texttt{repr(obj)} 调用 \\
+\_\_len\_\_(self)            & Length / 长度——\texttt{len(obj)} 调用 \\
+\_\_eq\_\_(self, other)      & Equality / 相等比较——\texttt{obj1 == obj2} \\
+\_\_lt\_\_ / \_\_gt\_\_ / \_\_le\_\_ / \_\_ge\_\_ & Comparison / 比较运算符（<, >, <=, >=） \\
+\_\_add\_\_ / \_\_sub\_\_ / \_\_mul\_\_ & Arithmetic / 算术运算符 \\
+\_\_getitem\_\_(self, key)   & Indexing / 索引——\texttt{obj[key]} \\
+\_\_setitem\_\_(self, key, v) & Item assignment / 索引赋值——\texttt{obj[key] = v} \\
+\_\_contains\_\_(self, item) & Membership / 成员检查——\texttt{item in obj} \\
+\_\_call\_\_(self)           & Callable / 可调用——\texttt{obj()} 使实例像函数一样 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{7.4  Decorators \& Encapsulation / 装饰器与封装}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+@property                   & Getter decorator / 将方法伪装为只读属性（不加括号访问） \\
+@xxx.setter                 & Setter decorator / 赋值时自动调用——可在 setter 中添加验证逻辑 \\
+@xxx.deleter                & Deleter decorator / \texttt{del obj.xxx} 时调用 \\
+@staticmethod               & Static method / 静态方法——不需要 \texttt{self}，不访问实例 \\
+@classmethod                & Class method / 类方法——第一个参数是 \texttt{cls}（类本身），非 \texttt{self} \\
+\_attr (single underscore)  & Convention: "internal use" / 约定：内部属性（不强制，靠自觉） \\
+\_\_attr (double underscore) & Name mangling / 名称改写——\texttt{\_ClassName\_\_attr}，减少意外访问 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{7.5  Polymorphism / 多态}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Concept}} & \textbf{Description / 说明} \\ \midrule
+Method Overriding      & Child redefines parent method / 子类重写父类方法——同名方法，不同行为 \\
+Duck Typing            & "If it walks like a duck..." / 鸭子类型——不关心类型，只关心有没有需要的方法 \\
+isinstance(obj, Class) & Check type with inheritance support / 类型检查（支持继承判断） \\
+issubclass(A, B)       & Check if A is subclass of B / 检查 A 是否为 B 的子类 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{File I/O \& Error Handling / 文件IO与错误处理}
+% ============================================================
+
+\begin{cmdsection}{8.1  File Operations / 文件操作}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+open('f.txt', 'r')          & Read mode / 只读模式——文件必须存在 \\
+open('f.txt', 'w')          & Write mode / 覆写模式——\textbf{清空原有内容}！ \\
+open('f.txt', 'a')          & Append mode / 追加模式——在末尾添加 \\
+open('f.txt', 'r+')         & Read + Write / 读写模式 \\
+with open('f.txt') as f:    & \textbf{Context Manager (Recommended)} / 上下文管理器——自动关闭文件 \\
+f.write(str)                & Write string / 写入——\textbf{不会自动添加换行符} \\
+f.writelines(list)          & Write list of strings / 批量写入 \\
+f.read()                    & Read entire file → string / 整个文件读为一个字符串 \\
+f.read(n)                   & Read n characters / 读取 n 个字符 \\
+f.readline()                & Read one line (includes \texttt{\textbackslash n}) / 读一行（含换行符） \\
+f.readlines()               & Read all lines → list / 所有行读为字符串列表 \\
+for line in f:              & Line-by-line iteration / 逐行遍历——\textbf{最省内存} \\
+f.seek(offset)              & Move file pointer / 移动文件指针 \\
+f.tell()                    & Current file pointer position / 当前指针位置 \\
+f.close()                   & Manual close / 手动关闭——\texttt{with} 语句替代此操作 \\
+f.name / f.mode / f.closed  & File attributes / 文件属性：名称/模式/是否已关闭 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{8.2  CSV Operations / CSV 操作}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import csv                  & Import CSV module / 导入 CSV 模块 \\
+csv.reader(f)               & CSV reader → list per row / 每行返回到表 \\
+csv.DictReader(f)           & CSV reader → dict per row / 每行返回字典——\textbf{推荐} \\
+csv.writer(f)               & CSV writer / CSV 写入器 \\
+writer.writerow(row)        & Write one row / 写入一行 \\
+writer.writerows(rows)      & Write multiple rows / 批量写入多行 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{8.3  Exception Handling / 异常处理}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+try: ... except Err: ...    & Basic try-except / 基本异常捕获——\textbf{必须指定异常类型} \\
+except Err as e:            & Capture exception object / 捕获异常对象，可打印 \texttt{e} \\
+except (E1, E2):            & Catch multiple types / 捕获多种异常 \\
+else: ...                   & Runs only if no exception / 无异常时执行 \\
+finally: ...                & \textbf{Always runs} / 无论是否异常都执行——常用于清理资源 \\
+raise                       & Re-raise current exception / 重新抛出当前异常 \\
+raise ValueError("msg")     & Raise new exception / 抛出指定异常 \\
+raise NewErr from orig      & Exception chaining / 异常链——保留原始异常信息 \\
+\bottomrule
+\end{tabularx}
+\medskip
+\textbf{Common Exception Types / 常见异常类型}：
+\small
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+SyntaxError / IndentationError & Invalid syntax / Wrong indentation（语法错误/缩进错误） \\
+NameError                   & Variable not defined（变量未定义） \\
+TypeError                   & Wrong type operation（类型错误——如 \texttt{"a"+1}） \\
+ValueError                  & Valid type, invalid value（值错误——如 \texttt{int("abc")}） \\
+IndexError                  & List index out of range（列表索引越界） \\
+KeyError                    & Dictionary key not found（字典键不存在） \\
+AttributeError              & Object has no such attribute/method（属性不存在） \\
+FileNotFoundError           & File does not exist（文件未找到） \\
+ZeroDivisionError           & Division by zero（除以零） \\
+ImportError / ModuleNotFoundError & Import failed（导入失败/模块未安装） \\
+StopIteration               & Iterator exhausted（迭代器耗尽） \\
+\end{tabularx}
+\normalsize
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{PEP-8 Style Guide / PEP-8 编码规范}
+% ============================================================
+
+\begin{cmdsection}{9.1  Naming Conventions / 命名约定}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Element}} & \textbf{Convention / 规范} \\ \midrule
+Variables \& Functions   & \texttt{snake\_case} — lowercase with underscores / 全小写+下划线 \\
+Constants               & \texttt{UPPER\_CASE\_WITH\_UNDERSCORES} / 全大写+下划线 \\
+Classes                 & \texttt{UpperCamelCase} (PascalCase) / 大驼峰（每个单词首字母大写） \\
+Modules \& Packages     & \texttt{short\_lowercase} / 简短小写（无下划线更好） \\
+"Private" attributes    & \texttt{\_single\_leading\_underscore} / 单下划线前缀——约定为内部使用 \\
+Name mangling           & \texttt{\_\_double\_leading\_underscore} / 双下划线前缀——触发名称改写 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{9.2  Layout Rules / 布局规范}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Rule}} & \textbf{Convention / 规范} \\ \midrule
+Indentation             & 4 spaces per level / 每级缩进 4 个空格（不要用 Tab） \\
+Line length             & Max 79 characters / 每行最多 79 字符 \\
+Blank lines             & 2 between top-level functions/classes / 顶层之间 2 行空行 \\
+                        & 1 between method definitions / 方法之间 1 行空行 \\
+                        & No more than 4 lines without blank line / 连续代码不超过 4 行 \\
+Spaces around operators & \texttt{x = a + b} — spaces around \texttt{=}, \texttt{+}, etc. \\
+After comma             & \texttt{f(a, b, c)} — space after each comma \\
+No space in kwargs      & \texttt{f(n=42)} — no spaces around \texttt{=} in keyword args \\
+No space before \texttt{(} & \texttt{func(x)} — no space between function name and \texttt{(} \\
+Imports                 & One import per line; standard library → third-party → local \\
+                        & Group in order: standard library, third-party, local \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Matplotlib / 数据可视化}
+% ============================================================
+
+\begin{cmdsection}{10.1  Figure \& Axes Creation / 创建画板与坐标系}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import matplotlib.pyplot as plt & Standard import / 标准导入 \\
+fig, ax = plt.subplots()        & \textbf{Recommended style} / 推荐显式写法——创建一个 Figure + 一个 Axes \\
+fig, axes = plt.subplots(r, c)  & Grid of subplots / 多子图网格——axes 是二维数组 \\
+fig, ax = plt.subplots(figsize=(w,h)) & Set figure size / 设置画板尺寸（英寸） \\
+plt.figure()                    & Implicit figure creation / 隐式创建——不推荐 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{10.2  Plot Functions / 绘图函数}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+ax.plot(x, y)                   & Line plot / 折线图 \\
+ax.scatter(x, y, s=size, c=color) & Scatter plot / 散点图——s=点大小，c=颜色，alpha=透明度 \\
+ax.bar(x, height)               & Vertical bar chart / 垂直柱状图 \\
+ax.barh(y, width)               & Horizontal bar chart / 水平柱状图 \\
+ax.hist(data, bins=30)          & Histogram / 直方图——bins=柱子数量 \\
+ax.boxplot(data)                & Box plot / 箱线图——显示五数概括+离群点 \\
+ax.pie(sizes, labels=, autopct=) & Pie chart / 饼图——autopct='\%1.1f\%\%' 显示百分比 \\
+ax.fill\_between(x, y1, y2)     & Filled area / 填充面积图 \\
+ax.imshow(matrix, cmap=)        & Image/matrix display / 图像/矩阵显示 \\
+ax.hexbin(x, y, gridsize=)      & Hexbin plot / 六边形分箱——大数据量散点 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{10.3  Styling \& Decoration / 样式与装饰}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+ax.set\_title('T', fontsize=n)  & Set title / 设置标题 \\
+ax.set\_xlabel('L') / .set\_ylabel('L') & Set axis labels / 设置坐标轴标签 \\
+ax.set\_xlim(a,b) / .set\_ylim(a,b) & Set axis limits / 设置坐标轴范围 \\
+ax.legend(loc='best')           & Display legend / 显示图例——loc='best' 自动选址 \\
+ax.legend(frameon=False)        & Legend without border / 无边框图例 \\
+ax.grid(True, alpha=0.3)        & Add grid / 添加网格线 \\
+ax.axis('off')                  & Hide all axes / 隐藏所有坐标轴 \\
+ax.spines['top'].set\_visible(False) & Remove top spine / 隐藏顶部边框 \\
+ax.tick\_params(axis='y', direction='in') & Customize ticks / 自定义刻度 \\
+fig.tight\_layout()             & Auto-adjust spacing / 自动调整子图间距 \\
+fig.subplots\_adjust(wspace=,hspace=) & Manual spacing / 手动调整间距 \\
+plt.savefig('f.png', dpi=300, bbox\_inches='tight') & Save to file / 保存图片 \\
+plt.show()                      & Display figure / 显示图形 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{10.4  Colors, Markers \& Linestyles / 颜色·标记·线型}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Specification}} & \textbf{Options / 选项} \\ \midrule
+\textbf{Color letters}  & \texttt{'r'} red, \texttt{'b'} blue, \texttt{'g'} green, \texttt{'c'} cyan, \texttt{'m'} magenta, \texttt{'y'} yellow, \texttt{'k'} black, \texttt{'w'} white \\
+\textbf{Color hex}      & \texttt{'\#0000FF'} (blue), \texttt{'\#FF0000'} (red) \\
+\textbf{Color RGB(A)}   & \texttt{(0, 0, 1, 0.5)} — floats in [0,1], alpha = opacity \\
+\textbf{Colormaps}      & \texttt{'viridis'} (default), \texttt{'plasma'}, \texttt{'magma'}, \texttt{'jet'}, \texttt{'coolwarm'} \\
+\textbf{Markers}        & \texttt{'o'} circle, \texttt{'s'} square, \texttt{'D'} diamond, \texttt{'\^{}'} triangle, \texttt{'*'} star, \texttt{'.'} point, \texttt{','} pixel \\
+\textbf{Linestyles}     & \texttt{'-'} solid, \texttt{'--'} dashed, \texttt{':'} dotted, \texttt{'-.′} dash-dot, \texttt{'None'} no line \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{10.5  Mathtext (LaTeX in Plots) / 数学公式}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+r"\$\\sigma\_i=15\$"            & Inline math with \$...\$ / 行内数学公式 \\
+r"\$\\frac\{3\}\{5\}\$"         & Fraction / 分数 \\
+r"\$\\alpha\$, \$\\beta\$"      & Greek letters / 希腊字母 \\
+r"\$x\^{}\{2\}\$"               & Superscript / 上标 \\
+r"\$x\_\{i\}\$"                 & Subscript / 下标 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Pandas / 数据分析}
+% ============================================================
+
+\begin{cmdsection}{11.1  Import \& I/O / 导入与读写}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import pandas as pd          & Standard import / 标准导入 \\
+pd.read\_csv('f.csv')        & Read CSV → DataFrame / 读取 CSV 文件 \\
+pd.read\_csv('f.csv', sep=';') & Read CSV with custom delimiter / 自定义分隔符 \\
+pd.read\_excel('f.xlsx')     & Read Excel → DataFrame \\
+pd.read\_html(url)           & Scrape HTML tables / 抓取网页中的表格 \\
+pd.read\_json('f.json')      & Read JSON → DataFrame \\
+df.to\_csv('f.csv', index=False) & Export to CSV / 导出为 CSV（不保存行索引） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.2  DataFrame Exploration / 数据探索}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+df.head(n) / df.tail(n)     & First/Last n rows (default 5) / 前/后 n 行 \\
+df.shape                    & (rows, columns) / 行数和列数 \\
+df.columns / df.index       & Column names / Row index / 列名列表 / 行索引 \\
+df.dtypes                   & Data type of each column / 每列的数据类型 \\
+df.info()                   & Summary: dtypes, non-null counts, memory / 详细摘要信息 \\
+df.describe()               & Statistics: count, mean, std, min, 25\%, 50\%, 75\%, max / 数值列统计摘要 \\
+df.describe(include='object') & Categorical column statistics / 分类列统计摘要 \\
+df.memory\_usage()           & Memory usage per column / 每列内存占用 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.3  Creation \& Manipulation / 创建与修改}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+pd.DataFrame(dict)          & From dict: keys → columns, values → data / 字典建表 \\
+pd.DataFrame(list)          & From list: each sublist → one row / 列表建表 \\
+pd.Series([v1, v2])         & Create Series / 创建 Series \\
+df['new'] = value           & Create/assign column / 创建或赋值列 \\
+df.insert(i, 'name', val)   & Insert column at position i / 在位置 i 插入列 \\
+df.drop(columns=['c'])      & Drop columns / 删除列——\textbf{不修改原表}（需 inplace=True 或赋值） \\
+df.rename(columns=\{o:n\})   & Rename columns / 重命名列 \\
+df.astype('category')       & Change dtype / 转换列类型——低基数分类列可大幅节省内存 \\
+df.assign(new=lambda x: expr) & Create column via lambda / 用 lambda 创建新列（返回新表） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.4  Selection \& Indexing / 选择与索引（核心考点）}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+df['col']                   & Single column → Series / 单列选取 \\
+df[['c1','c2']]             & Multiple columns → DataFrame / 多列选取 \\
+df.col                      & Attribute-style access / 属性方式访问（仅限无空格列名） \\
+df.loc[row\_labels, cols]    & \textbf{Label-based} indexing / 基于标签——切片\textbf{包含}右边界 \\
+df.iloc[row\_pos, col\_pos]   & \textbf{Position-based} indexing / 基于位置——切片\textbf{不包含}右边界 \\
+df.at[label, 'col']         & Fast scalar access by label / 按标签取单值（最快） \\
+df.iat[i, j]                & Fast scalar access by position / 按位置取单值（最快） \\
+df[df['col'] > 100]         & Boolean filtering / 布尔过滤——选出满足条件的行 \\
+df[df['col'].isin([a,b])]   & Filter by membership / 按值列表过滤 \\
+df[df['col'].str.contains('x')] & String filter / 字符串包含过滤 \\
+df.query('col > 100')       & SQL-style query / SQL风格查询 \\
+\bottomrule
+\end{tabularx}
+\medskip
+\textbf{Critical Exam Point / 必考点}：
+\texttt{.loc} 基于标签，切片\textbf{包含}右边界；\texttt{.iloc} 基于整数位置，切片\textbf{不包含}右边界（标准 Python 行为）。
+\end{cmdsection}
+
+\begin{cmdsection}{11.5  Missing Data / 缺失值处理}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+df.isna() / df.isnull()     & Boolean mask of NaN / 缺失值布尔掩码 \\
+df.isna().sum()             & Count NaN per column / 每列缺失值计数 \\
+df.dropna()                 & Drop rows with any NaN / 删除含 NaN 的行 \\
+df.dropna(subset=['c'])     & Drop rows where column 'c' is NaN / 指定列删 NaN \\
+df.dropna(how='all')        & Drop rows where ALL values are NaN / 全部为 NaN 才删 \\
+df.fillna(value)            & Fill NaN with value / 用指定值填充 \\
+df.fillna(method='ffill')   & Forward fill / 用前一个有效值填充 \\
+df.fillna(method='bfill')   & Backward fill / 用后一个有效值填充 \\
+df.fillna(df.mean())        & Fill with column mean / 用列均值填充 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.6  Aggregation \& Grouping / 聚合与分组}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+df['col'].value\_counts()    & Frequency count / 值频次统计——常用 \texttt{.head(10)} 取 Top-N \\
+df['col'].unique()          & Unique values / 唯一值数组 \\
+df['col'].nunique()         & Number of unique values / 唯一值个数 \\
+df.sort\_values('c')         & Sort by column / 按列排序——ascending=False 降序 \\
+df.sort\_values(['c1','c2'], ascending=[True,False]) & Multi-column sort / 多列排序 \\
+df.groupby('col').mean()    & Group by + aggregate / 分组聚合——mean/sum/min/max/count/std \\
+df.groupby('col').agg(['mean','std']) & Multiple aggregations / 多种聚合函数 \\
+df.groupby(['c1','c2']).size() & Group by multiple, count / 多列分组计数 \\
+df.groupby('c').filter(lambda x: len(x)>10) & Filter groups / 按组大小过滤 \\
+df.pivot\_table(index, columns, values, aggfunc) & \textbf{Pivot table} / 透视表——多维聚合 \\
+pd.crosstab(index, columns) & \textbf{Crosstab} / 交叉表——两分类变量的频次表 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.7  Merge, Join \& Concatenate / 数据合并}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+pd.concat([df1, df2])       & Concatenate along rows (axis=0) / 纵向拼接 \\
+pd.concat([df1, df2], axis=1) & Concatenate along columns / 横向拼接 \\
+df1.join(df2, on='key')     & Join on index or key / 按索引或键拼接 \\
+pd.merge(a, b, on='key')    & SQL-style merge (inner join default) / SQL风格合并 \\
+pd.merge(a, b, how='left')  & Left join / 左连接——保留左侧所有行 \\
+pd.merge(a, b, how='right') & Right join / 右连接 \\
+pd.merge(a, b, how='outer') & Full outer join / 全外连接 \\
+pd.merge(a, b, how='inner') & Inner join (default) / 内连接——仅保留匹配行 \\
+pd.merge(a, b, left\_on, right\_on) & Merge on different column names / 不同列名合并 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.8  Feature Engineering / 特征工程}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+pd.cut(series, bins, labels) & \textbf{Binning} / 分箱——将连续值划为离散类别 \\
+pd.qcut(series, q)          & Quantile-based binning / 等频分箱 \\
+pd.get\_dummies(df, columns=['c']) & \textbf{One-Hot Encoding} / 独热编码——每类一列 \\
+LabelEncoder().fit\_transform(s) & \textbf{Label Encoding} / 标签编码（需 from sklearn.preprocessing） \\
+df['col'].astype('category').cat.codes & Category codes / 分类编码（Pandas原生） \\
+df['col'].str.extract(r'(\textbackslash d+)') & Regex extraction / 正则提取——从字符串中抽数字 \\
+df['col'].str.replace('old','new') & String replace / 字符串替换 \\
+df['col'].str.split(',').str[0] & Split and take first / 拆分取第一项 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{11.9  Pandas Plotting / Pandas 绘图}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+df.plot(kind='line')        & Line plot (default) / 折线图——趋势/时间序列 \\
+df.plot(kind='bar')         & Vertical bar / 垂直柱状图——分类对比 \\
+df.plot(kind='barh')        & Horizontal bar / 水平柱状图——长标签分类 \\
+df.plot(kind='hist', bins=) & Histogram / 直方图——分布形态 \\
+df.plot(kind='box')         & Box plot / 箱线图——五数概括+离群点 \\
+df.plot(kind='scatter', x=, y=) & Scatter plot / 散点图——两变量关系 \\
+df.plot(kind='area')        & Stacked area / 堆叠面积图——构成变化 \\
+df.plot(kind='pie', y=)     & Pie chart / 饼图——各部分占比 \\
+df.plot(kind='density')     & KDE density plot / 核密度估计——平滑分布 \\
+df.plot(kind='hexbin', x=, y=, gridsize=) & Hexbin / 六边形分箱——大数据量散点 \\
+df.hist(bins=, figsize=)    & Histogram for each column / 每列独立直方图 \\
+df.boxplot(column=, by=)    & Box plot grouped by category / 按分类分组的箱线图 \\
+pd.plotting.scatter\_matrix(df) & Pairwise scatter matrix / 配对散点矩阵 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+
+% ============================================================
+\chapter{Seaborn / 统计可视化}
+% ============================================================
+
+\begin{cmdsection}{12.1  Seaborn Basics / 基础}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+import seaborn as sns        & Standard import / 标准导入 \\
+sns.set\_style('whitegrid')  & Set background style / 设置背景风格：darkgrid, whitegrid, dark, white, ticks \\
+sns.set\_palette('viridis')  & Set color palette / 设置调色板 \\
+sns.set\_context('talk')     & Set context scale / 设置上下文缩放：paper, notebook, talk, poster \\
+sns.color\_palette('Set2', n) & Create custom palette / 创建自定义调色板 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{12.2  Seaborn Plot Functions / 绘图函数}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Syntax}} & \textbf{Description / 说明} \\ \midrule
+sns.barplot(data=df, x=, y=) & Bar plot / 柱状图——自动计算均值+误差棒 \\
+sns.countplot(data=df, x=)   & Count plot / 计数图——分类变量的频次柱状图 \\
+sns.lineplot(data=df, x=, y=) & Line plot / 折线图——自动聚合+置信区间 \\
+sns.scatterplot(data=df, x=, y=, hue=) & Scatter with hue / 散点图——hue 按第三变量着色 \\
+sns.histplot(data=df, x=, bins=) & Histogram / 直方图——比 plt.hist 更美观 \\
+sns.kdeplot(data=df, x=)     & KDE density / 核密度估计图 \\
+sns.boxplot(data=df, x=, y=) & Box plot / 箱线图——hue 可进一步分组 \\
+sns.violinplot(data=df, x=, y=) & Violin plot / 小提琴图——箱线图+密度图 \\
+sns.heatmap(data=matrix, annot=True) & Heatmap / 热力图——annot=True 显示数值 \\
+sns.pairplot(data=df)        & Pairwise scatter matrix / 配对散点矩阵——比 scatter\_matrix 更好看 \\
+sns.jointplot(data=df, x=, y=, kind='hex') & Joint distribution / 联合分布图 \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Practice Set Patterns / 练习题常用模式}
+% ============================================================
+
+\begin{cmdsection}{13.1  Data Cleaning Workflow / 数据清洗流程}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Step}} & \textbf{Code Pattern / 代码模板} \\ \midrule
+1. Load data   & \texttt{df = pd.read\_csv('data.csv')} \\
+2. Inspect     & \texttt{df.head() → df.shape → df.info() → df.describe()} \\
+3. Check NaNs  & \texttt{df.isna().sum()} \\
+4. Drop NaNs   & \texttt{df = df.dropna()}  or  \texttt{df = df.dropna(subset=['col'])} \\
+5. Rename cols & \texttt{df = df.rename(columns=\{old: new\})} \\
+6. Convert type& \texttt{df['date'] = pd.to\_datetime(df['date'])} \\
+7. Filter      & \texttt{df\_sub = df[df['col'] > threshold]} \\
+8. Group       & \texttt{result = df.groupby('col')['target'].sum()} \\
+9. Sort        & \texttt{result = result.sort\_values(ascending=False)} \\
+10. Visualize  & \texttt{sns.barplot(data=result.head(5), x=, y=)} \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\begin{cmdsection}{13.2  Common Exam Patterns / 考试常见套路}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Task / 任务}} & \textbf{Pattern / 模板} \\ \midrule
+Top-N ranking       & \texttt{df['col'].value\_counts().head(n)} \\
+Filter + aggregate  & \texttt{df[df['type']=='Movie']['duration'].mean()} \\
+Create dict from df & \texttt{dict(zip(df['key'], df['value']))} \\
+Dict filter         & \texttt{\{k:v for k,v in d.items() if 'text' in v\}} \\
+Groupby + reset     & \texttt{df.groupby('col').sum().reset\_index()} \\
+Multi-condition     & \texttt{df[(df['a']>0) \& (df['b']<10)]} — \textbf{\& not and!} \\
+Date range          & \texttt{df['date'].min()}, \texttt{df['date'].max()} \\
+Unique values       & \texttt{df['col'].unique()}, \texttt{df['col'].nunique()} \\
+Regex extract       & \texttt{df['col'].str.extract(r'(\textbackslash d+)')} \\
+Encode categorical  & \texttt{pd.get\_dummies(df, columns=['col'])} \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\newpage
+
+% ============================================================
+\chapter{Python Built-in Functions / Python 内置函数速查}
+% ============================================================
+
+\begin{cmdsection}{14.1  Frequently Used Built-ins / 常用内置函数}
+\normalsize\renewcommand{\arraystretch}{1.4}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Function}} & \textbf{Description / 说明} \\ \midrule
+print(...)                  & Output to console / 打印到控制台 \\
+input(prompt)               & Read user input / 读取用户输入 \\
+type(obj)                   & Return type / 返回类型 \\
+isinstance(obj, type)       & Type check with inheritance / 类型检查（支持继承） \\
+len(seq)                    & Length / 长度 \\
+range(start, stop, step)    & Integer sequence / 整数序列 \\
+sum(iterable)               & Sum / 求和 \\
+max(iterable) / min(iterable) & Maximum / Minimum / 最大/最小值 \\
+abs(x)                      & Absolute value / 绝对值 \\
+round(x, n)                 & Round to n decimals / 保留n位小数 \\
+sorted(iterable, key=, reverse=) & Return new sorted list / 返回新排序列表 \\
+reversed(seq)               & Return reverse iterator / 返回反向迭代器 \\
+enumerate(seq)              & (index, value) pairs / 索引-值对 \\
+zip(*iterables)             & Parallel iteration / 并行迭代 \\
+map(func, iterable)         & Apply function to each element / 逐元素应用函数 \\
+filter(func, iterable)      & Keep elements where func returns True / 过滤元素 \\
+any(iterable) / all(iterable) & Any True / All True / 任一为真 / 全部为真 \\
+open(file, mode)            & Open file / 打开文件 \\
+dir(obj)                    & List attributes/methods / 列出属性和方法 \\
+help(func)                  & Show docstring / 显示帮助文档 \\
+id(obj)                     & Memory address / 内存地址 \\
+eval(str)                    & Evaluate string as Python code / 执行字符串中的表达式（\textbf{慎用}） \\
+\bottomrule
+\end{tabularx}
+\end{cmdsection}
+
+\end{document}

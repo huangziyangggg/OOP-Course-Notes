@@ -1,0 +1,820 @@
+\documentclass[11pt,a4paper]{report}
+
+% Core packages
+\usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\titleformat{\chapter}[block]{\normalfont\Huge\bfseries\raggedright}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{16pt}
+\titleformat{\section}[block]{\normalfont\Large\bfseries\raggedright}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\hypersetup{
+    colorlinks=false, pdfborder={0 0 0},
+    bookmarks=true, bookmarksnumbered=true, bookmarksopen=true, bookmarksopenlevel=2,
+    pdfcreator={XeLaTeX}, pdftitle={Python Basic Syntax Tutorial},
+    pdfauthor={黄子扬},
+}
+
+\geometry{top=0.6in,bottom=0.7in,left=0.6in,right=0.6in}
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\tcbuselibrary{skins,breakable}
+
+\definecolor{mainblue}{RGB}{0,51,102}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{commentgreen}{RGB}{0,128,0}
+
+\lstset{
+    backgroundcolor=\color{codebg}, basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries, commentstyle=\color{commentgreen},
+    stringstyle=\color{orange}, breaklines=true, showstringspaces=false,
+    frame=single, frameround=tttt, framesep=6pt, rulecolor=\color{gray!40},
+    xleftmargin=0em, numbers=left, numbersep=5pt, numberstyle=\tiny\color{gray},
+    language=Python,
+    morekeywords={None,True,False,def,return,if,elif,else,for,in,while,break,continue,pass,class,self,lambda,and,or,not,del,range,len,type,sum,min,max,sorted},
+}
+
+\newtcolorbox{concept}[1]{colback=blue!3,colframe=mainblue,fonttitle=\bfseries,title={#1},arc=2pt,breakable,before skip=10pt,after skip=6pt}
+\newtcolorbox{warning}[1]{colback=red!3,colframe=red!60!black,fonttitle=\bfseries,title={#1},arc=2pt,breakable,before skip=10pt,after skip=6pt}
+
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\bfseries Python Basic Syntax Tutorial}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{\textcolor{mainblue}{\oldtexttt{#1}}}
+
+\begin{document}
+
+% === Cover ===
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{2cm}
+{\large 哈尔滨工业大学 × 法国里昂商学院 \par}
+\vspace{0.3cm}
+{\large HIT × emlyon business school \par}
+\vspace{1.5cm}
+\rule{\linewidth}{0.5pt}
+\vspace{1cm}
+{\Huge\bfseries Python Basic Syntax \\[0.3em] Tutorial \par}
+\vspace{0.5cm}
+{\LARGE Python 基础语法教程（精简版）\par}
+\vspace{1cm}
+\rule{\linewidth}{0.5pt}
+\vspace{1.5cm}
+{\Large\textbf{黄子扬} \quad Ziyang Huang \par}
+\vfill
+{\large \today \par}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\chapter{Variables \& Data Types / 变量与数据类型}
+% ============================================================
+
+\section{Hello World \& Basic Output}
+
+\begin{concept}{Your First Python Program / 你的第一个 Python 程序}
+\begin{lstlisting}
+print("Hello, World!")      # Output: Hello, World!
+\end{lstlisting}
+\texttt{print()} 是 Python 最基础的输出函数，将括号内的内容打印到屏幕上。\texttt{\#} 后面的文字是注释，Python 不会执行。
+\end{concept}
+
+\section{Variables \& Assignment / 变量与赋值}
+
+\begin{concept}{The Assignment Operator \texttt{=} / 赋值运算符}
+变量是存储数据的"容器"。Python 使用 \texttt{=} 将右侧的值绑定到左侧的变量名上：
+\begin{lstlisting}
+age = 25                    # 将 25 赋给变量 age
+name = "Alice"              # 将 "Alice" 赋给变量 name
+print(age)                  # 25
+print(name)                 # Alice
+\end{lstlisting}
+\end{concept}
+
+\begin{warning}{Variable Naming Rules / 变量命名禁忌}
+\begin{itemize}[itemsep=0.3em]
+    \item \textbf{不能数字开头}：\texttt{3text = 4} ✗ —— 会报 SyntaxError
+    \item \textbf{不能用保留字}：不要用 \texttt{print}, \texttt{for}, \texttt{in}, \texttt{list}, \texttt{str}, \texttt{int} 做变量名
+    \item \textbf{大小写敏感}：\texttt{age} 和 \texttt{Age} 是两个不同的变量
+    \item \textbf{命名规范}：使用 \texttt{lower\_case\_with\_underscores}（蛇形命名法），如 \texttt{car\_length}
+\end{itemize}
+\end{warning}
+
+\section{Basic Data Types / 基本数据类型}
+
+\begin{concept}{Four Primitive Types / 四种原始类型}
+\medskip
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Type / 类型} & \textbf{Keyword} & \textbf{Example / 示例} & \textbf{Description / 说明} \\ \midrule
+Integer / 整数   & \texttt{int}   & \texttt{100}        & 整数，可正可负 \\
+Float / 浮点数   & \texttt{float} & \texttt{10.7}       & 小数（带小数点） \\
+String / 字符串  & \texttt{str}   & \texttt{"Hello"}    & 引号内的文本 \\
+Boolean / 布尔值 & \texttt{bool}  & \texttt{True} / \texttt{False} & 真/假（\textbf{首字母大写}） \\ \bottomrule
+\end{tabular}
+\medskip
+
+用 \texttt{type()} 函数可以查看任何变量的类型：
+\begin{lstlisting}
+print(type(100))            # <class 'int'>
+print(type(10.7))           # <class 'float'>
+print(type("Hello"))        # <class 'str'>
+print(type(True))           # <class 'bool'>
+\end{lstlisting}
+\end{concept}
+
+\section{The None Type / 空值}
+
+\begin{concept}{None — "No Value" / 空值}
+\texttt{None} 表示"没有值"。它不等于 \texttt{0}、\texttt{False} 或空字符串 \texttt{""}，\texttt{None} 是 \texttt{NoneType} 类型，只等于它自己。
+\begin{lstlisting}
+my_var = None
+print(type(my_var))         # <class 'NoneType'>
+\end{lstlisting}
+\end{concept}
+
+\section{Type Casting / 类型转换}
+
+\begin{concept}{Converting Between Types / 类型之间互转}
+\begin{lstlisting}
+print(int(9.9))             # 9  —— 截断（不四舍五入！）
+print(float(5))             # 5.0
+print(str(100))             # '100'
+print(bool(1))              # True
+print(bool(0))              # False（0、空字符串、None、空容器都是 False）
+\end{lstlisting}
+\end{concept}
+
+\begin{warning}{String + Int = Error! / 字符串 + 整数 = 报错！}
+\begin{lstlisting}
+a = 34
+b = "10"
+# print(a + b)              # TypeError! 不能将 int 和 str 直接相加
+print(a + int(b))           # 44 —— 先转换再运算
+\end{lstlisting}
+\end{warning}
+
+\section{User Input / 用户输入}
+
+\begin{concept}{\texttt{input()} Always Returns String / input() 总是返回字符串}
+\begin{lstlisting}
+name = input("Enter your name: ")   # 用户输入
+print("Hello, " + name)             # 输出：Hello, [用户输入的名字]
+\end{lstlisting}
+\textbf{重要}：\texttt{input()} 的返回值永远是 \texttt{str} 类型。如果要做数学运算，必须先用 \texttt{int()} 或 \texttt{float()} 转换。
+\end{concept}
+
+\newpage
+
+% ============================================================
+\chapter{Operators / 运算符}
+% ============================================================
+
+\section{Arithmetic Operators / 算术运算符}
+
+\medskip
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Operator} & \textbf{Name / 名称} & \textbf{Example / 示例} & \textbf{Result / 结果} \\ \midrule
+\texttt{+}  & Addition / 加法      & \texttt{2 + 3}   & \texttt{5} \\
+\texttt{-}  & Subtraction / 减法   & \texttt{5 - 2}   & \texttt{3} \\
+\texttt{*}  & Multiplication / 乘法 & \texttt{3 * 2}   & \texttt{6} \\
+\texttt{/}  & Division / 除法      & \texttt{5 / 2}   & \texttt{2.5}（总是返回 float） \\
+\texttt{//} & Floor Division / 整除 & \texttt{5 // 2}  & \texttt{2}（丢弃余数） \\
+\texttt{**} & Exponent / 幂      & \texttt{3 ** 2}   & \texttt{9} \\
+\texttt{\%} & Modulo / 取余     & \texttt{7 \% 3}   & \texttt{1} \\ \bottomrule
+\end{tabular}
+\medskip
+
+\section{String Operators / 字符串特殊运算}
+
+\begin{concept}{\texttt{+} Concatenation / \texttt{*} Repetition / 拼接与重复}
+\begin{lstlisting}
+print("Hello" + " World")   # 'Hello World' —— 拼接
+print("Ha" * 3)             # 'HaHaHa'      —— 重复
+\end{lstlisting}
+\end{concept}
+
+\section{Comparison Operators / 比较运算符}
+
+\medskip
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Operator} & \textbf{Meaning / 含义} & \textbf{Example / 示例} \\ \midrule
+\texttt{==} & Equal / 等于              & \texttt{1 == 1} → \texttt{True} \\
+\texttt{!=} & Not equal / 不等于        & \texttt{2 != 3} → \texttt{True} \\
+\texttt{<}  & Less than / 小于           & \texttt{2 < 5} → \texttt{True} \\
+\texttt{>}  & Greater than / 大于        & \texttt{5 > 3} → \texttt{True} \\
+\texttt{<=} & Less than or equal / 小于等于 & \texttt{3 <= 3} → \texttt{True} \\
+\texttt{>=} & Greater than or equal / 大于等于 & \texttt{5 >= 5} → \texttt{True} \\ \bottomrule
+\end{tabular}
+\medskip
+
+比较运算的结果永远是 \texttt{bool} 类型（\texttt{True} 或 \texttt{False}）。
+
+\section{Logical Operators / 逻辑运算符}
+
+\medskip
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Operator} & \textbf{Rule / 规则} & \textbf{Example / 示例} \\ \midrule
+\texttt{and} & 两边都为 True 才返回 True & \texttt{True and False} → \texttt{False} \\
+\texttt{or}  & 任一边为 True 就返回 True & \texttt{True or False} → \texttt{True} \\
+\texttt{not} & 取反                    & \texttt{not True} → \texttt{False} \\ \bottomrule
+\end{tabular}
+\medskip
+
+\begin{lstlisting}
+print((5 > 3) and (2 < 4))  # True  —— 两个条件都成立
+print((5 > 3) or (2 > 4))   # True  —— 至少一个成立
+print(not (5 > 3))          # False —— 取反
+\end{lstlisting}
+
+\newpage
+
+% ============================================================
+\chapter{Strings / 字符串完全指南}
+% ============================================================
+
+\section{String Creation / 创建字符串}
+
+\begin{concept}{Single or Double Quotes / 单引号或双引号}
+\begin{lstlisting}
+s1 = "Hello"
+s2 = 'World'
+s3 = "It's okay"            # 双引号内可含单引号
+s4 = 'She said, "Hi!"'      # 单引号内可含双引号
+\end{lstlisting}
+\end{concept}
+
+\section{Indexing / 索引}
+
+\begin{concept}{Zero-Based Indexing / 从 0 开始计数}
+字符串中每个字符都有一个编号（索引），从 \textbf{0} 开始。负索引从右向左，-1 是最后一个字符。
+\begin{lstlisting}
+text = "Python"
+print(text[0])              # 'P' —— 第一个字符
+print(text[1])              # 'y'
+print(text[-1])             # 'n' —— 最后一个字符
+print(text[-2])             # 'o'
+\end{lstlisting}
+\end{concept}
+
+\section{Slicing / 切片}
+
+\begin{concept}{\texttt{[start:stop:step]} — Left-Closed, Right-Open / 左闭右开}
+切片格式：\texttt{[start:stop]}。\textbf{包含 start，不包含 stop}。
+\begin{lstlisting}
+text = "Python BootCamp"
+print(text[0:6])            # 'Python' —— 索引 0,1,2,3,4,5（不含 6）
+print(text[7:11])           # 'Boot'
+print(text[:6])             # 'Python' —— 省略 start，默认从 0 开始
+print(text[7:])             # 'BootCamp' —— 省略 stop，默认到末尾
+print(text[::-1])           # 'pmaCtooB nohtyP' —— 反转字符串！
+\end{lstlisting}
+\end{concept}
+
+\section{String Length / 字符串长度}
+
+\begin{lstlisting}
+text = "Hello World"
+print(len(text))            # 11 —— 空格也算一个字符
+\end{lstlisting}
+
+\section{Escape Characters / 转义字符}
+
+\begin{concept}{Special Characters / 特殊字符}
+\medskip
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Escape / 转义} & \textbf{Meaning / 含义} \\ \midrule
+\texttt{\textbackslash n} & Newline / 换行 \\
+\texttt{\textbackslash t} & Tab / 制表符 \\
+\texttt{\textbackslash\textbackslash} & Backslash / 反斜杠本身 \\
+\texttt{\textbackslash"} & Double quote / 双引号 \\
+\texttt{\textbackslash'} & Single quote / 单引号 \\ \bottomrule
+\end{tabular}
+\medskip
+\begin{lstlisting}
+print("Line1\nLine2")       # 两行输出
+print("Name:\tAlice")       # Name:    Alice
+\end{lstlisting}
+\end{concept}
+
+\section{String Methods / 字符串常用方法}
+
+\begin{concept}{Strings Are Immutable / 字符串不可变}
+所有字符串方法都返回\textbf{新字符串}，原字符串不变。要保留结果必须重新赋值！
+\end{concept}
+
+\medskip
+\renewcommand{\arraystretch}{1.5}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Method}} & \textbf{Description / 说明} \\ \midrule
+s.lower()               & 转小写：\texttt{"ABC".lower()} → \texttt{'abc'} \\
+s.upper()               & 转大写：\texttt{"abc".upper()} → \texttt{'ABC'} \\
+s.strip()               & 去除首尾空白（\texttt{lstrip} 仅左，\texttt{rstrip} 仅右） \\
+s.replace(old, new)     & 替换：\texttt{"Hi".replace("i","ello")} → \texttt{'Hello'} \\
+s.split(delim)          & 拆分：\texttt{"a,b,c".split(",")} → \texttt{['a','b','c']} \\
+delim.join(list)        & 连接：\texttt{"-".join(['a','b'])} → \texttt{'a-b'} \\
+s.count(sub)            & 统计出现次数：\texttt{"ababa".count("a")} → \texttt{3} \\
+s.find(sub)             & 查找位置——找不到返回 \textbf{-1}（不报错） \\
+s.startswith(p)         & 是否以 p 开头 → \texttt{bool} \\
+s.endswith(p)           & 是否以 p 结尾 → \texttt{bool} \\
+\bottomrule
+\end{tabularx}
+\medskip
+
+\begin{lstlisting}
+name = "  Alice  "
+print(name.strip())         # 'Alice' —— 原字符串不变！
+name = name.strip()         # 必须重新赋值才能保留
+print(name)                 # 'Alice'
+\end{lstlisting}
+
+\section{String Formatting / 字符串格式化}
+
+\begin{concept}{f-string (Recommended) / f-字符串（推荐，Python 3.6+）}
+\begin{lstlisting}
+name = "Alice"
+age = 20
+print(f"{name} is {age} years old.")    # Alice is 20 years old.
+print(f"Pi = {3.14159:.2f}")            # Pi = 3.14（保留两位小数）
+\end{lstlisting}
+\end{concept}
+
+\begin{concept}{Other Formatting Methods / 其他格式化方法}
+\begin{lstlisting}
+# .format() 方法
+print("{} is {} years old.".format(name, age))
+
+# % 旧式格式化（不推荐）
+print("%s is %d years old." % (name, age))
+
+# 逗号拼接（print 自动加空格，需手动 str() 转换数字）
+print(name, "is", str(age), "years old.")
+\end{lstlisting}
+\end{concept}
+
+\newpage
+
+% ============================================================
+\chapter{Control Flow / 控制流程}
+% ============================================================
+
+\section{Conditionals: if / elif / else / 条件判断}
+
+\begin{concept}{The Full Structure / 完整结构}
+条件判断让程序根据条件选择执行不同的代码分支。\textbf{缩进}（4 个空格）决定哪些代码属于哪个分支。
+\begin{lstlisting}
+price = 42
+
+if price > 100:
+    print("expensive")          # price > 100 时执行
+elif price > 50:                # 仅在 price <= 100 时才检查
+    print("moderate")           # 50 < price <= 100 时执行
+else:                           # 以上条件都不满足时
+    print("cheap")              # price <= 50 时执行
+\end{lstlisting}
+\end{concept}
+
+\begin{warning}{Execution Order / 执行顺序}
+Python 从上到下检查条件，\textbf{第一个为 True 的分支被执行，其余全部跳过}。
+\end{warning}
+
+\section{Ternary Operator / 三元表达式（一行 if/else）}
+
+\begin{lstlisting}
+# 语法：value_if_true if condition else value_if_false
+result = "pass" if score >= 60 else "fail"
+\end{lstlisting}
+
+\section{For Loops / For 循环}
+
+\begin{concept}{\texttt{for item in sequence} — 遍历序列}
+\begin{lstlisting}
+# 遍历列表
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+    print(fruit)
+
+# 使用 range() 循环固定次数
+for i in range(5):          # 0, 1, 2, 3, 4（不含 5！）
+    print(i)
+
+for i in range(1, 11):      # 1, 2, ..., 10
+    print(i)
+
+for i in range(0, 10, 2):   # 0, 2, 4, 6, 8（步长为 2）
+    print(i)
+\end{lstlisting}
+\texttt{range(start, stop, step)} 同样遵循"左闭右开"：含 start，不含 stop。
+\end{concept}
+
+\section{While Loops / While 循环}
+
+\begin{concept}{Repeat While Condition is True / 条件为真就重复}
+\begin{lstlisting}
+counter = 1
+while counter <= 5:
+    print(counter)
+    counter = counter + 1       # 必须更新计数器！否则会无限循环
+\end{lstlisting}
+\end{concept}
+
+\begin{warning}{For vs While / 何时用哪种？}
+\begin{itemize}[itemsep=0.3em]
+    \item \textbf{For}：知道要循环多少次——遍历序列或固定次数。
+    \item \textbf{While}：只知道什么时候停，但不知道要循环多少次。
+\end{itemize}
+\end{warning}
+
+\section{Loop Control Keywords / 循环控制关键字}
+
+\begin{concept}{break, continue, pass / 三大控制关键字}
+\begin{lstlisting}
+# break：立即退出整个循环
+for i in range(1, 10):
+    if i == 5:
+        break                   # 退出循环
+    print(i)                    # 输出: 1, 2, 3, 4
+
+# continue：跳过本次迭代，进入下一次
+for i in range(1, 10):
+    if i == 5:
+        continue                # 跳过 i=5
+    print(i)                    # 输出: 1,2,3,4,6,7,8,9（没有 5）
+
+# pass：占位符——什么都不做
+for i in range(1, 10):
+    if i == 5:
+        pass                    # 什么都不做
+    print(i)                    # 输出: 1,2,3,4,5,6,7,8,9
+\end{lstlisting}
+\end{concept}
+
+\section{Loop Utilities / 循环工具}
+
+\begin{lstlisting}
+# enumerate：同时获取索引和值
+for i, fruit in enumerate(["a", "b", "c"]):
+    print(i, fruit)             # 0 a, 1 b, 2 c
+
+# zip：并行遍历多个序列
+for a, b in zip([1, 2, 3], ["x", "y", "z"]):
+    print(a, b)                 # 1 x, 2 y, 3 z
+\end{lstlisting}
+
+\newpage
+
+% ============================================================
+\chapter{Functions / 函数}
+% ============================================================
+
+\section{Defining Functions / 定义函数}
+
+\begin{concept}{The \texttt{def} Keyword / def 关键字}
+函数是可重复使用的代码块。\texttt{def} 关键字定义函数，\texttt{return} 返回值。
+\begin{lstlisting}
+def multiply(x, y):             # 函数签名：名称 + 参数
+    result = x * y              # 函数体（缩进！）
+    return result               # 返回结果
+
+# 调用函数
+answer = multiply(3, 4)         # answer = 12
+print(answer)                   # 12
+\end{lstlisting}
+\end{concept}
+
+\begin{concept}{Key Terminology / 关键术语}
+\begin{itemize}[itemsep=0.3em]
+    \item \textbf{Parameter / 形参}：函数定义时的变量名（如 \texttt{x, y}）
+    \item \textbf{Argument / 实参}：调用函数时传入的实际值（如 \texttt{3, 4}）
+    \item \textbf{Return Value / 返回值}：函数执行完返回的结果——无 \texttt{return} 则返回 \texttt{None}
+\end{itemize}
+\end{concept}
+
+\section{Scope / 作用域}
+
+\begin{concept}{Local vs Global / 局部变量 vs 全局变量}
+函数内部定义的变量是\textbf{局部变量}，只在函数内部可见。函数外部定义的变量是\textbf{全局变量}。
+\begin{lstlisting}
+x = 5                           # 全局变量
+
+def func():
+    y = 10                      # 局部变量（仅 func 内部可见）
+    x = 99                      # 创建新的局部 x——不影响全局 x！
+    print("Inside:", x)         # 99（局部 x）
+
+func()
+print("Outside:", x)            # 5（全局 x 没变！）
+# print(y)                      # NameError! y 只在 func 内部存在
+\end{lstlisting}
+\textbf{读取}全局变量可以在函数内部直接做；\textbf{修改}全局变量需要用 \texttt{global} 关键字声明。
+\end{concept}
+
+\section{Lambda Functions / 匿名函数}
+
+\begin{concept}{One-Line Anonymous Functions / 一行匿名函数}
+\texttt{lambda} 创建不需要名字的简单函数，只能包含单个表达式：
+\begin{lstlisting}
+# 传统写法
+def add(x, y):
+    return x + y
+
+# lambda 写法
+add = lambda x, y: x + y
+
+print(add(3, 4))                # 7
+
+# lambda 常用于排序、过滤等场景
+pairs = [(1, 'one'), (2, 'two'), (3, 'three')]
+pairs.sort(key=lambda p: p[1])  # 按第二个元素（字符串）排序
+\end{lstlisting}
+\end{concept}
+
+\newpage
+
+% ============================================================
+\chapter{Data Structures / 数据结构}
+% ============================================================
+
+\section{List / 列表 \texttt{[]}}
+
+\begin{concept}{Mutable, Ordered Sequence / 可变、有序序列}
+列表是最常用的数据结构——用方括号 \texttt{[]} 创建，元素可变，保持插入顺序。
+\begin{lstlisting}
+# 创建
+fruits = ["apple", "banana", "cherry"]
+mixed = [1, "hello", 3.14, True]        # 可混合不同类型
+
+# 索引和切片（和字符串一样）
+print(fruits[0])            # 'apple'
+print(fruits[-1])           # 'cherry'
+print(fruits[0:2])          # ['apple', 'banana']
+\end{lstlisting}
+\end{concept}
+
+\begin{concept}{List Methods / 列表常用方法}
+\renewcommand{\arraystretch}{1.5}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Method}} & \textbf{Description / 说明} \\ \midrule
+lst.append(x)           & 末尾追加元素 \\
+lst.extend(iter)        & 批量追加（从另一个可迭代对象） \\
+lst.insert(i, x)        & 在位置 i 插入 \\
+lst.remove(x)           & 删除首次出现的 x——找不到则报错 \\
+lst.pop(i)              & 弹出位置 i 的元素（默认最后一个）并返回 \\
+lst.clear()             & 清空列表 \\
+lst.index(x)            & 查找首次出现的位置 \\
+lst.count(x)            & 统计出现次数 \\
+lst.sort()              & \textbf{原地排序}——修改原列表，返回 None \\
+sorted(lst)             & \textbf{返回新排序列表}——原列表不变 \\
+lst.reverse()           & 原地反转 \\
+lst.copy()              & 浅拷贝（等价于 \texttt{lst[:]}） \\
+len(lst)                & 列表长度 \\
+\bottomrule
+\end{tabularx}
+\medskip
+
+\begin{lstlisting}
+nums = [3, 1, 2]
+nums.append(4)              # [3, 1, 2, 4]
+nums.sort()                 # [1, 2, 3, 4] —— 原地排序
+print(nums.pop())           # 4 —— 弹出并返回最后一个元素
+print(nums)                 # [1, 2, 3]
+\end{lstlisting}
+\end{concept}
+
+\begin{warning}{The Reference Pitfall / 引用陷阱（重要考点）}
+\begin{lstlisting}
+a = [1, 2, 3]
+b = a                       # b 和 a 指向同一个列表！
+b.append(4)
+print(a)                    # [1, 2, 3, 4] —— a 也被改了！
+
+# 正确拷贝方式
+c = a.copy()                # 或 c = a[:] 或 c = list(a)
+c.append(5)
+print(a)                    # [1, 2, 3, 4] —— 不受影响
+\end{lstlisting}
+\texttt{=} 只创建引用（别名），不是真正的复制！
+\end{warning}
+
+\section{Tuple / 元组 \texttt{()}}
+
+\begin{concept}{Immutable, Ordered Sequence / 不可变、有序序列}
+元组和列表类似，但\textbf{不可变}——创建后不能修改、添加或删除元素。
+\begin{lstlisting}
+# 创建
+point = (3, 4)
+person = ("Alice", 20, "Student")
+
+# 索引和切片（和列表一样）
+print(point[0])             # 3
+
+# 解包 (Unpacking)
+x, y = point
+print(x, y)                 # 3 4
+
+# 单元素元组需要逗号
+single = (1,)               # 注意逗号！(1) 只是带括号的整数
+\end{lstlisting}
+\end{concept}
+
+\section{Dictionary / 字典 \texttt{\{\}}}
+
+\begin{concept}{Key-Value Pairs / 键值对——通过键来查找值}
+字典存储\textbf{键值对}，通过唯一的键来访问值（而不是靠位置索引）。
+\begin{lstlisting}
+# 创建
+student = {"name": "Alice", "age": 20, "grade": "A"}
+
+# 访问
+print(student["name"])      # 'Alice'
+print(student.get("age"))   # 20 —— 推荐！键不存在返回 None 不报错
+# student["height"]         # KeyError! 键不存在
+
+# 增删改
+student["height"] = 170     # 添加新键值对
+student["age"] = 21         # 修改已有键的值
+del student["grade"]        # 删除键值对
+
+# 遍历
+for key, value in student.items():
+    print(f"{key}: {value}")
+
+# 检查键是否存在
+if "name" in student:
+    print("Found!")
+\end{lstlisting}
+\end{concept}
+
+\section{Set / 集合 \texttt{\{\}}}
+
+\begin{concept}{Unordered, Unique Elements / 无序、不重复}
+集合自动去重，支持数学集合运算（交、并、差）。
+\begin{lstlisting}
+# 创建（空集合必须用 set()，{} 是空字典！）
+colors = {"red", "blue", "green"}
+colors.add("yellow")        # 添加
+colors.remove("red")        # 删除——不存在则报错
+colors.discard("purple")    # 安全删除——不存在也不报错
+
+# 集合运算
+A = {1, 2, 3, 4}
+B = {3, 4, 5, 6}
+print(A | B)                # {1,2,3,4,5,6} —— 并集
+print(A & B)                # {3,4}           —— 交集
+print(A - B)                # {1,2}           —— 差集
+
+# 去重
+duplicates = [1, 2, 2, 3, 3, 3]
+unique = list(set(duplicates))  # [1, 2, 3]
+\end{lstlisting}
+\end{concept}
+
+\section{Comprehensions / 推导式}
+
+\begin{concept}{One-Line Loops / 一行搞定循环}
+推导式是 \texttt{for} 循环的简洁写法，用于快速创建列表、字典、集合。
+\begin{lstlisting}
+# 列表推导式
+squares = [x**2 for x in range(1, 6)]           # [1, 4, 9, 16, 25]
+
+# 带条件的列表推导式
+evens = [x for x in range(1, 11) if x % 2 == 0] # [2, 4, 6, 8, 10]
+
+# 字典推导式
+sq_dict = {x: x**2 for x in range(1, 6)}        # {1:1, 2:4, 3:9, 4:16, 5:25}
+
+# 集合推导式
+sq_set = {x**2 for x in [1, -1, 2, -2, 3, -3]}  # {1, 4, 9} —— 自动去重！
+\end{lstlisting}
+\end{concept}
+
+\newpage
+
+% ============================================================
+\chapter{Common Built-in Functions / 常用内置函数}
+% ============================================================
+
+\medskip
+\renewcommand{\arraystretch}{1.5}
+\centering
+\begin{tabularx}{\textwidth}{@{}>{\ttfamily}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textbf{Function}} & \textbf{Description / 说明} \\ \midrule
+print(x)                & 输出到控制台 \\
+input(prompt)           & 读取用户输入——\textbf{总是返回 str} \\
+type(obj)               & 返回数据类型 \\
+len(seq)                & 返回序列长度（字符串、列表、元组等） \\
+range(start,stop,step)  & 生成整数序列——\textbf{左闭右开} \\
+sum(iterable)           & 求和 \\
+max(iterable)           & 最大值 \\
+min(iterable)           & 最小值 \\
+abs(x)                  & 绝对值 \\
+round(x, n)             & 保留 n 位小数 \\
+sorted(iterable)        & 返回新排序列表——\textbf{不改变原序列} \\
+enumerate(seq)          & 返回 (索引, 值) 对 \\
+zip(a, b)               & 并行遍历多个序列 \\
+map(func, iterable)     & 对每个元素应用函数 \\
+filter(func, iterable)  & 保留 func 返回 True 的元素 \\
+any(iterable)           & 任一为 True 则 True \\
+all(iterable)           & 全部为 True 才 True \\
+isinstance(obj, type)   & 类型检查（支持继承判断） \\
+\bottomrule
+\end{tabularx}
+\medskip
+
+\newpage
+
+% ============================================================
+\chapter{Quick Reference Card / 速查卡}
+% ============================================================
+
+\begin{concept}{Top 20 Most Used Patterns / 最常用 20 条}
+\begin{enumerate}[itemsep=0.4em]
+    \item \texttt{print(f"\{var\}")} — f-string 输出
+    \item \texttt{name = input("Prompt: ")} — 获取用户输入
+    \item \texttt{int(x) / float(x) / str(x)} — 类型转换
+    \item \texttt{len(seq)} — 获取长度
+    \item \texttt{s[i] / s[i:j] / s[::-1]} — 索引 / 切片 / 反转
+    \item \texttt{s.strip() / .split(d) / d.join(lst)} — 字符串处理三件套
+    \item \texttt{if c1: ... elif c2: ... else: ...} — 条件分支
+    \item \texttt{for item in iterable: ...} — for 循环遍历
+    \item \texttt{for i in range(n): ...} — 固定次数循环
+    \item \texttt{while cond: ...} — 条件循环（注意更新计数器）
+    \item \texttt{break / continue / pass} — 循环控制
+    \item \texttt{def f(a, b=0): return x} — 函数定义
+    \item \texttt{lambda x: x * 2} — 匿名函数
+    \item \texttt{lst.append(x) / .pop() / .sort()} — 列表核心操作
+    \item \texttt{lst.copy() / lst[:]} — 浅拷贝（避免引用陷阱）
+    \item \texttt{d.get(key, default)} — 字典安全取值
+    \item \texttt{for k, v in d.items(): ...} — 字典遍历
+    \item \texttt{set(lst)} — 列表去重
+    \item \texttt{[expr for x in lst if cond]} — 列表推导式
+    \item \texttt{sorted(lst, key=..., reverse=True)} — 自定义排序
+\end{enumerate}
+\end{concept}
+
+\vspace{1cm}
+
+\begin{center}
+\rule{\linewidth}{0.3pt}
+\vspace{0.5cm}
+{\large \textbf{Practice Makes Perfect / 熟能生巧}}
+\vspace{0.3cm}
+
+This tutorial covers the core Python syntax needed for the OOP course (22EM31202C).
+
+For more advanced topics (NumPy, Pandas, Matplotlib, OOP, File I/O, Error Handling),
+
+refer to the full \textbf{OOP.pdf} course notes and the \textbf{Command.pdf} quick reference.
+
+本教程涵盖 OOP 课程 (22EM31202C) 所需的 Python 核心语法。
+
+更进阶的内容（NumPy、Pandas、Matplotlib、面向对象、文件IO、异常处理）
+
+请参考完整版 \textbf{OOP.pdf} 课程笔记和 \textbf{Command.pdf} 速查表。
+
+\vspace{0.5cm}
+\rule{\linewidth}{0.3pt}
+\end{center}
+
+\end{document}

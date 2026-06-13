@@ -4870,13 +4870,320 @@ plt.show()
     口诀：一手 \texttt{.plot(kind='xxx')} 走天下，Matplotlib 的精细控制全兼容！
 \end{concept}
 
-% ======================================================================
+% ============================================================
+\chapter{Practice Set 01 - COVID-19 Data Analysis / 练习题集 01 - 法国新冠疫情数据分析}
+% ============================================================
+
+\begin{concept}{Dataset Overview / 数据集概览}
+    数据集 \texttt{dailydata-covid-fr.csv} 来自 \textbf{Santé Publique France}（法国公共卫生部），记录了法国各省每日新冠疫情四项指标：
+    \begin{itemize}[itemsep=0.3em]
+        \item \textbf{incid\_hosp}：Daily number of newly hospitalized persons / 每日新增住院人数
+        \item \textbf{incid\_rea}：Daily number of newly released persons / 每日新增出院人数
+        \item \textbf{incid\_dc}：Daily number of newly deceased persons / 每日新增死亡人数
+        \item \textbf{incid\_rad}：Daily number of new intensive care admissions / 每日新增重症监护人数
+    \end{itemize}
+\end{concept}
+
+\noindent\textbf{导入库 / Import Libraries：}
+\begin{lstlisting}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+\end{lstlisting}
+
+% --- Q00 ---
+\section*{Q00 — Read File \& Check Dimensions / 读取文件并检查维度}
+\begin{lstlisting}
+df = pd.read_csv('dailydata-covid-fr.csv')
+print(df.head(3))
+print(f'Shape: {df.shape}')   # (21816, 6) — 21816 rows, 6 columns
+\end{lstlisting}
+
+% --- Q01 ---
+\section*{Q01 — Handle Missing Values / 处理缺失值}
+\begin{lstlisting}
+print(df.isnull().sum())          # Check missing values per column
+df = df.dropna()                  # Drop rows with missing values
+print(f'After dropna: {df.shape}')
+\end{lstlisting}
+
+% --- Q02 ---
+\section*{Q02 — Rename Columns / 重命名列}
+\begin{lstlisting}
+df = df.rename(columns={
+    'jour': 'date',
+    'incid_hosp': 'hospitalized',
+    'incid_rea': 'released',
+    'incid_dc': 'deceased',
+    'incid_rad': 'intensive_care'
+})
+print(df.columns.tolist())
+# ['dep', 'date', 'hospitalized', 'released', 'deceased', 'intensive_care']
+\end{lstlisting}
+
+% --- Q03 ---
+\section*{Q03 — Convert Date Column / 转换日期类型}
+\begin{lstlisting}
+df['date'] = pd.to_datetime(df['date'])
+print(df['date'].dtype)           # datetime64[ns]
+\end{lstlisting}
+
+% --- Q04 ---
+\section*{Q04 — Find Time Period / 数据时间范围}
+\begin{lstlisting}
+print(f"From: {df['date'].min()}")   # e.g., 2020-03-19
+print(f"To:   {df['date'].max()}")   # e.g., 2022-06-28
+\end{lstlisting}
+
+% --- Q05 ---
+\section*{Q05 — Departments Analysis / 省份分析}
+\begin{lstlisting}
+# Unique departments / 唯一省份
+departments = df['dep'].unique()
+print(f'Departments: {sorted(departments)}')
+
+# Number of departments / 省份数量
+n_deps = df['dep'].nunique()
+print(f'Number of departments: {n_deps}')   # 101
+\end{lstlisting}
+
+% --- Q06 ---
+\section*{Q06 — Total Hospitalized per Department / 各省住院总人数}
+\begin{lstlisting}
+total_by_dep = df.groupby('dep')['hospitalized'].sum()
+print(total_by_dep.head(10))
+\end{lstlisting}
+
+% --- Q07 ---
+\section*{Q07 — Create df\_dep DataFrame / 创建各省汇总表}
+\begin{lstlisting}
+df_dep = total_by_dep.reset_index()
+df_dep.columns = ['dep', 'total']
+print(df_dep.head())
+\end{lstlisting}
+
+% --- Q08 ---
+\section*{Q08 — Sort Descending / 降序排列}
+\begin{lstlisting}
+df_dep = df_dep.sort_values('total', ascending=False)
+print(df_dep.head(10))
+\end{lstlisting}
+
+% --- Q09 ---
+\section*{Q09 — Top 5 Bar Plot / 前 5 名柱状图}
+\begin{lstlisting}
+top5 = df_dep.head(5)
+sns.barplot(data=top5, x='dep', y='total', palette='viridis')
+plt.title('Top 5 Departments - Total Hospitalized Persons')
+plt.xlabel('Department Code')
+plt.ylabel('Total Hospitalized')
+plt.show()
+\end{lstlisting}
+
+\begin{center}
+\includegraphics[width=0.85\textwidth]{practice set 01/deps.png}
+\end{center}
+
+% --- Q10 ---
+\section*{Q10 — Filter Rhône Department / 筛选罗讷省 (69)}
+\begin{lstlisting}
+df_rhone = df[df['dep'] == 69]         # Department 69 = Rhône
+print(f'Rhone data shape: {df_rhone.shape}')
+\end{lstlisting}
+
+% --- Q11 ---
+\section*{Q11 — Deceased Trend in Rhône / 罗讷省死亡人数趋势}
+\begin{lstlisting}
+df_rhone = df_rhone.sort_values('date')
+sns.lineplot(data=df_rhone, x='date', y='deceased',
+             color='crimson', linewidth=1.5)
+plt.title('Daily Deceased - Rhône (Department 69)')
+plt.xlabel('Date')
+plt.ylabel('Number of Deceased')
+plt.xticks(rotation=45)
+plt.show()
+\end{lstlisting}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{practice set 01/rhones.png}
+\end{center}
+
+\begin{concept}{Key Takeaways / 核心收获}
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{pd.read\_csv()} 读取 CSV → \texttt{.head()} / \texttt{.shape} 初探数据
+        \item \texttt{.isnull().sum()} + \texttt{.dropna()} 处理缺失值
+        \item \texttt{.rename(columns=\{...\})} 重命名列，使代码更可读
+        \item \texttt{pd.to\_datetime()} 将字符串转为日期类型，解锁时间序列操作
+        \item \texttt{.groupby('col').sum()} + \texttt{.reset\_index()} 分组聚合的标准套路
+        \item \texttt{.sort\_values('col', ascending=False)} 降序排序
+        \item \texttt{seaborn.barplot()} / \texttt{seaborn.lineplot()} 快速出图
+    \end{itemize}
+\end{concept}
+
+\newpage
+
+% ============================================================
+\chapter{Practice Set 02 - Netflix Data Analysis / 练习题集 02 - Netflix 影视数据分析}
+% ============================================================
+
+\begin{concept}{Dataset Overview / 数据集概览}
+    数据集 \texttt{netflix\_titles.csv} 来自 Flixable 提取的 Netflix 报告，共 8,804 条记录，包含电影和电视剧的元数据：
+    \begin{itemize}[itemsep=0.2em]
+        \item \textbf{type}：Movie or TV Show / 电影或电视剧
+        \item \textbf{title}：Title of the content / 片名
+        \item \textbf{director}：Director(s) name / 导演
+        \item \textbf{cast}：List of actors (comma-separated) / 演员列表（逗号分隔）
+        \item \textbf{country}：Production country(ies) / 制作国家
+        \item \textbf{date\_added}：Date added to Netflix / 上线日期
+        \item \textbf{release\_year}：Year of release / 发行年份
+        \item \textbf{rating}：Content rating / 分级（如 PG-13, TV-MA）
+        \item \textbf{duration}：Duration in min (Movie) or seasons (TV Show) / 时长
+        \item \textbf{listed\_in}：Genre categories / 类型分类
+        \item \textbf{description}：Summary text / 简介
+    \end{itemize}
+\end{concept}
+
+\noindent\textbf{导入库 / Import Libraries：}
+\begin{lstlisting}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+\end{lstlisting}
+
+% --- Q1 ---
+\section*{Q1 — Read File / 读取文件}
+\begin{lstlisting}
+nf = pd.read_csv('netflix_titles.csv')
+print(nf.head(3))
+print(f'Shape: {nf.shape}')        # (8804, 12)
+\end{lstlisting}
+
+% --- Q2 ---
+\section*{Q2 — Data Summary / 数据摘要}
+\begin{lstlisting}
+print(nf.info())                    # Column types, non-null counts
+print(nf.describe())                # Numerical summary
+print(nf.describe(include='object')) # Categorical summary
+\end{lstlisting}
+
+% --- Q3 ---
+\section*{Q3 — Unique Release Years / 唯一发行年份}
+\begin{lstlisting}
+unique_years = nf['release_year'].unique()
+unique_years.sort()
+print(unique_years)                 # e.g., [1925 1942 ... 2021]
+print(f'Number of unique years: {len(unique_years)}')
+\end{lstlisting}
+
+% --- Q4 ---
+\section*{Q4 — Time Period / 数据时间范围}
+\begin{lstlisting}
+print(f"From: {nf['release_year'].min()}")   # 1925
+print(f"To:   {nf['release_year'].max()}")   # 2021
+\end{lstlisting}
+
+% --- Q5 ---
+\section*{Q5 — Unique Movie Release Years / 仅电影的发行年份}
+\begin{lstlisting}
+movies = nf[nf['type'] == 'Movie']
+movie_years = sorted(movies['release_year'].unique())
+print(movie_years)
+print(f'Movie years count: {len(movie_years)}')
+\end{lstlisting}
+
+% --- Q6 ---
+\section*{Q6 — Average Movie Duration / 电影平均时长}
+\begin{lstlisting}
+# Duration column for movies: '90 min' → extract number
+movies = nf[nf['type'] == 'Movie'].copy()
+movies['duration_min'] = movies['duration'].str.extract(r'(\d+)').astype(float)
+avg_duration = movies['duration_min'].mean()
+print(f'Average movie duration: {avg_duration:.1f} minutes')
+\end{lstlisting}
+
+% --- Q7 ---
+\section*{Q7 — Create Title → Cast Dictionary / 构建片名→演员字典}
+\begin{lstlisting}
+# Drop rows where cast is null / 删除演员为空的记录
+nf_clean = nf.dropna(subset=['cast'])
+titles_and_cast = dict(zip(nf_clean['title'], nf_clean['cast']))
+print(f'Dictionary size: {len(titles_and_cast)} entries')
+print(f'Example: {list(titles_and_cast.items())[0]}')
+\end{lstlisting}
+
+% --- Q8 ---
+\section*{Q8 — Ryan Reynolds Appearances / Ryan Reynolds 出演次数}
+\begin{lstlisting}
+ryan_titles = [title for title, cast in titles_and_cast.items()
+               if 'Ryan Reynolds' in cast]
+print(f'Ryan Reynolds appears in {len(ryan_titles)} titles:')
+for t in ryan_titles:
+    print(f'  - {t}')
+\end{lstlisting}
+
+% --- Q9 ---
+\section*{Q9 — Ryan Reynolds + Blake Lively Together / 夫妻档合作}
+\begin{lstlisting}
+together = [title for title, cast in titles_and_cast.items()
+            if 'Ryan Reynolds' in cast and 'Blake Lively' in cast]
+print(f'They appear together in {len(together)} titles:')
+for t in together:
+    print(f'  - {t}')
+\end{lstlisting}
+
+% --- Q10 ---
+\section*{Q10 — Movies per Director / 各导演电影数量}
+\begin{lstlisting}
+# Filter to movies, drop null directors / 仅电影 + 排除空导演
+movies_only = nf[nf['type'] == 'Movie'].copy()
+movies_only = movies_only.dropna(subset=['director'])
+director_counts = movies_only['director'].value_counts()
+print(director_counts.head(15))
+\end{lstlisting}
+
+% --- Q11 ---
+\section*{Q11 — Top 10 Directors / 前 10 名导演}
+\begin{lstlisting}
+top10_directors = director_counts.head(10)
+print(top10_directors)
+\end{lstlisting}
+
+% --- Q12 ---
+\section*{Q12 — Top 10 Directors Bar Chart / 前 10 名导演柱状图}
+\begin{lstlisting}
+sns.barplot(x=top10_directors.values, y=top10_directors.index,
+            palette='magma')
+plt.title('Top 10 Directors by Number of Movies (Netflix)')
+plt.xlabel('Number of Movies')
+plt.ylabel('Director')
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{practice set 02/directors.png}
+\end{center}
+
+\begin{concept}{Key Takeaways / 核心收获}
+    \begin{itemize}[itemsep=0.3em]
+        \item \texttt{.info()} + \texttt{.describe()} 是数据探索的第一步
+        \item \texttt{.unique()} 提取唯一值 → \texttt{sorted()} 排序展示
+        \item \texttt{.str.extract(r'(\textbackslash d+)')} 正则从字符串中提取数字
+        \item \texttt{dict(zip(keys, values))} 两列快速转字典
+        \item 字典推导式 + \texttt{if 'name' in cast} 做文本筛选，灵活高效
+        \item \texttt{.value\_counts().head(10)} 是"Top-N 排行榜"的标准写法
+        \item \texttt{seaborn.barplot()} 横向柱状图适合展示排名（\texttt{y=} 放类别标签）
+    \end{itemize}
+\end{concept}
+
 \newpage
 
 \appendix
 \chapter{Complete Command Reference / 全课程命令速查表}
 
-Below is a consolidated quick reference of all key syntax, functions, and methods covered in Chapters 01--09. Use for exam review.
+Below is a consolidated quick reference of all key syntax, functions, and methods covered in Chapters 01--09 plus Practice Sets. Use for exam review.
 \vspace{1em}
 
 % ====== 01 ======

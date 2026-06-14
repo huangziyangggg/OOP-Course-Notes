@@ -4,10 +4,11 @@
 >
 > **哈尔滨工业大学 × 法国里昂商学院** · 应用数据科学本科 · 面向对象编程课程笔记
 
-[![PDF](https://img.shields.io/badge/PDF-OOP.pdf-blue)](OOP.pdf)
-[![Practice](https://img.shields.io/badge/Practice-Practice.pdf-green)](Practice.pdf)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Pages](https://img.shields.io/badge/pages-121-orange)](OOP.pdf)
+[![OOP](https://img.shields.io/badge/OOP-121p-blue)](OOP.pdf)
+[![Practice](https://img.shields.io/badge/Practice-50p-green)](Practice.pdf)
+[![Command](https://img.shields.io/badge/Command-30p-orange)](Command.pdf)
+[![Syntax](https://img.shields.io/badge/Syntax-23p-purple)](Syntax.pdf)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 ---
 
@@ -46,6 +47,10 @@ This repository contains the complete course notes for **Object Oriented Program
 | 📝 `OOP.tex` | Master LaTeX source file (~5,000 lines) |
 | 📊 `Practice.pdf` | **Practice Case Collection** (50 pages, 159 examples) — All example boxes extracted |
 | 📝 `Practice.tex` | Practice case LaTeX source file |
+| 📋 `Command.pdf` | **Standalone Command Reference** (30 pages, ~300 commands, 14 sections) — Complete quick reference |
+| 📝 `Command.tex` | Command reference LaTeX source file |
+| 📗 `Syntax.pdf` | **Python Basic Syntax Tutorial** (23 pages, 8 chapters) — Concise syntax guide for beginners |
+| 📝 `Syntax.tex` | Syntax tutorial LaTeX source file |
 | 📘 `OOP.doc` | Official course syllabus |
 | 🖼️ `HIT_logo.png` | Harbin Institute of Technology logo |
 | 🖼️ `emlyon_logo.png` | emlyon business school logo |
@@ -65,7 +70,7 @@ This repository contains the complete course notes for **Object Oriented Program
 | **09** | Pandas Library II | Data cleaning (NaN, renaming, type conversion), feature engineering (lambda, binning, encoding), pivot tables, crosstabs, **10 plot types** (line/bar/barh/hist/box/scatter/area/pie/density/hexbin) |
 | **P1** | Practice Set 01 — COVID-19 | France COVID dataset: groupby aggregation, bar plots, line plots (Seaborn) |
 | **P2** | Practice Set 02 — Netflix | Netflix titles dataset: dictionary operations, text filtering, director rankings, bar charts |
-| **📎** | Appendix | **Complete Command Reference** (~160 commands) across 10 categories |
+| **📎** | Appendix | **Complete Command Reference** (~300 commands, 14 sections — also available standalone as `Command.pdf`) |
 
 ### Notebook Features
 
@@ -132,6 +137,10 @@ These notes were originally created during final exam preparation by reorganizin
 | 📝 `OOP.tex` | 合并版 LaTeX 源文件（约 5000 行） |
 | 📊 `Practice.pdf` | **实战案例合集**（50 页，159 个案例）——提取全书的 examplebox 独立成册 |
 | 📝 `Practice.tex` | 实战案例 LaTeX 源文件 |
+| 📋 `Command.pdf` | **独立命令速查表**（30 页，约 300 条命令，14 个分类）——完整快速查阅手册 |
+| 📝 `Command.tex` | 命令速查表 LaTeX 源文件 |
+| 📗 `Syntax.pdf` | **Python 基础语法教程**（23 页，8 章）——精简版语法入门指南 |
+| 📝 `Syntax.tex` | 语法教程 LaTeX 源文件 |
 | 📘 `OOP.doc` | 官方课程教学大纲 |
 | 🖼️ `HIT_logo.png` | 哈尔滨工业大学校徽 |
 | 🖼️ `emlyon_logo.png` | 法国里昂商学院校徽 |
@@ -151,7 +160,7 @@ These notes were originally created during final exam preparation by reorganizin
 | **09** | Pandas 库 II | 数据清洗（NaN/重命名/类型转换）、特征工程（lambda/分箱/编码）、透视表/交叉表、**10 种绘图**（折线/柱状/水平/直方/箱线/散点/面积/饼图/密度/六边形） |
 | **P1** | 练习题集 01 — 新冠疫情 | 法国新冠数据集：分组聚合、柱状图、折线图（Seaborn） |
 | **P2** | 练习题集 02 — Netflix | Netflix 影视数据集：字典操作、文本筛选、导演排行、柱状图 |
-| **📎** | 附录 | **全课程命令速查表**（约 160 条），分 10 大类 |
+| **📎** | 附录 | **全课程命令速查表**（约 300 条，14 个分类 —— 也可独立查阅 `Command.pdf`） |
 
 ### 笔记特色
 
@@ -192,6 +201,7 @@ These notes were originally created during final exam preparation by reorganizin
 
 | 日期 | 版本 | 更新内容 |
 |------|------|----------|
+| 2026-06 | v3.1 | 新增 `Command.pdf`（独立命令速查表，30页/300条/14类）和 `Syntax.pdf`（Python基础语法教程，23页/8章） |
 | 2026-06 | v3.0 | 新增 Practice Set 01（COVID-19）和 02（Netflix），含可视化图表；新增多态与析构函数章节；Pandas 可视化扩展至 10 种；全文中英双语完善 |
 | 2026-05 | v2.0 | 全面优化：代码行号、页眉页脚、PDF 书签、titlesec 标题格式、tocloft 目录、封面美化、附录速查表 |
 | 2026-05 | v1.0 | 初始版本，9 章笔记合并 |
